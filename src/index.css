@@ -79,217 +79,6 @@ body {
   text-align: center;
 }
 
-/* ===== LOGIN PAGE ===== */
-.login-page,
-.register-page{
-  min-height:100vh;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:url("/background.png") center/cover no-repeat fixed;
-}
-
-/* DARK OVERLAY */
-.login-page::before,
-.register-page::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(20,10,50,.45) 0%,
-      rgba(10,0,30,.65) 60%,
-      rgba(5,0,20,.85) 100%
-    );
-  backdrop-filter:blur(2px);
-}
-
-/* .login-page {
-  min-height: 100%;
-  background: linear-gradient(135deg, #6C4CF1, #8B5CF6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Poppins', sans-serif;
-} */
-
-.login-page .container {
-  background: white;
-  padding: 40px;
-  width: 100%;
-  max-width: 420px;
-  border-radius: 18px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-}
-
-.login-page .logo {
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-.login-page .logo h1 {
-  margin: 0;
-  color: #6C4CF1;
-  font-size: 26px;
-  font-weight: 700;
-}
-
-.login-page .subtitle {
-  text-align: center;
-  color: #666;
-  margin-bottom: 30px;
-  font-size: 14px;
-}
-
-.login-page label {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.login-page input {
-  width: 100%;
-  padding: 12px 14px;
-  margin-top: 6px;
-  margin-bottom: 18px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  transition: .2s;
-}
-
-.login-page input:focus {
-  outline: none;
-  border-color: #6C4CF1;
-  box-shadow: 0 0 0 3px rgba(108,76,241,0.15);
-}
-
-.login-page button {
-  width: 100%;
-  padding: 13px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
-  color: white;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: .25s;
-}
-
-.login-page button:hover {
-  transform: translateY(-2px);
-}
-
-.login-page .footer {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 13px;
-}
-
-.login-page .footer a {
-  color: #6C4CF1;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-/* ===== REGISTER ======== */
-/* ===== REGISTER PAGE ===== */
-
-/* .register-page {
-  min-height: 100%;
-  background: linear-gradient(135deg, #6C4CF1, #8B5CF6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Poppins', sans-serif;
-} */
-
-.register-page .container {
-  background: white;
-  padding: 35px;
-  width: 100%;
-  max-width: 520px;
-  border-radius: 18px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-}
-
-.register-page .logo {
-  text-align: center;
-  margin-bottom: 20px;
-}
-
-.register-page .logo h1 {
-  margin: 0;
-  color: #6C4CF1;
-  font-size: 26px;
-  font-weight: 700;
-}
-
-.register-page .subtitle {
-  text-align: center;
-  color: #666;
-  margin-bottom: 25px;
-  font-size: 14px;
-}
-
-.register-page label {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.register-page input {
-  width: 100%;
-  padding: 12px 14px;
-  margin-top: 6px;
-  margin-bottom: 16px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  transition: .2s;
-}
-
-.register-page input:focus {
-  outline: none;
-  border-color: #6C4CF1;
-  box-shadow: 0 0 0 3px rgba(108,76,241,0.15);
-}
-
-.register-page button {
-  width: 100%;
-  padding: 13px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
-  color: white;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: .25s;
-}
-
-.register-page button:hover {
-  transform: translateY(-2px);
-}
-
-.register-page .footer {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 13px;
-}
-
-.register-page .footer a {
-  color: #6C4CF1;
-  text-decoration: none;
-  font-weight: 500;
-}
-
-.register-page .error {
-  color: red;
-  font-size: 13px;
-  margin-bottom: 10px;
-}
-
-/* Competitions */
 /* ===== COMPETITIONS PAGE ===== */
 
 .competitions-page {
@@ -306,20 +95,6 @@ body {
   flex-direction: column;
   background: #F5F3FF;
 }
-/* HEADER */
-/* .competitions-page .header {
-  background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
-  padding: 18px 30px;
-  color: white;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-} */
-
-/* .competitions-page .header h1 {
-  margin: 0;
-  font-size: 22px;
-} */
 
 .competitions-page .logout {
   background: white;
@@ -368,23 +143,6 @@ body {
 }
 
 /* POSTER */
-/* .competitions-page .poster {
-  position: relative;
-  width: 100%;
-  aspect-ratio: 4 / 3;
-  overflow: hidden;
-  background: #eee;
-  border-bottom: 1px solid #f1f1f1;
-}
-
-.competitions-page .poster img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  transition: transform .4s ease;
-  display: block;
-} */
  .competitions-page .poster{
   aspect-ratio:4/3;
   background:#f3f4f6;
@@ -1144,64 +902,6 @@ input:focus, select:focus, textarea:focus {
 @keyframes fadeIn{
   from{opacity:0}
   to{opacity:1}
-}
-/* GLASS CARD */
-.login-page .container,
-.register-page .container{
-  position:relative;
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(18px) saturate(140%);
-  -webkit-backdrop-filter:blur(18px) saturate(140%);
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 25px 70px rgba(0,0,0,.45);
-  color:white;
-}
-
-/* TEXT COLOR FIX */
-.login-page .logo h1,
-.register-page .logo h1{
-  color:white;
-}
-
-.login-page .subtitle,
-.register-page .subtitle{
-  color:rgba(255,255,255,.85);
-}
-
-.login-page label,
-.register-page label{
-  color:rgba(255,255,255,.85);
-}
-
-/* INPUT GLASS */
-.login-page input,
-.register-page input{
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25);
-  color:white;
-}
-
-.login-page input::placeholder,
-.register-page input::placeholder{
-  color:rgba(255,255,255,.6);
-}
-
-.login-page input:focus,
-.register-page input:focus{
-  border-color:#c084fc;
-  box-shadow:0 0 0 3px rgba(192,132,252,.35);
-}
-
-.login-page button,
-.register-page button{
-  background:linear-gradient(135deg,#9333ea,#f472b6);
-  box-shadow:0 10px 30px rgba(244,114,182,.35);
-}
-
-.login-page button:hover,
-.register-page button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 18px 40px rgba(244,114,182,.55);
 }
 
 .competitions-page{
@@ -1972,73 +1672,6 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
-/* ================= MOBILE LOGIN ================= */
-@media (max-width: 768px){
-
-  .login-page, .register-page{
-    align-items:flex-start;      /* jangan center */
-    padding:40px 16px 30px;
-  }
-
-  .login-page .container{
-    width:100%;
-    max-width:none;
-    border-radius:22px;
-    padding:26px 18px 22px;
-  }
-
-  .login-page .logo h1{
-    font-size:22px;
-  }
-
-  .login-page .subtitle{
-    font-size:13px;
-    margin-bottom:22px;
-  }
-
-  .login-page label{
-    font-size:13px;
-  }
-
-  .login-page input{
-    padding:14px 14px;
-    font-size:16px; /* penting: biar iOS ga zoom */
-    border-radius:12px;
-    margin-bottom:14px;
-  }
-
-  .login-page button{
-    padding:15px;
-    font-size:16px;
-    border-radius:14px;
-    margin-top:8px;
-  }
-
-  .login-page .footer{
-    margin-top:18px;
-    font-size:13px;
-  }
-
-}
-
-@media (max-width:768px){
-  .login-page{
-    min-height:100dvh; /* bukan vh */
-  }
-}
-
-/* ===== MOBILE BACKGROUND ===== */
-@media (max-width:768px){
-
-  .login-page,
-  .register-page{
-    background-image:url("/background-mobile.png");
-    background-attachment:scroll; /* wajib */
-    background-position:center top;
-  }
-
-}
-
 .admin-tabs{
   display:flex;
   gap:8px;
@@ -2060,31 +1693,8 @@ input:focus, select:focus, textarea:focus {
   box-shadow:0 6px 18px rgba(108,76,241,.35);
 }
 
-/* tombol tidak full width */
-/* .btn-inline{
-  width: auto;
-  display: inline-flex;
-  padding: 8px 14px;
-  font-size: 14px;
-  border-radius: 8px;
-} */
- /* .btn-inline{
-  width:auto;
-  display:inline-flex;
-  align-items:center;
-  justify-content:center;
-  max-height: 100%;
-
-  height:36px;
-  padding:0 14px;
-
-  font-size:14px;
-  line-height:1;
-  border-radius:10px;
-} */
-
 .btn-inline {
-  width: auto;              /* 🔑 penting */
+  width: auto;
   padding: 10px 18px;
   font-size: 14px;
   border-radius: 10px;
@@ -2198,122 +1808,7 @@ body {
   text-align: center;
 }
 
-/* ===== LOGIN PAGE ===== */
-.login-page,
-.register-page{
-  min-height:100vh;
-  position:relative;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:url("/background.png") center/cover no-repeat fixed;
-}
-
-/* DARK OVERLAY */
-.login-page::before,
-.register-page::before{
-  content:"";
-  position:absolute;
-  inset:0;
-  background:
-    linear-gradient(
-      180deg,
-      rgba(20,10,50,.45) 0%,
-      rgba(10,0,30,.65) 60%,
-      rgba(5,0,20,.85) 100%
-    );
-  backdrop-filter:blur(2px);
-}
-
-/* .login-page {
-  min-height: 100%;
-  background: linear-gradient(135deg, #6C4CF1, #8B5CF6);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: 'Poppins', sans-serif;
-} */
-
-.login-page .container {
-  background: white;
-  padding: 40px;
-  width: 100%;
-  max-width: 420px;
-  border-radius: 18px;
-  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
-}
-
-.login-page .logo {
-  text-align: center;
-  margin-bottom: 25px;
-}
-
-.login-page .logo h1 {
-  margin: 0;
-  color: #6C4CF1;
-  font-size: 26px;
-  font-weight: 700;
-}
-
-.login-page .subtitle {
-  text-align: center;
-  color: #666;
-  margin-bottom: 30px;
-  font-size: 14px;
-}
-
-.login-page label {
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.login-page input {
-  width: 100%;
-  padding: 12px 14px;
-  margin-top: 6px;
-  margin-bottom: 18px;
-  border-radius: 10px;
-  border: 1px solid #ddd;
-  transition: .2s;
-}
-
-.login-page input:focus {
-  outline: none;
-  border-color: #6C4CF1;
-  box-shadow: 0 0 0 3px rgba(108,76,241,0.15);
-}
-
-.login-page button {
-  width: 100%;
-  padding: 13px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
-  color: white;
-  font-weight: 600;
-  font-size: 15px;
-  cursor: pointer;
-  transition: .25s;
-}
-
-.login-page button:hover {
-  transform: translateY(-2px);
-}
-
-.login-page .footer {
-  margin-top: 20px;
-  text-align: center;
-  font-size: 13px;
-}
-
-.login-page .footer a {
-  color: #6C4CF1;
-  text-decoration: none;
-  font-weight: 500;
-}
-
 /* ===== REGISTER ======== */
-/* ===== REGISTER PAGE ===== */
 
 /* .register-page {
   min-height: 100%;
@@ -3264,64 +2759,7 @@ input:focus, select:focus, textarea:focus {
   from{opacity:0}
   to{opacity:1}
 }
-/* GLASS CARD */
-.login-page .container,
-.register-page .container{
-  position:relative;
-  background:rgba(255,255,255,.08);
-  backdrop-filter:blur(18px) saturate(140%);
-  -webkit-backdrop-filter:blur(18px) saturate(140%);
-  border:1px solid rgba(255,255,255,.18);
-  box-shadow:0 25px 70px rgba(0,0,0,.45);
-  color:white;
-}
 
-/* TEXT COLOR FIX */
-.login-page .logo h1,
-.register-page .logo h1{
-  color:white;
-}
-
-.login-page .subtitle,
-.register-page .subtitle{
-  color:rgba(255,255,255,.85);
-}
-
-.login-page label,
-.register-page label{
-  color:rgba(255,255,255,.85);
-}
-
-/* INPUT GLASS */
-.login-page input,
-.register-page input{
-  background:rgba(255,255,255,.12);
-  border:1px solid rgba(255,255,255,.25);
-  color:white;
-}
-
-.login-page input::placeholder,
-.register-page input::placeholder{
-  color:rgba(255,255,255,.6);
-}
-
-.login-page input:focus,
-.register-page input:focus{
-  border-color:#c084fc;
-  box-shadow:0 0 0 3px rgba(192,132,252,.35);
-}
-
-.login-page button,
-.register-page button{
-  background:linear-gradient(135deg,#9333ea,#f472b6);
-  box-shadow:0 10px 30px rgba(244,114,182,.35);
-}
-
-.login-page button:hover,
-.register-page button:hover{
-  transform:translateY(-2px);
-  box-shadow:0 18px 40px rgba(244,114,182,.55);
-}
 
 .competitions-page{
   background:
@@ -4089,73 +3527,6 @@ input:focus, select:focus, textarea:focus {
     align-items:center;
     gap:12px;
   }
-}
-
-/* ================= MOBILE LOGIN ================= */
-@media (max-width: 768px){
-
-  .login-page, .register-page{
-    align-items:flex-start;      /* jangan center */
-    padding:40px 16px 30px;
-  }
-
-  .login-page .container{
-    width:100%;
-    max-width:none;
-    border-radius:22px;
-    padding:26px 18px 22px;
-  }
-
-  .login-page .logo h1{
-    font-size:22px;
-  }
-
-  .login-page .subtitle{
-    font-size:13px;
-    margin-bottom:22px;
-  }
-
-  .login-page label{
-    font-size:13px;
-  }
-
-  .login-page input{
-    padding:14px 14px;
-    font-size:16px; /* penting: biar iOS ga zoom */
-    border-radius:12px;
-    margin-bottom:14px;
-  }
-
-  .login-page button{
-    padding:15px;
-    font-size:16px;
-    border-radius:14px;
-    margin-top:8px;
-  }
-
-  .login-page .footer{
-    margin-top:18px;
-    font-size:13px;
-  }
-
-}
-
-@media (max-width:768px){
-  .login-page{
-    min-height:100dvh; /* bukan vh */
-  }
-}
-
-/* ===== MOBILE BACKGROUND ===== */
-@media (max-width:768px){
-
-  .login-page,
-  .register-page{
-    background-image:url("/background-mobile.png");
-    background-attachment:scroll; /* wajib */
-    background-position:center top;
-  }
-
 }
 
 .admin-tabs{
@@ -4573,4 +3944,185 @@ input:focus, select:focus, textarea:focus {
 
 .btn.secondary:hover {
   background: #d1d5db;
+}
+
+/* ================= LOGIN LAYOUT ================= */
+.login-page,
+.register-page{
+  min-height:100vh;
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  background:url("/background.png") center/cover no-repeat fixed;
+}
+
+/* DARK OVERLAY */
+.login-page::before,
+.register-page::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(
+    180deg,
+    rgba(20,10,50,.45) 0%,
+    rgba(10,0,30,.65) 60%,
+    rgba(5,0,20,.85) 100%
+  );
+  backdrop-filter:blur(2px);
+}
+
+/* ================= CONTAINER (GLASS CARD) ================= */
+.login-page .container,
+.register-page .container{
+  position:relative;
+  width:100%;
+  max-width:420px;
+  padding:40px;
+  border-radius:18px;
+
+  background:rgba(255,255,255,.08);
+  backdrop-filter:blur(18px) saturate(140%);
+  -webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(255,255,255,.18);
+  box-shadow:0 25px 70px rgba(0,0,0,.45);
+  color:white;
+}
+
+/* ================= TYPOGRAPHY ================= */
+.login-page .logo,
+.register-page .logo{
+  text-align:center;
+  margin-bottom:25px;
+}
+
+.login-page .logo h1,
+.register-page .logo h1{
+  margin:0;
+  font-size:26px;
+  font-weight:700;
+  color:white;
+}
+
+.login-page .subtitle,
+.register-page .subtitle{
+  text-align:center;
+  color:rgba(255,255,255,.85);
+  margin-bottom:30px;
+  font-size:14px;
+}
+
+.login-page label,
+.register-page label{
+  font-size:14px;
+  font-weight:500;
+  color:rgba(255,255,255,.85);
+}
+
+/* ================= INPUT ================= */
+.login-page input,
+.register-page input{
+  width:100%;
+  padding:12px 14px;
+  margin-top:6px;
+  margin-bottom:18px;
+  border-radius:10px;
+
+  background:rgba(255,255,255,.12);
+  border:1px solid rgba(255,255,255,.25);
+  color:white;
+  transition:.2s;
+}
+
+.login-page input::placeholder,
+.register-page input::placeholder{
+  color:rgba(255,255,255,.6);
+}
+
+.login-page input:focus,
+.register-page input:focus{
+  outline:none;
+  border-color:#c084fc;
+  box-shadow:0 0 0 3px rgba(192,132,252,.35);
+}
+
+/* ================= BUTTON ================= */
+.login-page button,
+.register-page button{
+  width:100%;
+  padding:13px;
+  border:none;
+  border-radius:12px;
+  font-weight:600;
+  font-size:15px;
+  color:white;
+  cursor:pointer;
+  transition:.25s;
+
+  background:linear-gradient(135deg,#9333ea,#f472b6);
+  box-shadow:0 10px 30px rgba(244,114,182,.35);
+}
+
+.login-page button:hover,
+.register-page button:hover{
+  transform:translateY(-2px);
+  box-shadow:0 18px 40px rgba(244,114,182,.55);
+}
+
+/* ================= FOOTER ================= */
+.login-page .footer{
+  margin-top:20px;
+  text-align:center;
+  font-size:13px;
+}
+
+.login-page .footer a{
+  color:#c084fc;
+  text-decoration:none;
+  font-weight:500;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width:768px){
+
+  .login-page,
+  .register-page{
+    min-height:100dvh;
+    align-items:flex-start;
+    padding:40px 16px 30px;
+
+    background-image:url("/background-mobile.png");
+    background-attachment:scroll;
+    background-position:center top;
+  }
+
+  .login-page .container,
+  .register-page .container{
+    max-width:none;
+    border-radius:22px;
+    padding:26px 18px 22px;
+  }
+
+  .login-page .logo h1{ font-size:22px; }
+  .login-page .subtitle{ font-size:13px; margin-bottom:22px; }
+  .login-page label{ font-size:13px; }
+
+  .login-page input{
+    padding:14px;
+    font-size:16px; /* prevent iOS zoom */
+    border-radius:12px;
+    margin-bottom:14px;
+  }
+
+  .login-page button{
+    padding:15px;
+    font-size:16px;
+    border-radius:14px;
+    margin-top:8px;
+  }
+
+  .login-page .footer{
+    margin-top:18px;
+    font-size:13px;
+  }
 }
