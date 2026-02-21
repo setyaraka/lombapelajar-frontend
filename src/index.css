@@ -100,3 +100,99 @@ body {
   text-decoration: none;
   font-weight: 500;
 }
+
+/* ===== REGISTER ======== */
+/* ===== REGISTER PAGE ===== */
+
+.register-page {
+  min-height: 100%;
+  background: linear-gradient(135deg, #6C4CF1, #8B5CF6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Poppins', sans-serif;
+}
+
+.register-page .container {
+  background: white;
+  padding: 35px;
+  width: 100%;
+  max-width: 520px;
+  border-radius: 18px;
+  box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+}
+
+.register-page .logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.register-page .logo h1 {
+  margin: 0;
+  color: #6C4CF1;
+  font-size: 26px;
+  font-weight: 700;
+}
+
+.register-page .subtitle {
+  text-align: center;
+  color: #666;
+  margin-bottom: 25px;
+  font-size: 14px;
+}
+
+.register-page label {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.register-page input {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 6px;
+  margin-bottom: 16px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+  transition: .2s;
+}
+
+.register-page input:focus {
+  outline: none;
+  border-color: #6C4CF1;
+  box-shadow: 0 0 0 3px rgba(108,76,241,0.15);
+}
+
+.register-page button {
+  width: 100%;
+  padding: 13px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
+  color: white;
+  font-weight: 600;
+  font-size: 15px;
+  cursor: pointer;
+  transition: .25s;
+}
+
+.register-page button:hover {
+  transform: translateY(-2px);
+}
+
+.register-page .footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+}
+
+.register-page .footer a {
+  color: #6C4CF1;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.register-page .error {
+  color: red;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
