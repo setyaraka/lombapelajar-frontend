@@ -272,12 +272,11 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
-.page {
+.layout-page {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
   background: #F5F3FF;
-  font-family: 'Poppins', sans-serif;
 }
 /* HEADER */
 /* .competitions-page .header {
@@ -750,13 +749,13 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* PAGINATION */
-.admin-page .pagination{
+/* .admin-page .pagination{
   display:flex;
   justify-content:center;
   align-items:center;
   gap:12px;
   padding:16px;
-}
+} */
 
 .admin-page .pagination button{
   border:none;
@@ -780,4 +779,104 @@ input:focus, select:focus, textarea:focus {
   color:white;
   text-align:center;
   padding:20px;
+}
+
+/* ================= MODERN PAGINATION ================= */
+
+.pagination{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  padding:22px;
+}
+
+/* tombol panah */
+.pagination .nav{
+  border:1px solid #E5E7EB;
+  background:white;
+  width:38px;
+  height:38px;
+  border-radius:10px;
+  font-size:18px;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.pagination .nav:hover:not(:disabled){
+  background:#F3F4F6;
+}
+
+.pagination .nav:disabled{
+  opacity:.4;
+  cursor:not-allowed;
+}
+
+/* nomor halaman */
+.pagination .page{
+  min-width:38px;
+  height:38px;
+  padding:0 12px;
+  border-radius:10px;
+  border:1px solid #E5E7EB;
+  background:white;
+  font-weight:500;
+  cursor:pointer;
+  transition:.2s;
+}
+
+.pagination .page:hover{
+  background:#F3F4F6;
+}
+
+/* halaman aktif */
+.pagination .page.active{
+  background:linear-gradient(135deg,#6C4CF1,#8B5CF6);
+  color:white;
+  border:none;
+  font-weight:600;
+}
+
+/* titik titik */
+.pagination .dots{
+  padding:0 6px;
+  color:#9CA3AF;
+  font-weight:600;
+}
+
+.pagination{
+  margin-top:16px;
+}
+
+/* force style modern pagination */
+/* default page */
+.pagination .page{
+  background:white;
+  color:#4B5563;
+  border:1px solid #E5E7EB;
+  transition:all .18s ease;
+}
+
+/* hover */
+.pagination .page:hover{
+  background:#F3F4F6;
+  transform:translateY(-1px);
+}
+
+/* ACTIVE — bikin beda banget */
+.pagination .page.active{
+  background:linear-gradient(135deg,#6C4CF1,#8B5CF6);
+  color:white !important;
+  border:none;
+
+  /* depth */
+  box-shadow:
+    0 8px 18px rgba(108,76,241,.45),
+    0 2px 6px rgba(0,0,0,.12);
+
+  /* fokus visual */
+  transform:translateY(-2px) scale(1.05);
+
+  /* glow */
+  outline:3px solid rgba(139,92,246,.25);
 }

@@ -35,7 +35,7 @@ export default function RegisterCompetition() {
   };
 
   return (
-    <div className="page">
+    <div className="layout-page">
       <Header />
 
       <div className="container">

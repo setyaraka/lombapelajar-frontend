@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import Pagination from "../components/Pagination";
 
 type Status = "pending" | "approved" | "rejected";
 
@@ -173,21 +174,8 @@ export default function AdminParticipants() {
             </tbody>
           </table>
 
-          {/* PAGINATION */}
-          <div className="pagination">
-            <button disabled={page === 1} onClick={() => setPage((p) => p - 1)}>
-              Prev
-            </button>
-
-            <span>
-              Halaman {page} / {totalPages}
-            </span>
-
-            <button disabled={page === totalPages} onClick={() => setPage((p) => p + 1)}>
-              Next
-            </button>
-          </div>
         </div>
+        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
       </div>
 
       <Footer />
