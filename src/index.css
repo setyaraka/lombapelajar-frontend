@@ -1971,3 +1971,70 @@ input:focus, select:focus, textarea:focus {
     gap:12px;
   }
 }
+
+/* ================= MOBILE LOGIN ================= */
+@media (max-width: 768px){
+
+  .login-page, .register-page{
+    align-items:flex-start;      /* jangan center */
+    padding:40px 16px 30px;
+  }
+
+  .login-page .container{
+    width:100%;
+    max-width:none;
+    border-radius:22px;
+    padding:26px 18px 22px;
+  }
+
+  .login-page .logo h1{
+    font-size:22px;
+  }
+
+  .login-page .subtitle{
+    font-size:13px;
+    margin-bottom:22px;
+  }
+
+  .login-page label{
+    font-size:13px;
+  }
+
+  .login-page input{
+    padding:14px 14px;
+    font-size:16px; /* penting: biar iOS ga zoom */
+    border-radius:12px;
+    margin-bottom:14px;
+  }
+
+  .login-page button{
+    padding:15px;
+    font-size:16px;
+    border-radius:14px;
+    margin-top:8px;
+  }
+
+  .login-page .footer{
+    margin-top:18px;
+    font-size:13px;
+  }
+
+}
+
+@media (max-width:768px){
+  .login-page{
+    min-height:100dvh; /* bukan vh */
+  }
+}
+
+/* ===== MOBILE BACKGROUND ===== */
+@media (max-width:768px){
+
+  .login-page,
+  .register-page{
+    background-image:url("/background-mobile.png");
+    background-attachment:scroll; /* wajib */
+    background-position:center top;
+  }
+
+}
