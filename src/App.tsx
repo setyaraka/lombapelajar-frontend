@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Register from "./pages/Register";
 import Competitions from "./pages/Competitions";
+import CompetitionDetail from "./pages/CompetitionDetail";
 
 const Dashboard = () => <h1>Dashboard (Private)</h1>;
 
@@ -16,11 +17,12 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
+          <Route path="/competition/:id" element={<CompetitionDetail />} />
+          <Route path="/" element={<Competitions />} />
+
           {/* private */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Competitions />} />
             <Route path="/dashboard" element={<Dashboard />} />
-            <Route path="/competition/:id" element={<h1>Detail lomba</h1>} />
           </Route>
 
           {/* NOT FOUND -> LOGIN */}

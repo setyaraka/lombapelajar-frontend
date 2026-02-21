@@ -23,8 +23,12 @@ export default function CompetitionCard({ id, title, level, date, poster }: Prop
 
       <div className="content">
         <div className="lomba-title">{title}</div>
-        <div className="info">{level} | {date}</div>
-        <button className="btn" onClick={openDetail}>Lihat Detail</button>
+        <div className="info">
+          {level} | {date}
+        </div>
+        <button className="btn" onClick={openDetail}>
+          Lihat Detail
+        </button>
       </div>
     </div>
   );

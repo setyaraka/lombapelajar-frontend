@@ -1,4 +1,8 @@
 /* ===== RESET BASIC ===== */
+:root {
+  --primary: #7C5CF4; /* midpoint gradient */
+}
+
 html, body, #root {
   height: 100%;
 }
@@ -11,6 +15,66 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* ===== GLOBAL LAYOUT ===== */
+
+.app-header {
+  background: var(--primary);
+  color: white;
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+
+.app-header-inner {
+  max-width: 1100px;
+  margin: auto;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0;
+}
+
+.right {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.user {
+  font-size: 14px;
+  opacity: .9;
+}
+
+.logout-btn {
+  background: white;
+  color: #6C4CF1;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+/* FOOTER */
+.app-footer {
+  background: var(--primary);
+  color: white;
+  margin-top: auto;
+}
+
+.footer-inner {
+  max-width: 1100px;
+  margin: auto;
+  padding: 20px;
+  text-align: center;
+}
 
 /* ===== LOGIN PAGE ===== */
 
@@ -209,19 +273,19 @@ body {
 }
 
 /* HEADER */
-.competitions-page .header {
+/* .competitions-page .header {
   background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
   padding: 18px 30px;
   color: white;
   display: flex;
   justify-content: space-between;
   align-items: center;
-}
+} */
 
-.competitions-page .header h1 {
+/* .competitions-page .header h1 {
   margin: 0;
   font-size: 22px;
-}
+} */
 
 .competitions-page .logout {
   background: white;
@@ -325,9 +389,75 @@ body {
 }
 
 /* FOOTER */
-.competitions-page footer {
+/* .competitions-page footer {
   background: #6C4CF1;
   color: white;
   text-align: center;
   padding: 20px;
+} */
+
+/* ====== Competition Detail =======*/
+/* ===== COMPETITION DETAIL PAGE ===== */
+
+.competition-detail-page {
+  background: #F5F3FF;
+  min-height: 100vh;
+  font-family: 'Poppins', sans-serif;
+}
+
+/* .competition-detail-page .header {
+  background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
+  padding: 18px 30px;
+  color: white;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+} */
+
+.competition-detail-page .back {
+  background: white;
+  color: #6C4CF1;
+  border: none;
+  padding: 8px 14px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.competition-detail-page .container {
+  max-width: 1000px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+.competition-detail-page .header-box {
+  background: white;
+  border-radius: 14px;
+  padding: 25px;
+  margin-bottom: 25px;
+  border: 1px solid #E5E7EB;
+}
+
+.competition-detail-page .poster-container img {
+  width: 100%;
+  border-radius: 12px;
+}
+
+.competition-detail-page .detail-box {
+  background: white;
+  border-radius: 18px;
+  padding: 22px 24px;
+  margin-top: 22px;
+  border: 1px solid #E5E7EB;
+}
+
+.competition-detail-page .btn {
+  width: 100%;
+  border: none;
+  background: linear-gradient(135deg,#F59E0B,#FDBA74);
+  color: white;
+  padding: 14px;
+  border-radius: 14px;
+  cursor: pointer;
+  font-weight: 600;
 }
