@@ -16,13 +16,13 @@ export default function App() {
           {/* public */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/admin/participants" element={<AdminParticipants />} />
-          <Route path="/competition/:id/register" element={<RegisterCompetition />} />
 
           {/* private */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Competitions />} />
             <Route path="/competition/:id" element={<CompetitionDetail />} />
+            <Route path="/competition/:id/register" element={<RegisterCompetition />} />
+            <Route path="/admin/participants" element={<AdminParticipants />} />
           </Route>
 
           {/* NOT FOUND -> LOGIN */}

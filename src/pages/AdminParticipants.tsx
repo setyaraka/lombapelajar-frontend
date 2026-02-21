@@ -3,6 +3,8 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Pagination from "../components/Pagination";
 import RowsPerPage from "../components/RowsPerPage";
+import PaymentProofModal from "../components/PaymentProofModal";
+import type { ProofData } from "../components/PaymentProofModal";
 
 type Status = "pending" | "approved" | "rejected";
 
@@ -64,6 +66,8 @@ export default function AdminParticipants() {
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
+  const [proof, setProof] = useState<ProofData | null>(null);
+  const [open, setOpen] = useState(false);
 
   // FILTER
   const filtered = useMemo(() => {
@@ -91,107 +95,128 @@ export default function AdminParticipants() {
   const badgeClass = (status: Status) => `status ${status}`;
 
   return (
-    <div className="admin-page">
-      <Header />
+    <>
+      <PaymentProofModal open={open} data={proof} onClose={() => setOpen(false)} />
+      <div className="admin-page">
+        <Header />
 
-      <div className="container">
-        {/* FILTER */}
-        <div className="card filter-card">
-          <div className="filter-title">Filter Peserta</div>
+        <div className="container">
+          {/* FILTER */}
+          <div className="card filter-card">
+            <div className="filter-title">Filter Peserta</div>
 
-          <div className="filter-row">
-            <div className="table-controls">
-              <input
-                placeholder="Cari nama, sekolah, atau lomba..."
-                value={search}
+            <div className="filter-row">
+              <div className="table-controls">
+                <input
+                  placeholder="Cari nama, sekolah, atau lomba..."
+                  value={search}
+                  onChange={(e) => {
+                    setPage(1);
+                    setSearch(e.target.value);
+                  }}
+                />
+              </div>
+
+              <select
+                value={statusFilter}
                 onChange={(e) => {
                   setPage(1);
-                  setSearch(e.target.value);
+                  setStatusFilter(e.target.value);
                 }}
-              />
+              >
+                <option value="">Semua Status</option>
+                <option value="pending">Menunggu</option>
+                <option value="approved">Diterima</option>
+                <option value="rejected">Ditolak</option>
+              </select>
             </div>
+          </div>
 
-            <select
-              value={statusFilter}
-              onChange={(e) => {
+          {/* TABLE */}
+          <div className="card">
+            <table>
+              <thead>
+                <tr>
+                  <th>Nama</th>
+                  <th>Sekolah</th>
+                  <th>Lomba</th>
+                  <th>Pembayaran</th>
+                  <th>Status</th>
+                  <th>Aksi</th>
+                </tr>
+              </thead>
+
+              <tbody>
+                {paginated.map((p) => (
+                  <tr key={p.id}>
+                    <td>{p.name}</td>
+                    <td>{p.school}</td>
+                    <td>{p.competition}</td>
+
+                    <td>
+                      <button
+                        className="btn view"
+                        onClick={() => {
+                          setProof({
+                            id: p.id,
+                            name: p.name,
+                            school: p.school,
+                            competition: p.competition,
+                            imageUrl: "/dummy-bukti.jpg",
+                            uploadedAt: "21 Feb 2026 21:30",
+                          });
+                          setOpen(true);
+                        }}
+                      >
+                        Lihat Bukti
+                      </button>
+                    </td>
+
+                    <td>
+                      <span className={badgeClass(p.status)}>
+                        {p.status === "pending" && "Menunggu"}
+                        {p.status === "approved" && "Diterima"}
+                        {p.status === "rejected" && "Ditolak"}
+                      </span>
+                    </td>
+
+                    <td className="actions">
+                      <button
+                        className="btn approve"
+                        onClick={() => changeStatus(p.id, "approved")}
+                      >
+                        Terima
+                      </button>
+
+                      <button className="btn reject" onClick={() => changeStatus(p.id, "rejected")}>
+                        Tolak
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+          <div className="table-footer">
+            <div></div>
+            {totalPages > 1 ? (
+              <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+            ) : (
+              <div></div>
+            )}
+
+            <RowsPerPage
+              value={perPage}
+              onChange={(v) => {
                 setPage(1);
-                setStatusFilter(e.target.value);
+                setPerPage(v);
               }}
-            >
-              <option value="">Semua Status</option>
-              <option value="pending">Menunggu</option>
-              <option value="approved">Diterima</option>
-              <option value="rejected">Ditolak</option>
-            </select>
+            />
           </div>
         </div>
 
-        {/* TABLE */}
-        <div className="card">
-          <table>
-            <thead>
-              <tr>
-                <th>Nama</th>
-                <th>Sekolah</th>
-                <th>Lomba</th>
-                <th>Pembayaran</th>
-                <th>Status</th>
-                <th>Aksi</th>
-              </tr>
-            </thead>
-
-            <tbody>
-              {paginated.map((p) => (
-                <tr key={p.id}>
-                  <td>{p.name}</td>
-                  <td>{p.school}</td>
-                  <td>{p.competition}</td>
-
-                  <td>
-                    <button className="btn view">Lihat Bukti</button>
-                  </td>
-
-                  <td>
-                    <span className={badgeClass(p.status)}>
-                      {p.status === "pending" && "Menunggu"}
-                      {p.status === "approved" && "Diterima"}
-                      {p.status === "rejected" && "Ditolak"}
-                    </span>
-                  </td>
-
-                  <td className="actions">
-                    <button className="btn approve" onClick={() => changeStatus(p.id, "approved")}>
-                      Terima
-                    </button>
-
-                    <button className="btn reject" onClick={() => changeStatus(p.id, "rejected")}>
-                      Tolak
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-        <div className="table-footer">
-          <div></div>
-          {totalPages > 1 ? (
-            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
-          ) : (
-            <div></div>
-          )}
-
-          <RowsPerPage
-            value={perPage}
-            onChange={(v) => {
-              setPage(1);
-              setPerPage(v);
-            }}
-          />
-        </div>
+        <Footer />
       </div>
-
-      <Footer />
-    </div>
+    </>
   );
 }
