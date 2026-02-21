@@ -272,6 +272,13 @@ body {
   font-family: 'Poppins', sans-serif;
 }
 
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: #F5F3FF;
+  font-family: 'Poppins', sans-serif;
+}
 /* HEADER */
 /* .competitions-page .header {
   background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
@@ -460,4 +467,191 @@ body {
   border-radius: 14px;
   cursor: pointer;
   font-weight: 600;
+}
+
+/* ================= REGISTER COMPETITION ================= */
+
+.container {
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
+}
+
+/* card umum */
+.card {
+  background: white;
+  border-radius: 20px;
+  padding: 25px;
+  box-shadow: 0 15px 35px rgba(0,0,0,0.08);
+  margin-bottom: 25px;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 15px;
+}
+
+label {
+  font-size: 14px;
+  font-weight: 500;
+  display:block;
+  margin-top:12px;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 12px 14px;
+  margin-top: 6px;
+  border-radius: 10px;
+  border: 1px solid #ddd;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline:none;
+  border-color:#6C4CF1;
+  box-shadow:0 0 0 3px rgba(108,76,241,0.15);
+}
+
+/* ===== Event Header Card ===== */
+
+.event-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
+  color: white;
+  padding: 28px;
+}
+
+.event-info h2 {
+  margin: 0 0 8px 0;
+  font-size: 24px;
+}
+
+.event-meta {
+  font-size: 14px;
+  opacity: .95;
+}
+
+.badge {
+  background: rgba(255,255,255,0.2);
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 500;
+  display: inline-block;
+  margin-right: 8px;
+}
+
+.deadline {
+  background: white;
+  color: #6C4CF1;
+  padding: 12px 18px;
+  border-radius: 14px;
+  text-align: center;
+  min-width: 160px;
+}
+
+.deadline small {
+  display:block;
+  font-size:12px;
+  opacity:.7;
+}
+
+.deadline b {
+  font-size:16px;
+}
+
+/* ===== Stepper ===== */
+
+.stepper {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 30px 0 20px;
+  gap: 14px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #999;
+  font-size: 14px;
+}
+
+.circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #E5E7EB;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+}
+
+.step.active {
+  color: #6C4CF1;
+}
+
+.step.active .circle {
+  background: linear-gradient(135deg,#6C4CF1,#8B5CF6);
+  color: white;
+}
+
+.line {
+  width: 60px;
+  height: 3px;
+  background: #E5E7EB;
+}
+
+/* ===== Payment ===== */
+
+.bank-box {
+  background:#F9F7FF;
+  border:1px dashed #D9D4FF;
+  padding:15px;
+  border-radius:12px;
+  margin-top:10px;
+  line-height:1.7;
+}
+
+.upload {
+  border:2px dashed #D9D4FF;
+  border-radius:14px;
+  padding:30px;
+  text-align:center;
+  margin-top:10px;
+  background:#FBFAFF;
+}
+
+/* ===== Buttons ===== */
+
+.btn {
+  width:100%;
+  border:none;
+  background:linear-gradient(135deg,#F59E0B,#FDBA74);
+  color:white;
+  padding:14px;
+  border-radius:14px;
+  font-weight:600;
+  font-size:16px;
+  cursor:pointer;
+  margin-top:20px;
+}
+
+.btn-secondary {
+  width: 100%;
+  border: none;
+  background: #E5E7EB;
+  color: #333;
+  padding: 14px;
+  border-radius: 14px;
+  font-weight: 600;
+  font-size: 16px;
+  cursor: pointer;
+  margin-top: 15px;
 }

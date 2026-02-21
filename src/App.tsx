@@ -5,8 +5,7 @@ import ProtectedRoute from "./routes/ProtectedRoute";
 import Register from "./pages/Register";
 import Competitions from "./pages/Competitions";
 import CompetitionDetail from "./pages/CompetitionDetail";
-
-const Dashboard = () => <h1>Dashboard (Private)</h1>;
+import RegisterCompetition from "./pages/RegisterCompetition";
 
 export default function App() {
   return (
@@ -17,13 +16,12 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
-          <Route path="/competition/:id" element={<CompetitionDetail />} />
-          <Route path="/" element={<Competitions />} />
-
           {/* private */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/dashboard" element={<Dashboard />} />
+            <Route path="/" element={<Competitions />} />
+            <Route path="/competition/:id" element={<CompetitionDetail />} />
           </Route>
+            <Route path="/competition/:id/register" element={<RegisterCompetition />} />
 
           {/* NOT FOUND -> LOGIN */}
           <Route path="*" element={<Navigate to="/login" replace />} />
