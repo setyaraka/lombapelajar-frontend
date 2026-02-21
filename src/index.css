@@ -4406,3 +4406,154 @@ input:focus, select:focus, textarea:focus {
   }
 
 }
+
+.status {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status.open {
+  background: #e6f7ee;
+  color: #16a34a;
+}
+
+.status.soon {
+  background: #fff4e5;
+  color: #d97706;
+}
+
+.status.closed {
+  background: #fde8e8;
+  color: #dc2626;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+}
+
+.btn.small {
+  padding: 4px 10px;
+  font-size: 12px;
+}
+
+.btn.warning {
+  background: #f59e0b;
+  color: white;
+}
+
+.btn.danger {
+  background: #ef4444;
+  color: white;
+}
+
+.link-btn {
+  background: none;
+  border: none;
+  color: #2563eb;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.link-btn:hover {
+  text-decoration: underline;
+}
+
+.participants-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 10px;
+}
+
+.participants-table th,
+.participants-table td {
+  border-bottom: 1px solid #eee;
+  padding: 10px;
+  text-align: left;
+}
+
+.badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.badge.verified {
+  background: #e6f7ee;
+  color: #16a34a;
+}
+
+.badge.pending {
+  background: #fff4e5;
+  color: #d97706;
+}
+
+.badge.rejected {
+  background: #fde8e8;
+  color: #dc2626;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.icon-btn {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+}
+
+/* tinggi modal fix */
+.modal.large {
+  width: 900px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* header tetap */
+.modal-header {
+  flex-shrink: 0;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #eee;
+}
+
+/* container scroll */
+.participants-container {
+  overflow-y: auto;
+  margin-top: 10px;
+  border: 1px solid #eee;
+  border-radius: 8px;
+}
+
+/* tinggi area scroll */
+.participants-container {
+  max-height: 55vh;
+}
+
+/* tabel */
+.participants-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.participants-table th,
+.participants-table td {
+  padding: 12px;
+  border-bottom: 1px solid #f1f1f1;
+}
+
+/* header tabel sticky */
+.participants-table thead th {
+  position: sticky;
+  top: 0;
+  background: white;
+  z-index: 2;
+}
