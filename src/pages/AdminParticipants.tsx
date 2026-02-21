@@ -101,6 +101,27 @@ export default function AdminParticipants() {
         <Header />
 
         <div className="container">
+          <div className="admin-stats">
+            <div className="stat pending">
+              <b>{dummyData.filter((p) => p.status === "pending").length}</b>
+              <span>Menunggu Verifikasi</span>
+            </div>
+
+            <div className="stat approved">
+              <b>{dummyData.filter((p) => p.status === "approved").length}</b>
+              <span>Diterima</span>
+            </div>
+
+            <div className="stat rejected">
+              <b>{dummyData.filter((p) => p.status === "rejected").length}</b>
+              <span>Ditolak</span>
+            </div>
+
+            <div className="stat total">
+              <b>{dummyData.length}</b>
+              <span>Total Peserta</span>
+            </div>
+          </div>
           {/* FILTER */}
           <div className="card filter-card">
             <div className="filter-title">Filter Peserta</div>

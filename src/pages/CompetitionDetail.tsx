@@ -1,12 +1,14 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
+import { useState } from "react";
 
 export default function CompetitionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  // nanti diganti fetch API berdasarkan id
+  const [preview, setPreview] = useState(false);
+
   const competition = {
     title: "Olimpiade Matematika Nasional",
     category: "Akademik",
@@ -23,72 +25,86 @@ export default function CompetitionDetail() {
       "Mengikuti seluruh tahapan seleksi",
     ],
     timeline: [
-      { title: "Pendaftaran", date: "1 Februari - 30 Maret 2026" },
-      { title: "Babak Penyisihan", date: "5 April 2026" },
+      { title: "Pendaftaran", date: "1 Feb - 30 Mar 2026" },
+      { title: "Penyisihan", date: "5 April 2026" },
       { title: "Final", date: "20 April 2026" },
     ],
   };
 
   return (
-    <div className="competition-detail-page">
-      {/* HEADER */}
-      <Header />
-
-      <div className="container">
-        {/* HEADER BOX */}
-        <div className="header-box">
-          <span className="badge">{competition.category}</span>
-          <h1>{competition.title}</h1>
-
-          <div className="poster-container">
-            <img src={competition.poster} alt={competition.title} />
-          </div>
-
-          <div className="header-info">
-            <span>Tingkat: {competition.level}</span>
-            <span>Deadline: {competition.deadline}</span>
-            <span>Biaya: {competition.price}</span>
-          </div>
+    <>
+      {preview && (
+        <div className="image-viewer" onClick={() => setPreview(false)}>
+          <img src={competition.poster} />
         </div>
+      )}
+      <div className="competition-detail-page">
+        <Header />
 
-        {/* DESKRIPSI */}
-        <div className="detail-box">
-          <h3>Deskripsi Lomba</h3>
-          <p>{competition.description}</p>
-        </div>
+        <div className="container">
+          {/* HERO */}
+          <div className="event-hero">
+            <div className="event-left">
+              <span className="badge">{competition.category}</span>
+              <h1>{competition.title}</h1>
 
-        {/* REQUIREMENTS */}
-        <div className="detail-box requirements">
-          <h3>Persyaratan Peserta</h3>
-          <ul>
-            {competition.requirements.map((r, i) => (
-              <li key={i}>{r}</li>
-            ))}
-          </ul>
-        </div>
+              <div className="meta">
+                <span>🎓 {competition.level}</span>
+                <span>⏰ {competition.deadline}</span>
+                <span>💰 {competition.price}</span>
+              </div>
 
-        {/* TIMELINE */}
-        <div className="detail-box">
-          <h3>Timeline Lomba</h3>
-
-          {competition.timeline.map((t, i) => (
-            <div className="timeline-item" key={i}>
-              <div className="timeline-title">{t.title}</div>
-              <div className="timeline-date">{t.date}</div>
+              <button className="cta" onClick={() => navigate(`/competition/${id}/register`)}>
+                Daftar Sekarang
+              </button>
             </div>
-          ))}
+
+            <div className="event-right">
+              <img
+                src={competition.poster}
+                alt={competition.title}
+                onClick={() => setPreview(true)}
+                className="clickable-poster"
+              />
+            </div>
+          </div>
+
+          {/* INFO GRID */}
+          <div className="info-grid">
+            <div className="detail-card">
+              <h3>Deskripsi</h3>
+              <p>{competition.description}</p>
+            </div>
+
+            <div className="detail-card">
+              <h3>Persyaratan</h3>
+              <ul>
+                {competition.requirements.map((r, i) => (
+                  <li key={i}>✔ {r}</li>
+                ))}
+              </ul>
+            </div>
+          </div>
+
+          {/* TIMELINE */}
+          <div className="timeline">
+            <h3>Timeline</h3>
+
+            <div className="timeline-steps">
+              {competition.timeline.map((t, i) => (
+                <div className="step" key={i}>
+                  <div className="circle">{i + 1}</div>
+                  <div className="step-info">
+                    <b>{t.title}</b>
+                    <span>{t.date}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-
-        <button
-          className="btn"
-          style={{ marginTop: 22 }}
-          onClick={() => navigate(`/competition/${id}/register`)}
-        >
-          Daftar Sekarang
-        </button>
+        <Footer />
       </div>
-
-      <Footer />
-    </div>
+    </>
   );
 }

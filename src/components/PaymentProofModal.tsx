@@ -64,6 +64,7 @@ export default function PaymentProofModal({ open, data, onClose }: Props) {
             {/* <img src={data.imageUrl} alt="Bukti pembayaran" /> */}
             <img
               src="https://www.paper.id/blog/wp-content/uploads/2025/07/contoh-kwitansi-pembayaran.png"
+              // src="https://www.telkomsel.com/sites/default/files/2024-10/Bukti_Pembayaran_Motor_Bekas.png"
               alt="Bukti Pembayaran"
             />
           </div>
@@ -74,6 +75,10 @@ export default function PaymentProofModal({ open, data, onClose }: Props) {
             <Info label="Sekolah" value={data.school} />
             <Info label="Lomba" value={data.competition} />
             {data.uploadedAt && <Info label="Upload" value={data.uploadedAt} />}
+            <div className="proof-actions">
+              <button className="btn approve">Terima Pembayaran</button>
+              <button className="btn reject">Tolak</button>
+            </div>
           </div>
         </div>
       </div>

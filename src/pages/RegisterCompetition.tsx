@@ -55,6 +55,10 @@ export default function RegisterCompetition() {
           </div>
         </div>
 
+        <div className="register-status">
+          Langkah {step} dari 2 • {step === 1 ? "Isi Data Peserta" : "Upload Pembayaran"}
+        </div>
+
         <Stepper step={step} />
 
         {step === 1 && (

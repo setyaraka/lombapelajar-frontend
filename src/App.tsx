@@ -17,13 +17,12 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
 
+          <Route path="/" element={<Competitions />} />
+          <Route path="/competition/:id" element={<CompetitionDetail />} />
+          <Route path="/competition/:id/register" element={<RegisterCompetition />} />
+          <Route path="/admin/participants" element={<AdminParticipants />} />
           {/* private */}
-          <Route element={<ProtectedRoute />}>
-            <Route path="/" element={<Competitions />} />
-            <Route path="/competition/:id" element={<CompetitionDetail />} />
-            <Route path="/competition/:id/register" element={<RegisterCompetition />} />
-            <Route path="/admin/participants" element={<AdminParticipants />} />
-          </Route>
+          <Route element={<ProtectedRoute />}></Route>
 
           {/* NOT FOUND -> LOGIN */}
           <Route path="*" element={<Navigate to="/login" replace />} />
