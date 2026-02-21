@@ -30,6 +30,7 @@ export default function Register() {
 
     if (form.password !== form.password_confirmation) {
       setError("Password tidak sama!");
+      window.scrollTo({ top: 0, behavior: "smooth" });
       return;
     }
 
@@ -62,6 +63,7 @@ export default function Register() {
             placeholder="Contoh: Budi Santoso"
             value={form.nama}
             onChange={handleChange}
+            autoComplete="name"
             required
           />
 
@@ -69,18 +71,19 @@ export default function Register() {
           <input
             type="date"
             name="ttl"
-            placeholder="Pilih tanggal lahir"
             value={form.ttl}
             onChange={handleChange}
+            autoComplete="bday"
             required
           />
 
           <label>Sekolah / Instansi</label>
           <input
             name="sekolah"
-            placeholder="Contoh: SMA Negeri 1 Bandung / Universitas Indonesia"
+            placeholder="Nama sekolah / kampus"
             value={form.sekolah}
             onChange={handleChange}
+            autoComplete="organization"
             required
           />
 
@@ -88,7 +91,9 @@ export default function Register() {
           <input
             type="email"
             name="email"
-            placeholder="contoh@email.com"
+            inputMode="email"
+            autoComplete="email"
+            placeholder="email@gmail.com"
             value={form.email}
             onChange={handleChange}
             required
@@ -98,7 +103,8 @@ export default function Register() {
           <input
             type="password"
             name="password"
-            placeholder="Minimal 8 karakter, kombinasi huruf & angka"
+            autoComplete="new-password"
+            placeholder="Minimal 8 karakter"
             value={form.password}
             onChange={handleChange}
             required
@@ -108,7 +114,8 @@ export default function Register() {
           <input
             type="password"
             name="password_confirmation"
-            placeholder="Ulangi password yang sama"
+            autoComplete="new-password"
+            placeholder="Ulangi password"
             value={form.password_confirmation}
             onChange={handleChange}
             required

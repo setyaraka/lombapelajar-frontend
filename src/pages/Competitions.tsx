@@ -55,6 +55,10 @@ export default function Competitions() {
       <Header />
 
       <div className="container">
+        <section className="competition-hero">
+          <h1>Temukan & Ikuti Kompetisi Terbaikmu</h1>
+          <p>Raih prestasi dan bangun portofolio sejak sekarang</p>
+        </section>
         <div className="title">Pilih Lomba</div>
 
         <div className="grid">
