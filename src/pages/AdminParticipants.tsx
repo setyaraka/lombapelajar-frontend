@@ -2,6 +2,7 @@ import { useMemo, useState } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Pagination from "../components/Pagination";
+import RowsPerPage from "../components/RowsPerPage";
 
 type Status = "pending" | "approved" | "rejected";
 
@@ -62,8 +63,7 @@ export default function AdminParticipants() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
-
-  const perPage = 5;
+  const [perPage, setPerPage] = useState(5);
 
   // FILTER
   const filtered = useMemo(() => {
@@ -81,7 +81,6 @@ export default function AdminParticipants() {
 
   // PAGINATION
   const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const changeStatus = (id: number, status: Status) => {
@@ -173,9 +172,23 @@ export default function AdminParticipants() {
               ))}
             </tbody>
           </table>
-
         </div>
-        <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        <div className="table-footer">
+          <div></div>
+          {totalPages > 1 ? (
+            <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+          ) : (
+            <div></div>
+          )}
+
+          <RowsPerPage
+            value={perPage}
+            onChange={(v) => {
+              setPage(1);
+              setPerPage(v);
+            }}
+          />
+        </div>
       </div>
 
       <Footer />

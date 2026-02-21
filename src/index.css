@@ -466,7 +466,6 @@ body {
   border-radius: 20px;
   padding: 25px;
   box-shadow: 0 15px 35px rgba(0,0,0,0.08);
-  margin-bottom: 25px;
 }
 
 .title {
@@ -788,7 +787,6 @@ input:focus, select:focus, textarea:focus {
   justify-content:center;
   align-items:center;
   gap:8px;
-  padding:22px;
 }
 
 /* tombol panah */
@@ -879,4 +877,48 @@ input:focus, select:focus, textarea:focus {
 
   /* glow */
   outline:3px solid rgba(139,92,246,.25);
+}
+
+/* FOOTER TABLE */
+.table-footer{
+  display:grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items:center;
+  padding:16px 6px;
+  flex-wrap:wrap;
+}
+
+.table-footer .pagination{
+  justify-self:center;
+} 
+.table-footer .rows-per-page{
+  justify-self:end;
+}
+
+.rows-per-page{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  color:#6B7280;
+}
+
+.rows-per-page select{
+  padding:8px 12px;
+  border-radius:10px;
+  border:1px solid #E5E7EB;
+  background:white;
+  cursor:pointer;
+  font-weight:500;
+  transition:.15s;
+}
+
+.rows-per-page select:hover{
+  border-color:#C7C3FF;
+}
+
+.rows-per-page select:focus{
+  outline:none;
+  border-color:#6C4CF1;
+  box-shadow:0 0 0 3px rgba(108,76,241,.15);
 }
