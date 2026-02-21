@@ -19,10 +19,10 @@ export default function App() {
 
           {/* private */}
             <Route path="/" element={<Competitions />} />
-          <Route element={<ProtectedRoute />}>
             <Route path="/competition/:id" element={<CompetitionDetail />} />
             <Route path="/competition/:id/register" element={<RegisterCompetition />} />
           <Route path="/admin/participants" element={<AdminParticipants />} />
+          <Route element={<ProtectedRoute />}>
           </Route>
 
           {/* NOT FOUND -> LOGIN */}

@@ -1,6 +1,8 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CreateCompetitionModal from "./CreateCompetitionModal";
 import CompetitionParticipantsModal from "./CompetitionParticipantsModal";
+import Pagination from "../Pagination";
+import RowsPerPage from "../RowsPerPage";
 
 type Competition = {
   id: number;
@@ -62,16 +64,30 @@ export default function CompetitionsTab() {
   const [competitions, setCompetitions] = useState<Competition[]>(initialCompetitions);
   const [participantOpen, setParticipantOpen] = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
 
+  
   const filtered = useMemo(() => {
-    return competitions.filter((c) => {
+      return competitions.filter((c) => {
       const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
       const matchLevel = level ? c.level === level : true;
       const matchCategory = category ? c.category === category : true;
-
+      
       return matchSearch && matchLevel && matchCategory;
     });
-  }, [competitions, search, level, category]);
+}, [competitions, search, level, category]);
+
+const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+
+const paginated = filtered.slice(
+(page - 1) * perPage,
+page * perPage
+);
+
+useEffect(() => {
+  if (page > totalPages) setPage(totalPages);
+}, [totalPages, page]);
 
   function getCompetitionStatus(deadline: string) {
     const now = new Date();
@@ -114,7 +130,10 @@ export default function CompetitionsTab() {
             <input
               placeholder="Cari nama lomba..."
               value={search}
-              onChange={(e) => setSearch(e.target.value)}
+              onChange={(e) => {
+  setPage(1);
+  setSearch(e.target.value);
+}}
             />
           </div>
 
@@ -156,7 +175,7 @@ export default function CompetitionsTab() {
           </thead>
 
           <tbody>
-            {filtered.map((c) => {
+            {paginated.map((c) => {
               const status = getCompetitionStatus(c.deadline);
 
               return (
@@ -197,6 +216,27 @@ export default function CompetitionsTab() {
           </tbody>
         </table>
       </div>
+      <div className="table-footer">
+  <div></div>
+
+  {totalPages > 1 ? (
+    <Pagination
+      page={page}
+      totalPages={totalPages}
+      onChange={setPage}
+    />
+  ) : (
+    <div></div>
+  )}
+
+  <RowsPerPage
+    value={perPage}
+    onChange={(v) => {
+      setPage(1);
+      setPerPage(v);
+    }}
+  />
+</div>
     </>
   );
 }
