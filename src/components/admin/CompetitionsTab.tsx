@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import CreateCompetitionModal from "./CreateCompetitionModal";
 import CompetitionParticipantsModal from "./CompetitionParticipantsModal";
 import Pagination from "../Pagination";
@@ -67,27 +67,23 @@ export default function CompetitionsTab() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
 
-  
   const filtered = useMemo(() => {
-      return competitions.filter((c) => {
+    return competitions.filter((c) => {
       const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
       const matchLevel = level ? c.level === level : true;
       const matchCategory = category ? c.category === category : true;
-      
+
       return matchSearch && matchLevel && matchCategory;
     });
-}, [competitions, search, level, category]);
+  }, [competitions, search, level, category]);
 
-const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
+  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
 
-const paginated = filtered.slice(
-(page - 1) * perPage,
-page * perPage
-);
+  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
-useEffect(() => {
-  if (page > totalPages) setPage(totalPages);
-}, [totalPages, page]);
+  //   useEffect(() => {
+  //     if (page > totalPages) setPage(totalPages);
+  //   }, [totalPages, page, ]);
 
   function getCompetitionStatus(deadline: string) {
     const now = new Date();
@@ -131,9 +127,9 @@ useEffect(() => {
               placeholder="Cari nama lomba..."
               value={search}
               onChange={(e) => {
-  setPage(1);
-  setSearch(e.target.value);
-}}
+                setPage(1);
+                setSearch(e.target.value);
+              }}
             />
           </div>
 
@@ -217,26 +213,22 @@ useEffect(() => {
         </table>
       </div>
       <div className="table-footer">
-  <div></div>
+        <div></div>
 
-  {totalPages > 1 ? (
-    <Pagination
-      page={page}
-      totalPages={totalPages}
-      onChange={setPage}
-    />
-  ) : (
-    <div></div>
-  )}
+        {totalPages > 1 ? (
+          <Pagination page={page} totalPages={totalPages} onChange={setPage} />
+        ) : (
+          <div></div>
+        )}
 
-  <RowsPerPage
-    value={perPage}
-    onChange={(v) => {
-      setPage(1);
-      setPerPage(v);
-    }}
-  />
-</div>
+        <RowsPerPage
+          value={perPage}
+          onChange={(v) => {
+            setPage(1);
+            setPerPage(v);
+          }}
+        />
+      </div>
     </>
   );
 }

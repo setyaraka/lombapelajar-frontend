@@ -50,7 +50,7 @@ const competitions = [
 ];
 
 export default function Competitions() {
-    const mySubmissions = ["ipa", "english"];
+  const mySubmissions = ["ipa", "english"];
   return (
     <div className="competitions-page">
       <Header />
@@ -64,7 +64,7 @@ export default function Competitions() {
 
         <div className="grid">
           {competitions.map((c) => (
-            <CompetitionCard key={c.id} {...c} submitted={mySubmissions.includes(c.id)}/>
+            <CompetitionCard key={c.id} {...c} submitted={mySubmissions.includes(c.id)} />
           ))}
         </div>
       </div>

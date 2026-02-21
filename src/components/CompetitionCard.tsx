@@ -28,11 +28,7 @@ export default function CompetitionCard({ id, title, level, date, poster, submit
           {level} | {date}
         </div>
 
-        {submitted && (
-          <div className="submitted-info">
-            ✓ Kamu sudah terdaftar di lomba ini
-          </div>
-        )}
+        {submitted && <div className="submitted-info">✓ Kamu sudah terdaftar di lomba ini</div>}
         <button className="btn" onClick={openDetail}>
           Lihat Detail
         </button>
