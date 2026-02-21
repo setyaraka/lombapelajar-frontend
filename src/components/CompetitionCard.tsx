@@ -6,9 +6,10 @@ type Props = {
   level: string;
   date: string;
   poster: string;
+  submitted?: boolean;
 };
 
-export default function CompetitionCard({ id, title, level, date, poster }: Props) {
+export default function CompetitionCard({ id, title, level, date, poster, submitted }: Props) {
   const navigate = useNavigate();
 
   const openDetail = () => {
@@ -26,6 +27,12 @@ export default function CompetitionCard({ id, title, level, date, poster }: Prop
         <div className="info">
           {level} | {date}
         </div>
+
+        {submitted && (
+          <div className="submitted-info">
+            ✓ Kamu sudah terdaftar di lomba ini
+          </div>
+        )}
         <button className="btn" onClick={openDetail}>
           Lihat Detail
         </button>
