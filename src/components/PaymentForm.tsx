@@ -12,7 +12,7 @@ export default function PaymentForm({
   submit: () => void;
 }) {
   return (
-    <div className="card">
+    <div className="card form-control">
       <div className="title">Pembayaran</div>
 
       <div className="bank-box">

@@ -10,7 +10,7 @@ export default function ParticipantForm({
   next: () => void;
 }) {
   return (
-    <div className="card">
+    <div className="card form-control">
       <div className="title">Data Peserta</div>
 
       <label>Nama Peserta</label>

@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Competitions from "./pages/Competitions";
 import CompetitionDetail from "./pages/CompetitionDetail";
 import RegisterCompetition from "./pages/RegisterCompetition";
+import AdminParticipants from "./pages/AdminParticipants";
 
 export default function App() {
   return (
@@ -15,13 +16,14 @@ export default function App() {
           {/* public */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/admin/participants" element={<AdminParticipants />} />
+          <Route path="/competition/:id/register" element={<RegisterCompetition />} />
 
           {/* private */}
           <Route element={<ProtectedRoute />}>
             <Route path="/" element={<Competitions />} />
             <Route path="/competition/:id" element={<CompetitionDetail />} />
           </Route>
-            <Route path="/competition/:id/register" element={<RegisterCompetition />} />
 
           {/* NOT FOUND -> LOGIN */}
           <Route path="*" element={<Navigate to="/login" replace />} />
