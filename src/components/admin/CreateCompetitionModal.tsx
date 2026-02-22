@@ -9,9 +9,10 @@ type Props = {
   open: boolean;
   onClose: () => void;
   competitionId?: string | null;
+  onSuccess?: () => void;
 };
 
-export default function CreateCompetitionModal({ open, onClose, competitionId }: Props) {
+export default function CreateCompetitionModal({ open, onClose, competitionId, onSuccess }: Props) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [level, setLevel] = useState("");
@@ -52,6 +53,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId }:
         alert("Lomba berhasil dibuat!");
       }
 
+      onSuccess?.();
       onClose();
     } catch {
       alert("Gagal menyimpan lomba");
@@ -120,7 +122,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId }:
   return (
     <div className="modal-overlay">
       <div className="modal large">
-        <h2>Tambah Lomba</h2>
+        <h2>{competitionId ? "Edit Lomba" : "Tambah Lomba"}</h2>
 
         <div className="form-grid">
           <input

@@ -1,9 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import CreateCompetitionModal from "./CreateCompetitionModal";
 import CompetitionParticipantsModal from "./CompetitionParticipantsModal";
 import Pagination from "../Pagination";
 import RowsPerPage from "../RowsPerPage";
-import { getCompetitions } from "../../services/competition.service";
+import { deleteCompetition, getCompetitions } from "../../services/competition.service";
 
 type Competition = {
   id: string;
@@ -29,31 +29,30 @@ export default function CompetitionsTab() {
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      setLoading(true);
-      try {
-        const res = await getCompetitions({
-          page,
-          perPage,
-          search,
-          level,
-          category,
-        });
+  const loadCompetitions = useCallback(async () => {
+    setLoading(true);
+    try {
+      const res = await getCompetitions({
+        page,
+        perPage,
+        search,
+        level,
+        category,
+      });
 
-        setCompetitions(res.data);
-        setTotalPages(res.meta.totalPages);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchData();
+      setCompetitions(res.data);
+      setTotalPages(res.meta.totalPages);
+    } finally {
+      setLoading(false);
+    }
   }, [page, perPage, search, level, category]);
+
+  useEffect(() => {
+    loadCompetitions();
+  }, [loadCompetitions]);
 
   return (
     <>
-      {/* <CreateCompetitionModal open={open} onClose={() => setOpen(false)} /> */}
       <CreateCompetitionModal
         open={open}
         competitionId={editingId}
@@ -61,6 +60,7 @@ export default function CompetitionsTab() {
           setOpen(false);
           setEditingId(null);
         }}
+        onSuccess={loadCompetitions}
       />
 
       <CompetitionParticipantsModal
@@ -186,7 +186,22 @@ export default function CompetitionsTab() {
                     >
                       Edit
                     </button>
-                    <button className="btn small danger">Hapus</button>
+                    <button
+                      className="btn small danger"
+                      onClick={async () => {
+                        if (!confirm("Yakin hapus lomba?")) return;
+
+                        await deleteCompetition(c.id);
+
+                        if (competitions.length === 1 && page > 1) {
+                          setPage((p) => p - 1);
+                        } else {
+                          loadCompetitions();
+                        }
+                      }}
+                    >
+                      Hapus
+                    </button>
                   </td>
                 </tr>
               ))

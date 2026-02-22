@@ -62,3 +62,8 @@ export const updateCompetition = async (id: string, data: CreateCompetitionPaylo
   const res = await api.put(`/competitions/${id}`, data);
   return res.data;
 };
+
+export const deleteCompetition = async (id: string) => {
+  const res = await api.delete(`/competitions/${id}`);
+  return res.data;
+};
