@@ -1,16 +1,17 @@
-import { useState } from "react";
-import { createCompetition } from "../../services/competition.service";
+import { useCallback, useEffect, useState } from "react";
+import {
+  createCompetition,
+  getCompetition,
+  updateCompetition,
+} from "../../services/competition.service";
 
-// type TimelineItem = {
-//   title: string;
-//   date: string;
-// };
 type Props = {
   open: boolean;
   onClose: () => void;
+  competitionId?: string | null;
 };
 
-export default function CreateCompetitionModal({ open, onClose }: Props) {
+export default function CreateCompetitionModal({ open, onClose, competitionId }: Props) {
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [level, setLevel] = useState("");
@@ -22,8 +23,6 @@ export default function CreateCompetitionModal({ open, onClose }: Props) {
   const [requirements, setRequirements] = useState<string[]>([""]);
   const [timeline, setTimeline] = useState([{ title: "", startDate: "", endDate: "" }]);
 
-  if (!open) return null;
-
   const addRequirement = () => setRequirements([...requirements, ""]);
   const removeRequirement = (i: number) =>
     setRequirements(requirements.filter((_, idx) => idx !== i));
@@ -32,25 +31,91 @@ export default function CreateCompetitionModal({ open, onClose }: Props) {
   const removeTimeline = (i: number) => setTimeline(timeline.filter((_, idx) => idx !== i));
 
   const submit = async () => {
-    try {
-      await createCompetition({
-        title,
-        category,
-        level,
-        deadline,
-        price,
-        poster,
-        description,
-        requirements: requirements.filter((r) => r.trim() !== ""),
-        timeline: timeline.filter((t) => t.title && t.startDate && t.endDate),
-      });
+    const payload = {
+      title,
+      category,
+      level,
+      deadline,
+      price,
+      poster,
+      description,
+      requirements: requirements.filter((r) => r.trim() !== ""),
+      timeline: timeline.filter((t) => t.title && t.startDate && t.endDate),
+    };
 
-      alert("Lomba berhasil dibuat!");
+    try {
+      if (competitionId) {
+        await updateCompetition(competitionId, payload);
+        alert("Lomba berhasil diupdate!");
+      } else {
+        await createCompetition(payload);
+        alert("Lomba berhasil dibuat!");
+      }
+
       onClose();
     } catch {
-      alert("Gagal membuat lomba");
+      alert("Gagal menyimpan lomba");
     }
   };
+
+  const handleClose = useCallback(() => {
+    onClose();
+    setTitle("");
+    setCategory("");
+    setLevel("");
+    setDeadline("");
+    setPrice("");
+    setPoster("");
+    setDescription("");
+    setRequirements([""]);
+    setTimeline([{ title: "", startDate: "", endDate: "" }]);
+  }, [onClose]);
+
+  useEffect(() => {
+    if (!open || !competitionId) return;
+
+    const load = async () => {
+      const data = await getCompetition(competitionId);
+
+      setTitle(data.title);
+      setCategory(data.category);
+      setLevel(data.level);
+      setDeadline(data.deadline.slice(0, 10));
+      setPrice(String(data.price));
+      setPoster(data.poster || "");
+      setDescription(data.description || "");
+
+      setRequirements(data.requirements?.map((r) => r.text) || [""]);
+
+      setTimeline(
+        data.timelines?.map((t) => ({
+          title: t.title,
+          startDate: t.startDate.slice(0, 10),
+          endDate: t.endDate.slice(0, 10),
+        })) || [{ title: "", startDate: "", endDate: "" }]
+      );
+    };
+
+    load();
+  }, [open, competitionId]);
+
+  useEffect(() => {
+    if (!open) return;
+
+    const handleKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") {
+        handleClose();
+      }
+    };
+
+    window.addEventListener("keydown", handleKey);
+
+    return () => {
+      window.removeEventListener("keydown", handleKey);
+    };
+  }, [open, handleClose]);
+
+  if (!open) return null;
 
   return (
     <div className="modal-overlay">
@@ -153,7 +218,7 @@ export default function CreateCompetitionModal({ open, onClose }: Props) {
         <button onClick={addTimeline}>+ Tambah Tahap</button>
 
         <div className="modal-actions">
-          <button className="btn" onClick={onClose}>
+          <button className="btn" onClick={handleClose}>
             Batal
           </button>
           <button className="btn primary" onClick={submit}>

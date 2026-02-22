@@ -20,6 +20,29 @@ export type CompetitionQuery = {
   category?: string;
 };
 
+export type CompetitionDetail = {
+  id: string;
+  title: string;
+  description: string | null;
+  poster: string | null;
+  level: string;
+  category: string;
+  deadline: string;
+  price: number;
+
+  requirements: {
+    id: string;
+    text: string;
+  }[];
+
+  timelines: {
+    id: string;
+    title: string;
+    startDate: string;
+    endDate: string;
+  }[];
+};
+
 export const createCompetition = async (data: CreateCompetitionPayload) => {
   const res = await api.post("/competitions", data);
   return res.data;
@@ -27,5 +50,15 @@ export const createCompetition = async (data: CreateCompetitionPayload) => {
 
 export const getCompetitions = async (params: CompetitionQuery) => {
   const res = await api.get("/competitions", { params });
+  return res.data;
+};
+
+export const getCompetition = async (id: string): Promise<CompetitionDetail> => {
+  const res = await api.get(`/competitions/${id}`);
+  return res.data;
+};
+
+export const updateCompetition = async (id: string, data: CreateCompetitionPayload) => {
+  const res = await api.put(`/competitions/${id}`, data);
   return res.data;
 };

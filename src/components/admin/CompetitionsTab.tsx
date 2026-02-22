@@ -27,6 +27,7 @@ export default function CompetitionsTab() {
   const [perPage, setPerPage] = useState(5);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [editingId, setEditingId] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -52,7 +53,15 @@ export default function CompetitionsTab() {
 
   return (
     <>
-      <CreateCompetitionModal open={open} onClose={() => setOpen(false)} />
+      {/* <CreateCompetitionModal open={open} onClose={() => setOpen(false)} /> */}
+      <CreateCompetitionModal
+        open={open}
+        competitionId={editingId}
+        onClose={() => {
+          setOpen(false);
+          setEditingId(null);
+        }}
+      />
 
       <CompetitionParticipantsModal
         open={participantOpen}
@@ -85,14 +94,26 @@ export default function CompetitionsTab() {
             />
           </div>
 
-          <select value={level} onChange={(e) => { setPage(1); setLevel(e.target.value); }}>
+          <select
+            value={level}
+            onChange={(e) => {
+              setPage(1);
+              setLevel(e.target.value);
+            }}
+          >
             <option value="">Semua Jenjang</option>
             <option value="SD">SD</option>
             <option value="SMP">SMP</option>
             <option value="SMA">SMA</option>
           </select>
 
-          <select value={category} onChange={(e) => { setPage(1); setCategory(e.target.value); }}>
+          <select
+            value={category}
+            onChange={(e) => {
+              setPage(1);
+              setCategory(e.target.value);
+            }}
+          >
             <option value="">Semua Kategori</option>
             <option value="Akademik">Akademik</option>
             <option value="Bahasa">Bahasa</option>
@@ -156,7 +177,15 @@ export default function CompetitionsTab() {
                   </td>
 
                   <td className="actions">
-                    <button className="btn small warning">Edit</button>
+                    <button
+                      className="btn small warning"
+                      onClick={() => {
+                        setEditingId(c.id);
+                        setOpen(true);
+                      }}
+                    >
+                      Edit
+                    </button>
                     <button className="btn small danger">Hapus</button>
                   </td>
                 </tr>
