@@ -28,13 +28,16 @@ export default function Header() {
             <button className={isActive("/list") ? "active" : ""} onClick={() => go("/list")}>
               Daftar Lomba
             </button>
-
+            {/* 
             <button className={isActive("/my") ? "active" : ""} onClick={() => go("/my")}>
               Pendaftaran Saya
-            </button>
+            </button> */}
 
             {user.role === "ADMIN" && (
-              <button className={isActive("/admin") ? "active" : ""} onClick={() => go("/admin")}>
+              <button
+                className={isActive("/admin/participants") ? "active" : ""}
+                onClick={() => go("/admin/participants")}
+              >
                 Admin
               </button>
             )}

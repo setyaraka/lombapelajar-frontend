@@ -1,13 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
+import LoadingButton from "../components/LoadingButton";
+import { useAuth } from "../auth/useAuth";
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
 
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     if (!email || !password) {
@@ -15,15 +19,20 @@ export default function Login() {
       return;
     }
 
-    // simulasi role
-    if (email === "admin@gmail.com") {
-      localStorage.setItem("role", "admin");
-      localStorage.setItem("isLogin", "true");
-      navigate("/admin_verification");
-    } else {
-      localStorage.setItem("role", "user");
-      localStorage.setItem("isLogin", "true");
-      navigate("/list");
+    try {
+      setLoading(true);
+
+      const loggedInUser = await login(email, password);
+
+      if (loggedInUser.role === "ADMIN") {
+        navigate("/admin/participants");
+      } else {
+        navigate("/list");
+      }
+    } catch {
+      alert("Email atau password salah");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -58,7 +67,9 @@ export default function Login() {
             autoComplete="current-password"
           />
 
-          <button type="submit">Masuk</button>
+          <LoadingButton loading={loading} loadingText="Masuk...">
+            Masuk
+          </LoadingButton>
         </form>
 
         <div className="footer">
