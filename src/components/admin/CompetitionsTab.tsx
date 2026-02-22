@@ -1,59 +1,18 @@
-import { useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import CreateCompetitionModal from "./CreateCompetitionModal";
 import CompetitionParticipantsModal from "./CompetitionParticipantsModal";
 import Pagination from "../Pagination";
 import RowsPerPage from "../RowsPerPage";
+import { getCompetitions } from "../../services/competition.service";
 
 type Competition = {
-  id: number;
+  id: string;
   title: string;
   category: string;
   level: string;
   participants: number;
   deadline: string;
-};
-
-type Participant = {
-  id: number;
-  name: string;
-  school: string;
-  status: "pending" | "verified" | "rejected";
-};
-
-const initialCompetitions: Competition[] = [
-  {
-    id: 1,
-    title: "Olimpiade Matematika",
-    category: "Akademik",
-    level: "SD",
-    participants: 120,
-    deadline: "2026-03-20",
-  },
-  {
-    id: 2,
-    title: "English Contest",
-    category: "Bahasa",
-    level: "SMP",
-    participants: 80,
-    deadline: "2026-02-25",
-  },
-  {
-    id: 3,
-    title: "Science Fair",
-    category: "Sains",
-    level: "SMA",
-    participants: 45,
-    deadline: "2026-02-10",
-  },
-];
-
-const participantMap: Record<number, Participant[]> = {
-  1: [
-    { id: 1, name: "Budi", school: "SDN 01 Jakarta", status: "verified" },
-    { id: 2, name: "Andi", school: "SDIT Harapan", status: "pending" },
-  ],
-  2: [{ id: 3, name: "Siti", school: "SMPN 5 Bandung", status: "verified" }],
-  3: [],
+  status: "open" | "closed";
 };
 
 export default function CompetitionsTab() {
@@ -61,61 +20,54 @@ export default function CompetitionsTab() {
   const [level, setLevel] = useState("");
   const [category, setCategory] = useState("");
   const [open, setOpen] = useState(false);
-  const [competitions, setCompetitions] = useState<Competition[]>(initialCompetitions);
+  const [competitions, setCompetitions] = useState<Competition[]>([]);
   const [participantOpen, setParticipantOpen] = useState(false);
   const [selectedCompetition, setSelectedCompetition] = useState<Competition | null>(null);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(5);
+  const [totalPages, setTotalPages] = useState(1);
+  const [loading, setLoading] = useState(false);
 
-  const filtered = useMemo(() => {
-    return competitions.filter((c) => {
-      const matchSearch = c.title.toLowerCase().includes(search.toLowerCase());
-      const matchLevel = level ? c.level === level : true;
-      const matchCategory = category ? c.category === category : true;
+  useEffect(() => {
+    const fetchData = async () => {
+      setLoading(true);
+      try {
+        const res = await getCompetitions({
+          page,
+          perPage,
+          search,
+          level,
+          category,
+        });
 
-      return matchSearch && matchLevel && matchCategory;
-    });
-  }, [competitions, search, level, category]);
+        setCompetitions(res.data);
+        setTotalPages(res.meta.totalPages);
+      } finally {
+        setLoading(false);
+      }
+    };
 
-  const totalPages = Math.max(1, Math.ceil(filtered.length / perPage));
-
-  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
-
-  //   useEffect(() => {
-  //     if (page > totalPages) setPage(totalPages);
-  //   }, [totalPages, page, ]);
-
-  function getCompetitionStatus(deadline: string) {
-    const now = new Date();
-    const d = new Date(deadline);
-
-    const diffDays = Math.ceil((d.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
-
-    if (diffDays < 0) return { label: "Ditutup", class: "status closed" };
-    if (diffDays <= 3) return { label: "Segera Dimulai", class: "status soon" };
-    return { label: "Dibuka", class: "status open" };
-  }
-
-  const deleteCompetition = (id: number) => {
-    if (!confirm("Yakin hapus lomba ini?")) return;
-    setCompetitions((prev) => prev.filter((c) => c.id !== id));
-  };
+    fetchData();
+  }, [page, perPage, search, level, category]);
 
   return (
     <>
       <CreateCompetitionModal open={open} onClose={() => setOpen(false)} />
+
       <CompetitionParticipantsModal
         open={participantOpen}
         onClose={() => setParticipantOpen(false)}
         competitionTitle={selectedCompetition?.title}
-        participants={selectedCompetition ? participantMap[selectedCompetition.id] || [] : []}
+        participants={[]} // nanti kita lazy load API participants
       />
+
       {/* FILTER */}
       <div className="table-toolbar">
         <button className="btn primary btn-inline add-btn" onClick={() => setOpen(true)}>
           + Tambah Lomba
         </button>
       </div>
+
       <div className="card filter-card">
         <div className="filter-header">
           <div className="filter-title">Filter Lomba</div>
@@ -133,26 +85,20 @@ export default function CompetitionsTab() {
             />
           </div>
 
-          <select value={level} onChange={(e) => setLevel(e.target.value)}>
+          <select value={level} onChange={(e) => { setPage(1); setLevel(e.target.value); }}>
             <option value="">Semua Jenjang</option>
             <option value="SD">SD</option>
             <option value="SMP">SMP</option>
             <option value="SMA">SMA</option>
           </select>
 
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
+          <select value={category} onChange={(e) => { setPage(1); setCategory(e.target.value); }}>
             <option value="">Semua Kategori</option>
             <option value="Akademik">Akademik</option>
             <option value="Bahasa">Bahasa</option>
             <option value="Sains">Sains</option>
           </select>
         </div>
-
-        {/* <div style={{ marginBottom: "10px" }}>
-        <button className="btn primary" onClick={() => setOpen(true)}>
-                + Tambah Lomba
-            </button>
-        </div> */}
       </div>
 
       {/* TABLE */}
@@ -171,21 +117,32 @@ export default function CompetitionsTab() {
           </thead>
 
           <tbody>
-            {paginated.map((c) => {
-              const status = getCompetitionStatus(c.deadline);
-
-              return (
+            {loading ? (
+              <tr>
+                <td colSpan={7} style={{ textAlign: "center" }}>
+                  Loading...
+                </td>
+              </tr>
+            ) : competitions.length === 0 ? (
+              <tr>
+                <td colSpan={7} style={{ textAlign: "center" }}>
+                  Tidak ada data
+                </td>
+              </tr>
+            ) : (
+              competitions.map((c) => (
                 <tr key={c.id}>
-                  <td>{c.title}</td>
-                  <td>{c.category}</td>
-                  <td>{c.level}</td>
-                  <td>{c.deadline}</td>
+                  <td>{c.title.toLocaleUpperCase()}</td>
+                  <td>{c.category.toLocaleUpperCase()}</td>
+                  <td>{c.level.toLocaleUpperCase()}</td>
+                  <td>{new Date(c.deadline).toLocaleDateString("id-ID")}</td>
 
                   <td>
-                    <span className={status.class}>{status.label}</span>
+                    <span className={`status ${c.status}`}>
+                      {c.status === "open" ? "Dibuka" : "Ditutup"}
+                    </span>
                   </td>
 
-                  {/* <td>{c.participants}</td> */}
                   <td>
                     <button
                       className="link-btn"
@@ -199,19 +156,17 @@ export default function CompetitionsTab() {
                   </td>
 
                   <td className="actions">
-                    <button onClick={() => setOpen(true)} className="btn small warning">
-                      Edit
-                    </button>
-                    <button className="btn small danger" onClick={() => deleteCompetition(c.id)}>
-                      Hapus
-                    </button>
+                    <button className="btn small warning">Edit</button>
+                    <button className="btn small danger">Hapus</button>
                   </td>
                 </tr>
-              );
-            })}
+              ))
+            )}
           </tbody>
         </table>
       </div>
+
+      {/* FOOTER */}
       <div className="table-footer">
         <div></div>
 

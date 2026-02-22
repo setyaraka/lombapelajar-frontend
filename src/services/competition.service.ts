@@ -12,7 +12,20 @@ export type CreateCompetitionPayload = {
   timeline: { title: string; startDate: string; endDate: string }[];
 };
 
+export type CompetitionQuery = {
+  page: number;
+  perPage: number;
+  search?: string;
+  level?: string;
+  category?: string;
+};
+
 export const createCompetition = async (data: CreateCompetitionPayload) => {
   const res = await api.post("/competitions", data);
+  return res.data;
+};
+
+export const getCompetitions = async (params: CompetitionQuery) => {
+  const res = await api.get("/competitions", { params });
   return res.data;
 };
