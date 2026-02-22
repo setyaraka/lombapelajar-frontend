@@ -1,31 +1,37 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { register } from "../services/auth.service";
+import LoadingButton from "../components/LoadingButton";
 
 type FormData = {
   nama: string;
-  ttl: string;
-  sekolah: string;
+  birthDate: string;
+  school: string;
   email: string;
   password: string;
   password_confirmation: string;
 };
 
 export default function Register() {
+  const navigate = useNavigate();
+
   const [form, setForm] = useState<FormData>({
     nama: "",
-    ttl: "",
-    sekolah: "",
+    birthDate: "",
+    school: "",
     email: "",
     password: "",
     password_confirmation: "",
   });
 
   const [error, setError] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (form.password !== form.password_confirmation) {
@@ -39,12 +45,25 @@ export default function Register() {
       return;
     }
 
-    setError("");
+    try {
+      setLoading(true);
+      setError("");
 
-    console.log("DATA REGISTER:", form);
+      await register({
+        name: form.nama,
+        email: form.email,
+        password: form.password,
+        birthDate: form.birthDate,
+        school: form.school,
+      });
 
-    // TODO: kirim ke backend
-    // await api.post("/auth/register", form);
+      alert("Register berhasil, silakan login");
+      navigate("/login");
+    } catch {
+      setError("Register gagal");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -70,8 +89,8 @@ export default function Register() {
           <label>Tanggal Lahir</label>
           <input
             type="date"
-            name="ttl"
-            value={form.ttl}
+            name="birthDate"
+            value={form.birthDate}
             onChange={handleChange}
             autoComplete="bday"
             required
@@ -79,9 +98,9 @@ export default function Register() {
 
           <label>Sekolah / Instansi</label>
           <input
-            name="sekolah"
+            name="school"
             placeholder="Nama sekolah / kampus"
-            value={form.sekolah}
+            value={form.school}
             onChange={handleChange}
             autoComplete="organization"
             required
@@ -123,7 +142,9 @@ export default function Register() {
 
           {error && <p className="error">{error}</p>}
 
-          <button type="submit">Daftar Sekarang</button>
+          <LoadingButton loading={loading} loadingText="Memuat...">
+            Masuk
+          </LoadingButton>
         </form>
 
         <div className="footer">
