@@ -31,6 +31,18 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const addTimeline = () => setTimeline([...timeline, { title: "", startDate: "", endDate: "" }]);
   const removeTimeline = (i: number) => setTimeline(timeline.filter((_, idx) => idx !== i));
 
+  const resetForm = useCallback(() => {
+    setTitle("");
+    setCategory("");
+    setLevel("");
+    setDeadline("");
+    setPrice("");
+    setPoster("");
+    setDescription("");
+    setRequirements([""]);
+    setTimeline([{ title: "", startDate: "", endDate: "" }]);
+  }, []);
+
   const submit = async () => {
     const payload = {
       title,
@@ -55,6 +67,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
       onSuccess?.();
       onClose();
+      resetForm();
     } catch {
       alert("Gagal menyimpan lomba");
     }
@@ -62,16 +75,8 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
   const handleClose = useCallback(() => {
     onClose();
-    setTitle("");
-    setCategory("");
-    setLevel("");
-    setDeadline("");
-    setPrice("");
-    setPoster("");
-    setDescription("");
-    setRequirements([""]);
-    setTimeline([{ title: "", startDate: "", endDate: "" }]);
-  }, [onClose]);
+    resetForm();
+  }, [onClose, resetForm]);
 
   useEffect(() => {
     if (!open || !competitionId) return;
