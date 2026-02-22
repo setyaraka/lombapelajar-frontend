@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createCompetition } from "../../services/competition.service";
 
 // type TimelineItem = {
 //   title: string;
@@ -19,7 +20,7 @@ export default function CreateCompetitionModal({ open, onClose }: Props) {
   const [description, setDescription] = useState("");
 
   const [requirements, setRequirements] = useState<string[]>([""]);
-  const [timeline, setTimeline] = useState([{ title: "", date: "" }]);
+  const [timeline, setTimeline] = useState([{ title: "", startDate: "", endDate: "" }]);
 
   if (!open) return null;
 
@@ -27,26 +28,28 @@ export default function CreateCompetitionModal({ open, onClose }: Props) {
   const removeRequirement = (i: number) =>
     setRequirements(requirements.filter((_, idx) => idx !== i));
 
-  const addTimeline = () => setTimeline([...timeline, { title: "", date: "" }]);
+  const addTimeline = () => setTimeline([...timeline, { title: "", startDate: "", endDate: "" }]);
   const removeTimeline = (i: number) => setTimeline(timeline.filter((_, idx) => idx !== i));
 
-  const submit = () => {
-    const payload = {
-      title,
-      category,
-      level,
-      deadline,
-      price,
-      poster,
-      description,
-      requirements,
-      timeline,
-    };
+  const submit = async () => {
+    try {
+      await createCompetition({
+        title,
+        category,
+        level,
+        deadline,
+        price,
+        poster,
+        description,
+        requirements: requirements.filter((r) => r.trim() !== ""),
+        timeline: timeline.filter((t) => t.title && t.startDate && t.endDate),
+      });
 
-    console.log("CREATE LOMBA:", payload);
-    // await api.post("/admin/competitions", payload)
-
-    onClose();
+      alert("Lomba berhasil dibuat!");
+      onClose();
+    } catch {
+      alert("Gagal membuat lomba");
+    }
   };
 
   return (
@@ -94,7 +97,6 @@ export default function CreateCompetitionModal({ open, onClose }: Props) {
           onChange={(e) => setDescription(e.target.value)}
         />
 
-        {/* REQUIREMENTS */}
         <h3>Persyaratan</h3>
         {requirements.map((r, i) => (
           <div key={i} className="dynamic-row">
@@ -124,15 +126,27 @@ export default function CreateCompetitionModal({ open, onClose }: Props) {
                 setTimeline(copy);
               }}
             />
+
             <input
               type="date"
-              value={t.date}
+              value={t.startDate}
               onChange={(e) => {
                 const copy = [...timeline];
-                copy[i].date = e.target.value;
+                copy[i].startDate = e.target.value;
                 setTimeline(copy);
               }}
             />
+
+            <input
+              type="date"
+              value={t.endDate}
+              onChange={(e) => {
+                const copy = [...timeline];
+                copy[i].endDate = e.target.value;
+                setTimeline(copy);
+              }}
+            />
+
             <button onClick={() => removeTimeline(i)}>✕</button>
           </div>
         ))}
