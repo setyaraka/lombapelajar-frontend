@@ -67,3 +67,8 @@ export const deleteCompetition = async (id: string) => {
   const res = await api.delete(`/competitions/${id}`);
   return res.data;
 };
+
+export const getCompetitionParticipants = async (id: string) => {
+  const res = await api.get(`/competitions/${id}/participants`);
+  return res.data;
+};

@@ -1,9 +1,13 @@
 import { useCallback, useEffect, useState } from "react";
 import CreateCompetitionModal from "./CreateCompetitionModal";
-import CompetitionParticipantsModal from "./CompetitionParticipantsModal";
+import CompetitionParticipantsModal, { type Participant } from "./CompetitionParticipantsModal";
 import Pagination from "../Pagination";
 import RowsPerPage from "../RowsPerPage";
-import { deleteCompetition, getCompetitions } from "../../services/competition.service";
+import {
+  deleteCompetition,
+  getCompetitionParticipants,
+  getCompetitions,
+} from "../../services/competition.service";
 
 type Competition = {
   id: string;
@@ -28,6 +32,8 @@ export default function CompetitionsTab() {
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
   const [editingId, setEditingId] = useState<string | null>(null);
+  const [participants, setParticipants] = useState<Participant[]>([]);
+  const [participantLoading, setParticipantLoading] = useState(false);
 
   const loadCompetitions = useCallback(async () => {
     setLoading(true);
@@ -46,6 +52,19 @@ export default function CompetitionsTab() {
       setLoading(false);
     }
   }, [page, perPage, search, level, category]);
+
+  const openParticipants = async (c: Competition) => {
+    setSelectedCompetition(c);
+    setParticipantOpen(true);
+    setParticipantLoading(true);
+
+    try {
+      const res = await getCompetitionParticipants(c.id);
+      setParticipants(res);
+    } finally {
+      setParticipantLoading(false);
+    }
+  };
 
   useEffect(() => {
     loadCompetitions();
@@ -67,7 +86,8 @@ export default function CompetitionsTab() {
         open={participantOpen}
         onClose={() => setParticipantOpen(false)}
         competitionTitle={selectedCompetition?.title}
-        participants={[]} // nanti kita lazy load API participants
+        participants={participants} // nanti kita lazy load API participants
+        loading={participantLoading}
       />
 
       {/* FILTER */}
@@ -167,10 +187,11 @@ export default function CompetitionsTab() {
                   <td>
                     <button
                       className="link-btn"
-                      onClick={() => {
-                        setSelectedCompetition(c);
-                        setParticipantOpen(true);
-                      }}
+                      // onClick={() => {
+                      //   setSelectedCompetition(c);
+                      //   setParticipantOpen(true);
+                      // }}
+                      onClick={() => openParticipants(c)}
                     >
                       {c.participants}
                     </button>

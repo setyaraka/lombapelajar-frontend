@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 
-type Participant = {
+export type Participant = {
   id: number;
   name: string;
   school: string;
@@ -12,6 +12,7 @@ type Props = {
   onClose: () => void;
   competitionTitle?: string;
   participants: Participant[];
+  loading: boolean;
 };
 
 export default function CompetitionParticipantsModal({
@@ -19,12 +20,20 @@ export default function CompetitionParticipantsModal({
   onClose,
   competitionTitle,
   participants,
+  loading,
 }: Props) {
+  // useEffect(() => {
+  //   const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
+  //   window.addEventListener("keydown", esc);
+  //   return () => window.removeEventListener("keydown", esc);
+  // }, [onClose]);
   useEffect(() => {
+    if (!open) return;
+
     const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", esc);
     return () => window.removeEventListener("keydown", esc);
-  }, [onClose]);
+  }, [open, onClose]);
 
   if (!open) return null;
 
@@ -48,7 +57,13 @@ export default function CompetitionParticipantsModal({
               </tr>
             </thead>
             <tbody>
-              {participants.length === 0 ? (
+              {loading ? (
+                <tr>
+                  <td colSpan={3} style={{ textAlign: "center" }}>
+                    Loading peserta...
+                  </td>
+                </tr>
+              ) : participants.length === 0 ? (
                 <tr>
                   <td colSpan={3} style={{ textAlign: "center" }}>
                     Belum ada peserta
