@@ -20,8 +20,7 @@ export default function PaymentForm({
   back: () => void;
   submit: () => void;
 }) {
-  const formatRupiah = (n?: number) =>
-    n ? `Rp ${n.toLocaleString("id-ID")}` : "-";
+  const formatRupiah = (n?: number) => (n ? `Rp ${n.toLocaleString("id-ID")}` : "-");
 
   return (
     <div className="card form-control register-active">
@@ -56,11 +55,7 @@ export default function PaymentForm({
           onChange={(e) => updateForm({ paymentProof: e.target.files?.[0] })}
         />
 
-        {form.paymentProof && (
-          <div className="file-selected">
-            {form.paymentProof.name}
-          </div>
-        )}
+        {form.paymentProof && <div className="file-selected">{form.paymentProof.name}</div>}
 
         <div style={{ fontSize: 13, color: "#777", marginTop: 8 }}>
           Format JPG/PNG, maksimal 2MB

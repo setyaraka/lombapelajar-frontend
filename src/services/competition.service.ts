@@ -18,6 +18,7 @@ export type CompetitionQuery = {
   search?: string;
   level?: string;
   category?: string;
+  joined?: boolean;
 };
 
 export type CompetitionDetail = {
@@ -44,7 +45,7 @@ export type CompetitionDetail = {
 
   bankName: string;
   bankNumber: string;
-  bankHolder: string
+  bankHolder: string;
 };
 
 export const createCompetition = async (data: CreateCompetitionPayload) => {

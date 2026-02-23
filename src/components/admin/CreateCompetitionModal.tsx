@@ -25,8 +25,8 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const [timeline, setTimeline] = useState([{ title: "", startDate: "", endDate: "" }]);
 
   const [bankName, setBankName] = useState("");
-const [bankNumber, setBankNumber] = useState("");
-const [bankHolder, setBankHolder] = useState("");
+  const [bankNumber, setBankNumber] = useState("");
+  const [bankHolder, setBankHolder] = useState("");
 
   const addRequirement = () => setRequirements([...requirements, ""]);
   const removeRequirement = (i: number) =>
@@ -36,39 +36,39 @@ const [bankHolder, setBankHolder] = useState("");
   const removeTimeline = (i: number) => setTimeline(timeline.filter((_, idx) => idx !== i));
 
   const resetForm = useCallback(() => {
-  setTitle("");
-  setCategory("");
-  setLevel("");
-  setDeadline("");
-  setPrice("");
-  setPoster("");
-  setDescription("");
+    setTitle("");
+    setCategory("");
+    setLevel("");
+    setDeadline("");
+    setPrice("");
+    setPoster("");
+    setDescription("");
 
-  setBankName("");
-  setBankNumber("");
-  setBankHolder("");
+    setBankName("");
+    setBankNumber("");
+    setBankHolder("");
 
-  setRequirements([""]);
-  setTimeline([{ title: "", startDate: "", endDate: "" }]);
-}, []);
+    setRequirements([""]);
+    setTimeline([{ title: "", startDate: "", endDate: "" }]);
+  }, []);
 
   const submit = async () => {
     const payload = {
-  title,
-  category,
-  level,
-  deadline,
-  price,
-  poster,
-  description,
+      title,
+      category,
+      level,
+      deadline,
+      price,
+      poster,
+      description,
 
-  bankName,
-  bankNumber,
-  bankHolder,
+      bankName,
+      bankNumber,
+      bankHolder,
 
-  requirements: requirements.filter((r) => r.trim() !== ""),
-  timeline: timeline.filter((t) => t.title && t.startDate && t.endDate),
-};
+      requirements: requirements.filter((r) => r.trim() !== ""),
+      timeline: timeline.filter((t) => t.title && t.startDate && t.endDate),
+    };
 
     try {
       if (competitionId) {
@@ -117,8 +117,8 @@ const [bankHolder, setBankHolder] = useState("");
       );
 
       setBankName(data.bankName || "");
-setBankNumber(data.bankNumber || "");
-setBankHolder(data.bankHolder || "");
+      setBankNumber(data.bankNumber || "");
+      setBankHolder(data.bankHolder || "");
     };
 
     load();
@@ -180,22 +180,22 @@ setBankHolder(data.bankHolder || "");
             onChange={(e) => setPoster(e.target.value)}
           />
           <input
-  placeholder="Nama Bank (contoh: BCA)"
-  value={bankName}
-  onChange={(e) => setBankName(e.target.value)}
-/>
+            placeholder="Nama Bank (contoh: BCA)"
+            value={bankName}
+            onChange={(e) => setBankName(e.target.value)}
+          />
 
-<input
-  placeholder="Nomor Rekening"
-  value={bankNumber}
-  onChange={(e) => setBankNumber(e.target.value)}
-/>
+          <input
+            placeholder="Nomor Rekening"
+            value={bankNumber}
+            onChange={(e) => setBankNumber(e.target.value)}
+          />
 
-<input
-  placeholder="Atas Nama Rekening"
-  value={bankHolder}
-  onChange={(e) => setBankHolder(e.target.value)}
-/>
+          <input
+            placeholder="Atas Nama Rekening"
+            value={bankHolder}
+            onChange={(e) => setBankHolder(e.target.value)}
+          />
         </div>
 
         <textarea

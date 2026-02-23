@@ -46,11 +46,10 @@ export default function RegisterCompetition() {
     paymentProof: null,
   });
 
-  const updateForm = (data: Partial<RegisterForm>) =>
-    setForm((prev) => ({ ...prev, ...data }));
+  const updateForm = (data: Partial<RegisterForm>) => setForm((prev) => ({ ...prev, ...data }));
 
   // LOAD COMPETITION DETAIL
-  console.log(id, ">>>> ID")
+  console.log(id, ">>>> ID");
   useEffect(() => {
     if (!id) return;
 
@@ -75,7 +74,7 @@ export default function RegisterCompetition() {
     load();
   }, [id, navigate]);
 
-  console.log(competition, ">>>>")
+  console.log(competition, ">>>>");
   // SUBMIT FLOW
   const submit = async () => {
     if (!id || !competition) return;
@@ -138,11 +137,7 @@ export default function RegisterCompetition() {
 
         {/* STEP 1 */}
         {step === 1 && (
-          <ParticipantForm
-            form={form}
-            updateForm={updateForm}
-            next={() => setStep(2)}
-          />
+          <ParticipantForm form={form} updateForm={updateForm} next={() => setStep(2)} />
         )}
 
         {/* STEP 2 */}

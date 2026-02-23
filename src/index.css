@@ -4139,3 +4139,70 @@ input:focus, select:focus, textarea:focus {
   margin-top: 4px;
   margin-bottom: 10px;
 }
+
+/* container title + filter */
+.title-row{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin:24px 0 14px;
+}
+
+/* title */
+.title-row .title{
+  font-size:22px;
+  font-weight:700;
+  color:#1f2937;
+}
+
+/* ===== TOGGLE SWITCH ===== */
+.mine-toggle{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  font-size:14px;
+  color:#374151;
+  cursor:pointer;
+  user-select:none;
+}
+
+/* hide default checkbox */
+.mine-toggle input{
+  appearance:none;
+  width:42px;
+  height:24px;
+  background:#e5e7eb;
+  border-radius:999px;
+  position:relative;
+  outline:none;
+  cursor:pointer;
+  transition:background .25s ease;
+}
+
+/* knob */
+.mine-toggle input::before{
+  content:"";
+  position:absolute;
+  top:3px;
+  left:3px;
+  width:18px;
+  height:18px;
+  border-radius:50%;
+  background:white;
+  box-shadow:0 2px 6px rgba(0,0,0,.2);
+  transition:all .25s cubic-bezier(.4,0,.2,1);
+}
+
+/* active */
+.mine-toggle input:checked{
+  background:#7c5cf4;
+}
+
+.mine-toggle input:checked::before{
+  transform:translateX(18px);
+}
+
+/* hover feel */
+.mine-toggle:hover input{
+  box-shadow:0 0 0 3px rgba(124,92,244,.15);
+}
