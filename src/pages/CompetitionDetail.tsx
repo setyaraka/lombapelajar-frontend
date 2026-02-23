@@ -1,43 +1,51 @@
 import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { getCompetition } from "../services/competition.service";
+import { toCompetitionDetailVM, type CompetitionDetailVM } from "../mapper/competition-detail.mapper";
 
 export default function CompetitionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
 
   const [preview, setPreview] = useState(false);
+  const [competition, setCompetition] = useState<CompetitionDetailVM | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [imgError, setImgError] = useState(false);
 
-  const competition = {
-    title: "Olimpiade Matematika Nasional",
-    category: "Akademik",
-    level: "SMA",
-    deadline: "30 Maret 2026",
-    price: "Rp50.000",
-    poster: "https://api.lombahub.com/posts/image/df78150c-e5f3-4351-b2f8-478fa2e5c9d8.jpeg",
-    description:
-      "Olimpiade Matematika Nasional merupakan ajang kompetisi untuk menguji kemampuan logika, analisis, dan pemecahan masalah matematika bagi pelajar SMA di seluruh Indonesia.",
-    requirements: [
-      "Pelajar aktif tingkat SMA",
-      "Mengisi formulir pendaftaran",
-      "Mengupload bukti pembayaran",
-      "Mengikuti seluruh tahapan seleksi",
-    ],
-    timeline: [
-      { title: "Pendaftaran", date: "1 Feb - 30 Mar 2026" },
-      { title: "Penyisihan", date: "5 April 2026" },
-      { title: "Final", date: "20 April 2026" },
-    ],
-  };
+  const defaultPoster = "/default-poster.png";
+  const safePoster =
+    competition?.poster && !imgError ? competition.poster : defaultPoster;
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        if (!id) return;
+        const res = await getCompetition(id);
+        setCompetition(toCompetitionDetailVM(res));
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    load();
+  }, [id]);
+
+  if (loading) return <div className="container">Loading...</div>;
+  if (!competition) return <div className="container">Lomba tidak ditemukan</div>;
 
   return (
     <>
+      {/* IMAGE PREVIEW */}
       {preview && (
         <div className="image-viewer" onClick={() => setPreview(false)}>
-          <img src={competition.poster} />
+          <img src={safePoster} alt={competition.title} />
         </div>
       )}
+
       <div className="competition-detail-page">
         <Header />
 
@@ -49,21 +57,25 @@ export default function CompetitionDetail() {
               <h1>{competition.title}</h1>
 
               <div className="meta">
-                <span>🎓 {competition.level}</span>
-                <span>⏰ {competition.deadline}</span>
-                <span>💰 {competition.price}</span>
+                <span>{competition.level}</span>
+                <span>{competition.deadline}</span>
+                <span>{competition.price}</span>
               </div>
 
-              <button className="cta" onClick={() => navigate(`/competition/${id}/register`)}>
+              <button
+                className="cta"
+                onClick={() => navigate(`/competition/${competition.id}/register`)}
+              >
                 Daftar Sekarang
               </button>
             </div>
 
             <div className="event-right">
               <img
-                src={competition.poster}
+                src={safePoster}
                 alt={competition.title}
                 onClick={() => setPreview(true)}
+                onError={() => setImgError(true)}
                 className="clickable-poster"
               />
             </div>
@@ -80,7 +92,7 @@ export default function CompetitionDetail() {
               <h3>Persyaratan</h3>
               <ul>
                 {competition.requirements.map((r, i) => (
-                  <li key={i}>✔ {r}</li>
+                  <li key={i}>{r}</li>
                 ))}
               </ul>
             </div>
@@ -103,6 +115,7 @@ export default function CompetitionDetail() {
             </div>
           </div>
         </div>
+
         <Footer />
       </div>
     </>

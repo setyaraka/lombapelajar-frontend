@@ -2,7 +2,8 @@ import Header from "../components/Header";
 import CompetitionCard from "../components/CompetitionCard";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
-import { getCompetitions, toCompetitionCardVM, type CompetitionCardVM } from "../services/competition.service";
+import { getCompetitions } from "../services/competition.service";
+import { toCompetitionCardVM, type CompetitionCardVM } from "../mapper/competition.mapper";
 
 export default function Competitions() {
   const [competitions, setCompetitions] = useState<CompetitionCardVM[]>([]);
