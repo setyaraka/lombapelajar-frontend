@@ -1982,7 +1982,6 @@ body {
 }
 
 
-
 /* POSTER */
 /* .competitions-page .poster {
   position: relative;
@@ -4129,3 +4128,14 @@ input:focus, select:focus, textarea:focus {
   }
 }
 
+.input-error {
+  border: 1px solid #e5484d !important;
+  background: #fff5f5;
+}
+
+.field-error {
+  color: #c62828;
+  font-size: 12.5px;
+  margin-top: 4px;
+  margin-bottom: 10px;
+}

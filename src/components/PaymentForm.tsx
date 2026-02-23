@@ -1,7 +1,7 @@
 import type { RegisterForm } from "../pages/RegisterCompetition";
 
 export default function PaymentForm({
-  //   form,
+  // form,
   updateForm,
   back,
   submit,
@@ -31,7 +31,9 @@ export default function PaymentForm({
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => updateForm({ paymentProof: e.target.files?.[0] })}
+          onChange={(e) => {
+            updateForm({ paymentProof: e.target.files?.[0] });
+          }}
         />
         <div style={{ fontSize: 13, color: "#777", marginTop: 8 }}>
           Format JPG/PNG, maksimal 2MB
@@ -42,7 +44,12 @@ export default function PaymentForm({
         Kembali
       </button>
 
-      <button type="button" className="btn" onClick={submit}>
+      <button
+        type="button"
+        className="btn"
+        // disabled={!form.paymentProof}
+        onClick={submit}
+      >
         Kirim Pendaftaran
       </button>
     </div>
