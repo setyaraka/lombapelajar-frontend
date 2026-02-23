@@ -41,6 +41,10 @@ export type CompetitionDetail = {
     startDate: string;
     endDate: string;
   }[];
+
+  bankName: string;
+  bankNumber: string;
+  bankHolder: string
 };
 
 export const createCompetition = async (data: CreateCompetitionPayload) => {

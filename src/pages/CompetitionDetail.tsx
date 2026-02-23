@@ -55,11 +55,11 @@ export default function CompetitionDetail() {
           {/* HERO */}
           <div className="event-hero">
             <div className="event-left">
-              <span className="badge">{competition.category}</span>
+              <span className="badge">{competition.category.toUpperCase()}</span>
               <h1>{competition.title}</h1>
 
               <div className="meta">
-                <span>{competition.level}</span>
+                <span>{competition.level.toUpperCase()}</span>
                 <span>{competition.deadline}</span>
                 <span>{competition.price}</span>
               </div>
