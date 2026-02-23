@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 
 export type ProofData = {
-  id: number;
+  id: string;
   name: string;
   school: string;
   competition: string;
