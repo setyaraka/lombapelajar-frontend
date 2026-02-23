@@ -157,7 +157,7 @@ export default function ParticipantsTab() {
                 ) : (
                   participants.map((p) => {
                     const paymentUploaded = p.proofUrl ? true : false;
-                    console.log(paymentUploaded, ">>>", p)
+                    console.log(paymentUploaded, ">>>", p);
 
                     return (
                       <tr key={p.id}>

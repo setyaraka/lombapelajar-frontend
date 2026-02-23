@@ -25,12 +25,7 @@ export default function CompetitionCard({ id, title, level, date, poster, submit
   return (
     <div className="card">
       <div className="poster">
-        <img
-          src={poster || defaultPoster}
-          alt={title}
-          loading="lazy"
-          onError={handleImgError}
-        />
+        <img src={poster || defaultPoster} alt={title} loading="lazy" onError={handleImgError} />
       </div>
 
       <div className="content">
@@ -39,11 +34,7 @@ export default function CompetitionCard({ id, title, level, date, poster, submit
           {level.toUpperCase()} | {date}
         </div>
 
-        {submitted && (
-          <div className="submitted-info">
-            Kamu sudah terdaftar di lomba ini
-          </div>
-        )}
+        {submitted && <div className="submitted-info">Kamu sudah terdaftar di lomba ini</div>}
 
         <button className="btn" onClick={openDetail}>
           Lihat Detail

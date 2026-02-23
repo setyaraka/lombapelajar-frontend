@@ -3,7 +3,10 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
 import { getCompetition } from "../services/competition.service";
-import { toCompetitionDetailVM, type CompetitionDetailVM } from "../mapper/competition-detail.mapper";
+import {
+  toCompetitionDetailVM,
+  type CompetitionDetailVM,
+} from "../mapper/competition-detail.mapper";
 
 export default function CompetitionDetail() {
   const { id } = useParams();
@@ -15,8 +18,7 @@ export default function CompetitionDetail() {
   const [imgError, setImgError] = useState(false);
 
   const defaultPoster = "/default-poster.png";
-  const safePoster =
-    competition?.poster && !imgError ? competition.poster : defaultPoster;
+  const safePoster = competition?.poster && !imgError ? competition.poster : defaultPoster;
 
   useEffect(() => {
     const load = async () => {

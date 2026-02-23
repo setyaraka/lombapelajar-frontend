@@ -7,7 +7,18 @@ export type CompetitionCardVM = {
   closed: boolean;
 };
 
-export function toCompetitionCardVM(api: any): CompetitionCardVM {
+export type CompetitionListItemDTO = {
+  id: string;
+  title: string;
+  category: string;
+  level: string;
+  deadline: string;
+  poster: string | null;
+  participants: number;
+  status: "open" | "closed";
+};
+
+export function toCompetitionCardVM(api: CompetitionListItemDTO): CompetitionCardVM {
   return {
     id: api.id,
     title: api.title,
@@ -17,7 +28,7 @@ export function toCompetitionCardVM(api: any): CompetitionCardVM {
       month: "long",
       year: "numeric",
     }),
-    poster: api.poster || "/default-competition.png",
+    poster: api.poster ?? "/default-competition.png",
     closed: api.status === "closed",
   };
 }

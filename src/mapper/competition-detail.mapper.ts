@@ -11,7 +11,33 @@ export type CompetitionDetailVM = {
   timeline: { title: string; date: string }[];
 };
 
-export function toCompetitionDetailVM(api: any): CompetitionDetailVM {
+export type CompetitionRequirementDTO = {
+  id: string;
+  text: string;
+};
+
+export type CompetitionTimelineDTO = {
+  id: string;
+  title: string;
+  startDate: string;
+  endDate: string;
+};
+
+export type CompetitionDetailDTO = {
+  id: string;
+  title: string;
+  description: string | null;
+  poster: string | null;
+  level: string;
+  category: string;
+  deadline: string;
+  price: number;
+  createdAt?: string;
+  requirements: CompetitionRequirementDTO[];
+  timelines: CompetitionTimelineDTO[];
+};
+
+export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDetailVM {
   return {
     id: api.id,
     title: api.title,
@@ -20,17 +46,16 @@ export function toCompetitionDetailVM(api: any): CompetitionDetailVM {
     deadline: formatDate(api.deadline),
     price: formatRupiah(api.price),
     poster: api.poster,
-    description: api.description,
+    description: api.description || "",
 
-    requirements: api.requirements.map((r: any) => r.text),
+    requirements: api.requirements.map((r) => r.text),
 
-    timeline: api.timelines.map((t: any) => ({
+    timeline: api.timelines.map((t) => ({
       title: t.title,
       date: `${formatDate(t.startDate)} - ${formatDate(t.endDate)}`,
     })),
   };
 }
-
 /* helpers */
 function formatDate(date: string) {
   return new Date(date).toLocaleDateString("id-ID", {
