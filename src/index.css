@@ -1981,6 +1981,8 @@ body {
   transform: scale(1.08);
 }
 
+
+
 /* POSTER */
 /* .competitions-page .poster {
   position: relative;
@@ -4126,3 +4128,4 @@ input:focus, select:focus, textarea:focus {
     font-size:13px;
   }
 }
+

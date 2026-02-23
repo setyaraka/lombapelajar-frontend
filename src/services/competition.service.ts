@@ -43,6 +43,15 @@ export type CompetitionDetail = {
   }[];
 };
 
+export type CompetitionCardVM = {
+  id: string;
+  title: string;
+  level: string;
+  date: string;
+  poster: string;
+  closed: boolean;
+};
+
 export const createCompetition = async (data: CreateCompetitionPayload) => {
   const res = await api.post("/competitions", data);
   return res.data;
@@ -72,3 +81,18 @@ export const getCompetitionParticipants = async (id: string) => {
   const res = await api.get(`/competitions/${id}/participants`);
   return res.data;
 };
+
+export function toCompetitionCardVM(api: any): CompetitionCardVM {
+  return {
+    id: api.id,
+    title: api.title,
+    level: api.level,
+    date: new Date(api.deadline).toLocaleDateString("id-ID", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }),
+    poster: api.poster || "/default-competition.png",
+    closed: api.status === "closed",
+  };
+}
