@@ -39,12 +39,12 @@ export default function PaymentProofModal({ open, data, onClose, changeStatus }:
 
   if (!open || !data) return null;
 
-  const fileUrl = (path?: string) => path ? `${import.meta.env.VITE_API_URL}${path}` : "";
+  const fileUrl = (path?: string) => (path ? `${import.meta.env.VITE_API_URL}${path}` : "");
 
   const handleChangeStatus = (status: string) => {
     changeStatus(data.id, status);
     onClose();
-  }
+  };
 
   return (
     <div className="proof-modal">
@@ -70,10 +70,7 @@ export default function PaymentProofModal({ open, data, onClose, changeStatus }:
           {/* IMAGE */}
           <div className="proof-image">
             {/* <img src={data.imageUrl} alt="Bukti pembayaran" /> */}
-            <img
-              src={fileUrl(data.imageUrl)}
-              alt="Bukti Pembayaran"
-            />
+            <img src={fileUrl(data.imageUrl)} alt="Bukti Pembayaran" />
           </div>
 
           {/* INFO */}
@@ -83,8 +80,12 @@ export default function PaymentProofModal({ open, data, onClose, changeStatus }:
             <Info label="Lomba" value={data.competition} />
             {data.uploadedAt && <Info label="Upload" value={data.uploadedAt} />}
             <div className="proof-actions">
-              <button onClick={() => handleChangeStatus("VERIFIED")} className="btn approve">Terima Pembayaran</button>
-              <button onClick={() => handleChangeStatus("REJECTED")} className="btn reject">Tolak</button>
+              <button onClick={() => handleChangeStatus("VERIFIED")} className="btn approve">
+                Terima Pembayaran
+              </button>
+              <button onClick={() => handleChangeStatus("REJECTED")} className="btn reject">
+                Tolak
+              </button>
             </div>
           </div>
         </div>
