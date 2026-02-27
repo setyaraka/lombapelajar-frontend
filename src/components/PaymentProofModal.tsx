@@ -13,6 +13,7 @@ type Props = {
   open: boolean;
   data: ProofData | null;
   onClose: () => void;
+  changeStatus: CallableFunction;
 };
 
 function Info({ label, value }: { label: string; value: string }) {
@@ -24,7 +25,7 @@ function Info({ label, value }: { label: string; value: string }) {
   );
 }
 
-export default function PaymentProofModal({ open, data, onClose }: Props) {
+export default function PaymentProofModal({ open, data, onClose, changeStatus }: Props) {
   useEffect(() => {
     if (!open) return;
     const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -37,6 +38,13 @@ export default function PaymentProofModal({ open, data, onClose }: Props) {
   }, [open, onClose]);
 
   if (!open || !data) return null;
+
+  const fileUrl = (path?: string) => path ? `${import.meta.env.VITE_API_URL}${path}` : "";
+
+  const handleChangeStatus = (status: string) => {
+    changeStatus(data.id, status);
+    onClose();
+  }
 
   return (
     <div className="proof-modal">
@@ -63,8 +71,7 @@ export default function PaymentProofModal({ open, data, onClose }: Props) {
           <div className="proof-image">
             {/* <img src={data.imageUrl} alt="Bukti pembayaran" /> */}
             <img
-              src="https://www.paper.id/blog/wp-content/uploads/2025/07/contoh-kwitansi-pembayaran.png"
-              // src="https://www.telkomsel.com/sites/default/files/2024-10/Bukti_Pembayaran_Motor_Bekas.png"
+              src={fileUrl(data.imageUrl)}
               alt="Bukti Pembayaran"
             />
           </div>
@@ -76,8 +83,8 @@ export default function PaymentProofModal({ open, data, onClose }: Props) {
             <Info label="Lomba" value={data.competition} />
             {data.uploadedAt && <Info label="Upload" value={data.uploadedAt} />}
             <div className="proof-actions">
-              <button className="btn approve">Terima Pembayaran</button>
-              <button className="btn reject">Tolak</button>
+              <button onClick={() => handleChangeStatus("VERIFIED")} className="btn approve">Terima Pembayaran</button>
+              <button onClick={() => handleChangeStatus("REJECTED")} className="btn reject">Tolak</button>
             </div>
           </div>
         </div>

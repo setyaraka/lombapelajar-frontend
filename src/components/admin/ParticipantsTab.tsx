@@ -5,7 +5,7 @@ import PaymentProofModal from "../PaymentProofModal";
 import type { ProofData } from "../PaymentProofModal";
 import { getParticipants, updateParticipantStatus } from "../../services/participant.service";
 
-type Status = "pending" | "approved" | "rejected";
+type Status = "PENDING" | "VERIFIED" | "REJECTED";
 
 type Participant = {
   id: string;
@@ -69,7 +69,12 @@ export default function ParticipantsTab() {
 
   return (
     <>
-      <PaymentProofModal open={open} data={proof} onClose={() => setOpen(false)} />
+      <PaymentProofModal
+        open={open}
+        data={proof}
+        onClose={() => setOpen(false)}
+        changeStatus={changeStatus}
+      />
 
       <div className="admin-page">
         <div className="container">
@@ -120,9 +125,9 @@ export default function ParticipantsTab() {
                 }}
               >
                 <option value="">Semua Status</option>
-                <option value="pending">Menunggu</option>
-                <option value="approved">Diterima</option>
-                <option value="rejected">Ditolak</option>
+                <option value="PENDING">Menunggu</option>
+                <option value="VERIFIED">Diterima</option>
+                <option value="REJECTED">Ditolak</option>
               </select>
             </div>
           </div>
@@ -192,9 +197,9 @@ export default function ParticipantsTab() {
                         {/* ===== STATUS ===== */}
                         <td>
                           <span className={badgeClass(p.status)}>
-                            {p.status === "pending" && "Menunggu"}
-                            {p.status === "approved" && "Diterima"}
-                            {p.status === "rejected" && "Ditolak"}
+                            {p.status === "PENDING" && "Menunggu"}
+                            {p.status === "VERIFIED" && "Diterima"}
+                            {p.status === "REJECTED" && "Ditolak"}
                           </span>
                         </td>
 
@@ -204,7 +209,7 @@ export default function ParticipantsTab() {
                             className="btn approve"
                             disabled={!paymentUploaded}
                             title={!paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""}
-                            onClick={() => changeStatus(p.id, "approved")}
+                            onClick={() => changeStatus(p.id, "VERIFIED")}
                           >
                             Terima
                           </button>
@@ -213,7 +218,7 @@ export default function ParticipantsTab() {
                             className="btn reject"
                             disabled={!paymentUploaded}
                             title={!paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""}
-                            onClick={() => changeStatus(p.id, "rejected")}
+                            onClick={() => changeStatus(p.id, "REJECTED")}
                           >
                             Tolak
                           </button>
