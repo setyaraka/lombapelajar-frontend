@@ -49,7 +49,6 @@ export default function RegisterCompetition() {
   const updateForm = (data: Partial<RegisterForm>) => setForm((prev) => ({ ...prev, ...data }));
 
   // LOAD COMPETITION DETAIL
-  console.log(id, ">>>> ID");
   useEffect(() => {
     if (!id) return;
 
