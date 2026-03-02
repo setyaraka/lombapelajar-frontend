@@ -74,7 +74,6 @@ export default function RegisterCompetition() {
     load();
   }, [id, navigate]);
 
-  console.log(competition, ">>>>");
   // SUBMIT FLOW
   const submit = async () => {
     if (!id || !competition) return;
