@@ -6,8 +6,9 @@ import PaymentForm from "../components/PaymentForm";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { createRegistration } from "../services/registration.service";
-import { uploadPaymentProof } from "../services/payment.service";
 import { getCompetition } from "../services/competition.service";
+import api from "../api/axios";
+import { getErrorMessage } from "../helper/errorHandler";
 
 export type RegisterForm = {
   name: string;
@@ -73,33 +74,40 @@ export default function RegisterCompetition() {
     load();
   }, [id, navigate]);
 
-  // SUBMIT FLOW
   const submit = async () => {
-    if (!id || !competition) return;
-
-    if (!form.paymentProof) {
-      alert("Silakan upload bukti pembayaran terlebih dahulu");
-      return;
-    }
+    if (!id || !competition || !form.paymentProof) return;
 
     try {
       setLoading(true);
 
-      // STEP 1 — create registration
-      const reg = await createRegistration(id, {
+      const { uploadUrl, fileUrl, fileKey } = await api
+        .post("/payments/upload-url", {
+          fileType: form.paymentProof.type,
+        })
+        .then((res) => res.data);
+
+      await fetch(uploadUrl, {
+        method: "PUT",
+        headers: {
+          "Content-Type": form.paymentProof.type,
+        },
+        body: form.paymentProof,
+      });
+
+      await createRegistration(id, {
         nisn: form.nisn,
         school: form.school,
         phone: form.whatsapp,
         address: form.address,
+        fileUrl,
+        fileKey,
       });
-
-      // STEP 2 — upload payment proof
-      await uploadPaymentProof(reg.id, form.paymentProof);
 
       alert("Pendaftaran berhasil!");
       navigate("/list");
-    } catch {
-      alert("Terjadi kesalahan saat mengirim pendaftaran");
+    } catch (err) {
+      const error = getErrorMessage(err);
+      alert(error);
     } finally {
       setLoading(false);
     }
