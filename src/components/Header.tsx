@@ -19,7 +19,7 @@ export default function Header() {
       <div className="app-header-inner">
         {/* LOGO */}
         <h1 className="logo" onClick={() => go("/list")}>
-          LombaPelajar.id
+          Maestro.id
         </h1>
 
         {/* NAVIGATION */}
