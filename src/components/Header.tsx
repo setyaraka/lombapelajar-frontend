@@ -33,14 +33,14 @@ export default function Header() {
               Pendaftaran Saya
             </button> */}
 
-            {user.role === "ADMIN" && (
+            {/* {user.role === "ADMIN" && (
               <button
                 className={isActive("/admin/participants") ? "active" : ""}
                 onClick={() => go("/admin/participants")}
               >
                 Admin
               </button>
-            )}
+            )} */}
           </nav>
         )}
 

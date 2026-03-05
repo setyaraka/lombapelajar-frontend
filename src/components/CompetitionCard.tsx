@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../auth/useAuth";
 
 type Props = {
   id: string;
@@ -7,17 +8,23 @@ type Props = {
   date: string;
   poster?: string | null;
   submitted?: boolean;
+  onEdit?: () => void;
 };
 
-export default function CompetitionCard({ id, title, level, date, poster, submitted }: Props) {
+export default function CompetitionCard({
+  id,
+  title,
+  level,
+  date,
+  poster,
+  submitted,
+  onEdit,
+}: Props) {
   const navigate = useNavigate();
-
-  const openDetail = () => {
-    navigate(`/competition/${id}`);
-  };
-
+  const { user } = useAuth();
   const defaultPoster = "/default-poster.png";
 
+  const openDetail = () => navigate(`/competition/${id}`);
   const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
     e.currentTarget.src = defaultPoster;
   };
@@ -39,6 +46,12 @@ export default function CompetitionCard({ id, title, level, date, poster, submit
         <button className="btn" onClick={openDetail}>
           Lihat Detail
         </button>
+
+        {onEdit && user?.role === "ADMIN" && (
+          <button className="btn secondary" onClick={onEdit}>
+            Edit
+          </button>
+        )}
       </div>
     </div>
   );
