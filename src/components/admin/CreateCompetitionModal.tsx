@@ -35,6 +35,19 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const addTimeline = () => setTimeline([...timeline, { title: "", startDate: "", endDate: "" }]);
   const removeTimeline = (i: number) => setTimeline(timeline.filter((_, idx) => idx !== i));
 
+  const formatRupiah = (value: string) => {
+    if (!value) return "";
+
+    return new Intl.NumberFormat("id-ID", {
+      minimumFractionDigits: 0,
+    }).format(Number(value));
+  };
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const raw = e.target.value.replace(/\./g, "");
+    setPrice(raw);
+  };
+
   const resetForm = useCallback(() => {
     setTitle("");
     setCategory("");
@@ -145,7 +158,25 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   return (
     <div className="modal-overlay">
       <div className="modal large">
-        <h2>{competitionId ? "Edit Lomba" : "Tambah Lomba"}</h2>
+        {/* <h2>{competitionId ? "Edit Lomba" : "Tambah Lomba"}</h2> */}
+        <div
+          className="modal-header"
+          style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        >
+          <h2>{competitionId ? "Edit Lomba" : "Tambah Lomba"}</h2>
+          <button
+            onClick={handleClose}
+            style={{
+              background: "transparent",
+              border: "none",
+              fontSize: "1.2rem",
+              cursor: "pointer",
+            }}
+            aria-label="Close modal"
+          >
+            ✕
+          </button>
+        </div>
 
         <div className="form-grid">
           <input
@@ -171,8 +202,8 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
           <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
           <input
             placeholder="Harga (Rp)"
-            value={price}
-            onChange={(e) => setPrice(e.target.value)}
+            value={formatRupiah(price)}
+            onChange={handlePriceChange}
           />
           <input
             placeholder="URL Poster"
