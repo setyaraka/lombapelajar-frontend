@@ -22,13 +22,14 @@ export default function Login() {
     try {
       setLoading(true);
 
-      const loggedInUser = await login(email, password);
+      await login(email, password);
+      navigate("/list")
 
-      if (loggedInUser.role === "ADMIN") {
-        navigate("/admin/participants");
-      } else {
-        navigate("/list");
-      }
+      // if (loggedInUser.role === "ADMIN") {
+      //   navigate("/admin/participants");
+      // } else {
+      //   navigate("/list");
+      // }
     } catch {
       alert("Email atau password salah");
     } finally {
