@@ -5,7 +5,6 @@ export type CreateRegistrationPayload = {
   school: string;
   nisn: string;
   address: string;
-  fileUrl: string;
   fileKey: string;
 };
 

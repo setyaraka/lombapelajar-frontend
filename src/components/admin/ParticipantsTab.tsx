@@ -161,8 +161,8 @@ export default function ParticipantsTab() {
                   </tr>
                 ) : (
                   participants.map((p) => {
+                    const imageUrl = `${import.meta.env.VITE_API_URL}/files/${p.proofUrl}`
                     const paymentUploaded = p.proofUrl ? true : false;
-                    console.log(paymentUploaded, ">>>", p);
 
                     return (
                       <tr key={p.id}>
@@ -172,7 +172,7 @@ export default function ParticipantsTab() {
 
                         {/* ===== BUKTI ===== */}
                         <td>
-                          {p.proofUrl ? (
+                          {imageUrl ? (
                             <button
                               className="btn view"
                               onClick={() => {
@@ -181,7 +181,7 @@ export default function ParticipantsTab() {
                                   name: p.name,
                                   school: p.school,
                                   competition: p.competition,
-                                  imageUrl: p.proofUrl!,
+                                  imageUrl: imageUrl,
                                   uploadedAt: new Date(p.uploadedAt!).toLocaleString("id-ID"),
                                 });
                                 setOpen(true);
