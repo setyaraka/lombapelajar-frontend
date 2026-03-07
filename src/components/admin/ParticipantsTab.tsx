@@ -161,7 +161,7 @@ export default function ParticipantsTab() {
                   </tr>
                 ) : (
                   participants.map((p) => {
-                    const imageUrl = `${import.meta.env.VITE_API_URL}/files/${p.proofUrl}`
+                    const imageUrl = `${import.meta.env.VITE_API_URL}/files/${p.proofUrl}`;
                     const paymentUploaded = p.proofUrl ? true : false;
 
                     return (

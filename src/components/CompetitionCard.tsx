@@ -25,14 +25,16 @@ export default function CompetitionCard({
   const defaultPoster = "/default-poster.png";
 
   const openDetail = () => navigate(`/competition/${id}`);
-  const handleImgError = (e: React.SyntheticEvent<HTMLImageElement>) => {
-    e.currentTarget.src = defaultPoster;
-  };
 
   return (
     <div className="card">
       <div className="poster">
-        <img src={poster || defaultPoster} alt={title} loading="lazy" onError={handleImgError} />
+        <img
+          src={poster ? `${import.meta.env.VITE_API_URL}/files/${poster}` : defaultPoster}
+          alt={title}
+          loading="lazy"
+          onError={(e) => (e.currentTarget.src = defaultPoster)}
+        />
       </div>
 
       <div className="content">
