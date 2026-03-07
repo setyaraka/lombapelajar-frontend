@@ -18,7 +18,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const [level, setLevel] = useState("");
   const [deadline, setDeadline] = useState("");
   const [price, setPrice] = useState("");
-  const [poster, setPoster] = useState("");
+  const [poster, setPoster] = useState<File | null>(null);
   const [description, setDescription] = useState("");
 
   const [requirements, setRequirements] = useState<string[]>([""]);
@@ -54,7 +54,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     setLevel("");
     setDeadline("");
     setPrice("");
-    setPoster("");
+    setPoster(null);
     setDescription("");
 
     setBankName("");
@@ -66,29 +66,32 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   }, []);
 
   const submit = async () => {
-    const payload = {
-      title,
-      category,
-      level,
-      deadline,
-      price,
-      poster,
-      description,
+    const formData = new FormData();
 
-      bankName,
-      bankNumber,
-      bankHolder,
+    formData.append("title", title);
+    formData.append("category", category);
+    formData.append("level", level);
+    formData.append("deadline", deadline);
+    formData.append("price", price);
+    formData.append("description", description);
 
-      requirements: requirements.filter((r) => r.trim() !== ""),
-      timeline: timeline.filter((t) => t.title && t.startDate && t.endDate),
-    };
+    formData.append("bankName", bankName);
+    formData.append("bankNumber", bankNumber);
+    formData.append("bankHolder", bankHolder);
+
+    if (poster) {
+      formData.append("poster", poster);
+    }
+
+    formData.append("requirements", JSON.stringify(requirements));
+    formData.append("timeline", JSON.stringify(timeline));
 
     try {
       if (competitionId) {
-        await updateCompetition(competitionId, payload);
+        await updateCompetition(competitionId, formData);
         alert("Lomba berhasil diupdate!");
       } else {
-        await createCompetition(payload);
+        await createCompetition(formData);
         alert("Lomba berhasil dibuat!");
       }
 
@@ -116,7 +119,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       setLevel(data.level);
       setDeadline(data.deadline.slice(0, 10));
       setPrice(String(data.price));
-      setPoster(data.poster || "");
+      setPoster(null);
       setDescription(data.description || "");
 
       setRequirements(data.requirements?.map((r) => r.text) || [""]);
@@ -158,7 +161,6 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   return (
     <div className="modal-overlay">
       <div className="modal large">
-        {/* <h2>{competitionId ? "Edit Lomba" : "Tambah Lomba"}</h2> */}
         <div
           className="modal-header"
           style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}
@@ -206,10 +208,14 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
             onChange={handlePriceChange}
           />
           <input
-            placeholder="URL Poster"
-            value={poster}
-            onChange={(e) => setPoster(e.target.value)}
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) setPoster(file);
+            }}
           />
+          {poster && <><img src={URL.createObjectURL(poster)} style={{ width: 500 }} /><br/></>}
           <input
             placeholder="Nama Bank (contoh: BCA)"
             value={bankName}

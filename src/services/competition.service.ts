@@ -6,7 +6,7 @@ export type CreateCompetitionPayload = {
   level: string;
   deadline: string;
   price: string;
-  poster?: string;
+  poster?: File | null;
   description: string;
   requirements: string[];
   timeline: { title: string; startDate: string; endDate: string }[];
@@ -48,11 +48,6 @@ export type CompetitionDetail = {
   bankHolder: string;
 };
 
-export const createCompetition = async (data: CreateCompetitionPayload) => {
-  const res = await api.post("/competitions", data);
-  return res.data;
-};
-
 export const getCompetitions = async (params: CompetitionQuery) => {
   const res = await api.get("/competitions", { params });
   return res.data;
@@ -63,8 +58,23 @@ export const getCompetition = async (id: string): Promise<CompetitionDetail> => 
   return res.data;
 };
 
-export const updateCompetition = async (id: string, data: CreateCompetitionPayload) => {
-  const res = await api.put(`/competitions/${id}`, data);
+export const createCompetition = async (data: FormData) => {
+  const res = await api.post("/competitions", data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return res.data;
+};
+
+export const updateCompetition = async (id: string, data: FormData) => {
+  const res = await api.put(`/competitions/${id}`, data, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
   return res.data;
 };
 
