@@ -22,14 +22,13 @@ export default function Login() {
     try {
       setLoading(true);
 
-      await login(email, password);
-      navigate("/list")
+      const loggedInUser = await login(email, password);
 
-      // if (loggedInUser.role === "ADMIN") {
-      //   navigate("/admin/participants");
-      // } else {
-      //   navigate("/list");
-      // }
+      if (loggedInUser.role === "ADMIN") {
+        navigate("/admin/participants");
+      } else {
+        navigate("/list");
+      }
     } catch {
       alert("Email atau password salah");
     } finally {
@@ -41,7 +40,7 @@ export default function Login() {
     <div className="login-page">
       <div className="container">
         <div className="logo">
-          <h1>Platform Lomba</h1>
+          <h1>Maestro</h1>
         </div>
 
         <div className="subtitle">Silakan login untuk melanjutkan</div>

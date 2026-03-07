@@ -80,7 +80,7 @@ export default function RegisterCompetition() {
     try {
       setLoading(true);
 
-      const { uploadUrl, fileUrl, fileKey } = await api
+      const { uploadUrl, fileKey } = await api
         .post("/payments/upload-url", {
           fileType: form.paymentProof.type,
         })
@@ -99,7 +99,6 @@ export default function RegisterCompetition() {
         school: form.school,
         phone: form.whatsapp,
         address: form.address,
-        fileUrl,
         fileKey,
       });
 

@@ -39,8 +39,6 @@ export default function PaymentProofModal({ open, data, onClose, changeStatus }:
 
   if (!open || !data) return null;
 
-  const fileUrl = (path?: string) => (path ? `${import.meta.env.VITE_API_URL}${path}` : "");
-
   const handleChangeStatus = (status: string) => {
     changeStatus(data.id, status);
     onClose();
@@ -69,8 +67,7 @@ export default function PaymentProofModal({ open, data, onClose, changeStatus }:
         <div className="proof-body">
           {/* IMAGE */}
           <div className="proof-image">
-            {/* <img src={data.imageUrl} alt="Bukti pembayaran" /> */}
-            <img src={fileUrl(data.imageUrl)} alt="Bukti Pembayaran" />
+            <img src={data.imageUrl} alt="Bukti Pembayaran" />
           </div>
 
           {/* INFO */}
