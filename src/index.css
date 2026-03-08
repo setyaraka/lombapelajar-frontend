@@ -4206,3 +4206,12 @@ input:focus, select:focus, textarea:focus {
 .mine-toggle:hover input{
   box-shadow:0 0 0 3px rgba(124,92,244,.15);
 }
+
+.proof-image-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 300px;
+  font-size: 14px;
+  color: #888;
+}

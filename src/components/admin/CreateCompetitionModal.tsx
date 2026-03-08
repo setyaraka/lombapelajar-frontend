@@ -215,7 +215,12 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               if (file) setPoster(file);
             }}
           />
-          {poster && <><img src={URL.createObjectURL(poster)} style={{ width: 500 }} /><br/></>}
+          {poster && (
+            <>
+              <img src={URL.createObjectURL(poster)} style={{ width: 500 }} />
+              <br />
+            </>
+          )}
           <input
             placeholder="Nama Bank (contoh: BCA)"
             value={bankName}

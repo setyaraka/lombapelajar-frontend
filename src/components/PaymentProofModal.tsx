@@ -1,4 +1,6 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+
+type Status = "PENDING" | "VERIFIED" | "REJECTED";
 
 export type ProofData = {
   id: string;
@@ -7,6 +9,7 @@ export type ProofData = {
   competition: string;
   imageUrl: string;
   uploadedAt?: string;
+  status: Status;
 };
 
 type Props = {
@@ -26,11 +29,15 @@ function Info({ label, value }: { label: string; value: string }) {
 }
 
 export default function PaymentProofModal({ open, data, onClose, changeStatus }: Props) {
+  const [imageLoading, setImageLoading] = useState(true);
+
   useEffect(() => {
     if (!open) return;
+
     const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
     window.addEventListener("keydown", esc);
     document.body.style.overflow = "hidden";
+
     return () => {
       window.removeEventListener("keydown", esc);
       document.body.style.overflow = "auto";
@@ -67,7 +74,16 @@ export default function PaymentProofModal({ open, data, onClose, changeStatus }:
         <div className="proof-body">
           {/* IMAGE */}
           <div className="proof-image">
-            <img src={data.imageUrl} alt="Bukti Pembayaran" />
+            {imageLoading && <div className="proof-image-loading">Loading image...</div>}
+
+            <img
+              src={data.imageUrl}
+              alt="Bukti Pembayaran"
+              onLoadStart={() => setImageLoading(true)}
+              onLoad={() => setImageLoading(false)}
+              onError={() => setImageLoading(false)}
+              style={{ display: imageLoading ? "none" : "block" }}
+            />
           </div>
 
           {/* INFO */}
@@ -76,14 +92,20 @@ export default function PaymentProofModal({ open, data, onClose, changeStatus }:
             <Info label="Sekolah" value={data.school} />
             <Info label="Lomba" value={data.competition} />
             {data.uploadedAt && <Info label="Upload" value={data.uploadedAt} />}
-            <div className="proof-actions">
-              <button onClick={() => handleChangeStatus("VERIFIED")} className="btn approve">
-                Terima Pembayaran
-              </button>
-              <button onClick={() => handleChangeStatus("REJECTED")} className="btn reject">
-                Tolak
-              </button>
-            </div>
+
+            {data.status === "PENDING" ? (
+              <div className="proof-actions">
+                <button onClick={() => handleChangeStatus("VERIFIED")} className="btn approve">
+                  Terima Pembayaran
+                </button>
+
+                <button onClick={() => handleChangeStatus("REJECTED")} className="btn reject">
+                  Tolak
+                </button>
+              </div>
+            ) : (
+              <div></div>
+            )}
           </div>
         </div>
       </div>

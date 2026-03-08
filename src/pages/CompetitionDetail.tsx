@@ -18,9 +18,10 @@ export default function CompetitionDetail() {
   const [imgError, setImgError] = useState(false);
 
   const defaultPoster = "/default-poster.png";
-  const safePoster = competition?.poster && !imgError 
-    ? `${import.meta.env.VITE_API_URL}/files/${competition.poster}` 
-    : defaultPoster;
+  const safePoster =
+    competition?.poster && !imgError
+      ? `${import.meta.env.VITE_API_URL}/files/${competition.poster}`
+      : defaultPoster;
 
   useEffect(() => {
     const load = async () => {

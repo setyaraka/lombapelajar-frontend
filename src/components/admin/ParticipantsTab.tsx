@@ -183,6 +183,7 @@ export default function ParticipantsTab() {
                                   competition: p.competition,
                                   imageUrl: imageUrl,
                                   uploadedAt: new Date(p.uploadedAt!).toLocaleString("id-ID"),
+                                  status: p.status,
                                 });
                                 setOpen(true);
                               }}
@@ -204,25 +205,33 @@ export default function ParticipantsTab() {
                         </td>
 
                         {/* ===== ACTION ===== */}
-                        <td className="actions">
-                          <button
-                            className="btn approve"
-                            disabled={!paymentUploaded}
-                            title={!paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""}
-                            onClick={() => changeStatus(p.id, "VERIFIED")}
-                          >
-                            Terima
-                          </button>
+                        {p.status === "PENDING" ? (
+                          <td className="actions">
+                            <button
+                              className="btn approve"
+                              disabled={!paymentUploaded}
+                              title={
+                                !paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""
+                              }
+                              onClick={() => changeStatus(p.id, "VERIFIED")}
+                            >
+                              Terima
+                            </button>
 
-                          <button
-                            className="btn reject"
-                            disabled={!paymentUploaded}
-                            title={!paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""}
-                            onClick={() => changeStatus(p.id, "REJECTED")}
-                          >
-                            Tolak
-                          </button>
-                        </td>
+                            <button
+                              className="btn reject"
+                              disabled={!paymentUploaded}
+                              title={
+                                !paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""
+                              }
+                              onClick={() => changeStatus(p.id, "REJECTED")}
+                            >
+                              Tolak
+                            </button>
+                          </td>
+                        ) : (
+                          <td></td>
+                        )}
                       </tr>
                     );
                   })
