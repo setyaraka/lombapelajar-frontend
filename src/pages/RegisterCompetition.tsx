@@ -97,7 +97,7 @@ export default function RegisterCompetition() {
       await createRegistration(id, {
         nisn: form.nisn,
         school: form.school,
-        phone: form.whatsapp,
+        phone: `+62${form.whatsapp}`,
         address: form.address,
         fileKey,
       });

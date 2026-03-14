@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import api from "../api/axios";
-import type { User, LoginResponse, MeResponse } from "../api/types";
+import type { User, LoginResponse } from "../api/types";
 import { AuthContext } from "./auth-context";
 
 export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
@@ -19,8 +19,8 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
       }
 
       try {
-        const res = await api.get<MeResponse>("/auth/me");
-        if (mounted) setUser(res.data.user);
+        const res = await api.get<User>("/auth/me");
+        if (mounted) setUser(res.data);
       } catch {
         localStorage.removeItem("token");
       } finally {

@@ -4215,3 +4215,39 @@ input:focus, select:focus, textarea:focus {
   font-size: 14px;
   color: #888;
 }
+
+.phone-input {
+  display: flex;
+  align-items: center;
+  width: 100%; /* agar mengikuti lebar parent */
+}
+
+.phone-input .prefix {
+  padding: 8px 12px;
+  background: #f3f3f3;
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 6px 0 0 6px;
+  display: flex;
+  align-items: center;
+  font-size: 14px;
+  box-sizing: border-box;
+  margin-top: 6px;
+}
+
+.phone-input input {
+  flex: 1;
+  padding: 10px 12px; /* samakan dengan prefix supaya teks sejajar */
+  border: 1px solid #ccc;
+  border-left: none; /* hilangkan border kiri supaya nyambung ke prefix */
+  border-radius: 0 6px 6px 0; /* membulat di kanan atas dan kanan bawah */
+  outline: none;
+  box-sizing: border-box;
+}
+
+.phone-input .prefix,
+.phone-input input {
+  height: 42px; /* sesuaikan dengan tinggi yang diinginkan */
+  display: flex;
+  align-items: center; /* supaya teks tetap vertical center */
+}

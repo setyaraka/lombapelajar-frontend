@@ -56,13 +56,26 @@ export default function ParticipantForm({
       {errors.school && <div className="field-error">{errors.school}</div>}
 
       <label>No. WhatsApp</label>
-      <input
-        className={errors.whatsapp ? "input-error" : ""}
-        type="tel"
-        placeholder="08xxxxxxxxxx (aktif untuk konfirmasi lomba)"
-        value={form.whatsapp}
-        onChange={(e) => updateForm({ whatsapp: e.target.value })}
-      />
+
+      <div className="phone-input">
+        <span className="prefix">+62</span>
+
+        <input
+          className={`${errors.whatsapp ? "input-error" : ""} phone-input`}
+          type="text"
+          inputMode="numeric"
+          placeholder="81234567890"
+          value={form.whatsapp}
+          maxLength={13}
+          minLength={9}
+          onChange={(e) =>
+            updateForm({
+              whatsapp: e.target.value.replace(/\D/g, ""),
+            })
+          }
+        />
+      </div>
+
       {errors.whatsapp && <div className="field-error">{errors.whatsapp}</div>}
 
       <label>Alamat</label>
