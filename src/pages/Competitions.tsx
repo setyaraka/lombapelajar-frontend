@@ -8,11 +8,8 @@ import { useEffect, useState } from "react";
 import { getCompetitions } from "../services/competition.service";
 import { toCompetitionCardVM, type CompetitionCardVM } from "../mapper/competition.mapper";
 import CreateCompetitionModal from "../components/admin/CreateCompetitionModal";
-import { useAuth } from "../auth/useAuth";
 
 export default function Competitions() {
-  const { user } = useAuth();
-
   const [competitions, setCompetitions] = useState<CompetitionCardVM[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -82,12 +79,6 @@ export default function Competitions() {
           <h1>Temukan & Ikuti Kompetisi Terbaikmu</h1>
           <p>Raih prestasi dan bangun portofolio sejak sekarang</p>
         </section>
-
-        {user?.role === "ADMIN" && (
-          <button className="btn primary" onClick={() => setModalOpen(true)}>
-            + Tambah Lomba
-          </button>
-        )}
 
         <div className="title-row">
           <div className="title">Pilih Lomba</div>
