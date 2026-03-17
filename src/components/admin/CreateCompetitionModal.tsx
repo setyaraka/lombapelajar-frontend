@@ -180,129 +180,141 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
           </button>
         </div>
 
-        <div className="form-grid">
-          <input
-            placeholder="Nama Lomba"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+        <div className="modal-body">
+          <div className="form-grid">
+            <input
+              placeholder="Nama Lomba"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value="">Kategori</option>
+              <option value="akademi">Akademik</option>
+              <option value="bahasa">Bahasa</option>
+              <option value="sains">Sains</option>
+            </select>
+
+            <select value={level} onChange={(e) => setLevel(e.target.value)}>
+              <option value="">Jenjang</option>
+              <option value="sd">SD</option>
+              <option value="smp">SMP</option>
+              <option value="sma">SMA</option>
+            </select>
+
+            <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+            <input
+              placeholder="Harga (Rp)"
+              value={formatRupiah(price)}
+              onChange={handlePriceChange}
+            />
+            <input
+              type="file"
+              accept="image/*"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) setPoster(file);
+              }}
+            />
+            {poster && (
+              <>
+                <img src={URL.createObjectURL(poster)} style={{ width: 500 }} />
+                <br />
+              </>
+            )}
+            <input
+              placeholder="Nama Bank (contoh: BCA)"
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              className="full"
+            />
+
+            <input
+              placeholder="Nomor Rekening"
+              value={bankNumber}
+              onChange={(e) => setBankNumber(e.target.value)}
+            />
+
+            <input
+              placeholder="Atas Nama Rekening"
+              value={bankHolder}
+              onChange={(e) => setBankHolder(e.target.value)}
+            />
+          </div>
+
+          <textarea
+            placeholder="Deskripsi lomba..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="full"
           />
 
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">Kategori</option>
-            <option value="akademi">Akademik</option>
-            <option value="bahasa">Bahasa</option>
-            <option value="sains">Sains</option>
-          </select>
+          <div className="section-title">Persyaratan</div>
+          {requirements.map((r, i) => (
+            <div key={i} className="dynamic-row">
+              <input
+                value={r}
+                onChange={(e) => {
+                  const copy = [...requirements];
+                  copy[i] = e.target.value;
+                  setRequirements(copy);
+                }}
+              />
+              <button onClick={() => removeRequirement(i)}>✕</button>
+            </div>
+          ))}
+          <div className="add-row">
+            <button className="btn-add" onClick={addRequirement}>
+              + Tambah Syarat
+            </button>
+          </div>
 
-          <select value={level} onChange={(e) => setLevel(e.target.value)}>
-            <option value="">Jenjang</option>
-            <option value="sd">SD</option>
-            <option value="smp">SMP</option>
-            <option value="sma">SMA</option>
-          </select>
+          {/* TIMELINE STEPPER */}
+          <div className="section-title">Timeline</div>
+          {timeline.map((t, i) => (
+            <div key={i} className="dynamic-row">
+              <input
+                placeholder="Nama Tahap"
+                value={t.title}
+                onChange={(e) => {
+                  const copy = [...timeline];
+                  copy[i].title = e.target.value;
+                  setTimeline(copy);
+                }}
+              />
 
-          <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
-          <input
-            placeholder="Harga (Rp)"
-            value={formatRupiah(price)}
-            onChange={handlePriceChange}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) setPoster(file);
-            }}
-          />
-          {poster && (
-            <>
-              <img src={URL.createObjectURL(poster)} style={{ width: 500 }} />
-              <br />
-            </>
-          )}
-          <input
-            placeholder="Nama Bank (contoh: BCA)"
-            value={bankName}
-            onChange={(e) => setBankName(e.target.value)}
-          />
+              <input
+                type="date"
+                value={t.startDate}
+                onChange={(e) => {
+                  const copy = [...timeline];
+                  copy[i].startDate = e.target.value;
+                  setTimeline(copy);
+                }}
+              />
 
-          <input
-            placeholder="Nomor Rekening"
-            value={bankNumber}
-            onChange={(e) => setBankNumber(e.target.value)}
-          />
+              <input
+                type="date"
+                value={t.endDate}
+                onChange={(e) => {
+                  const copy = [...timeline];
+                  copy[i].endDate = e.target.value;
+                  setTimeline(copy);
+                }}
+              />
 
-          <input
-            placeholder="Atas Nama Rekening"
-            value={bankHolder}
-            onChange={(e) => setBankHolder(e.target.value)}
-          />
+              <button onClick={() => removeTimeline(i)}>✕</button>
+            </div>
+          ))}
+          <div className="add-row">
+            <button className="btn-add" onClick={addTimeline}>
+              + Tambah Tahap
+            </button>
+          </div>
         </div>
 
-        <textarea
-          placeholder="Deskripsi lomba..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-
-        <h3>Persyaratan</h3>
-        {requirements.map((r, i) => (
-          <div key={i} className="dynamic-row">
-            <input
-              value={r}
-              onChange={(e) => {
-                const copy = [...requirements];
-                copy[i] = e.target.value;
-                setRequirements(copy);
-              }}
-            />
-            <button onClick={() => removeRequirement(i)}>✕</button>
-          </div>
-        ))}
-        <button onClick={addRequirement}>+ Tambah Syarat</button>
-
-        {/* TIMELINE STEPPER */}
-        <h3>Timeline</h3>
-        {timeline.map((t, i) => (
-          <div key={i} className="dynamic-row">
-            <input
-              placeholder="Nama Tahap"
-              value={t.title}
-              onChange={(e) => {
-                const copy = [...timeline];
-                copy[i].title = e.target.value;
-                setTimeline(copy);
-              }}
-            />
-
-            <input
-              type="date"
-              value={t.startDate}
-              onChange={(e) => {
-                const copy = [...timeline];
-                copy[i].startDate = e.target.value;
-                setTimeline(copy);
-              }}
-            />
-
-            <input
-              type="date"
-              value={t.endDate}
-              onChange={(e) => {
-                const copy = [...timeline];
-                copy[i].endDate = e.target.value;
-                setTimeline(copy);
-              }}
-            />
-
-            <button onClick={() => removeTimeline(i)}>✕</button>
-          </div>
-        ))}
-        <button onClick={addTimeline}>+ Tambah Tahap</button>
-
         <div className="modal-actions">
-          <button className="btn" onClick={handleClose}>
+          <button className="btn secondary" onClick={handleClose}>
             Batal
           </button>
           <button className="btn primary" onClick={submit}>

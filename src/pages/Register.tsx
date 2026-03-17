@@ -24,19 +24,21 @@ export default function Register() {
     password_confirmation: "",
   });
 
-  const [error, setError] = useState<string>("");
-  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    setForm((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (form.password !== form.password_confirmation) {
-      setError("Password tidak sama!");
-      window.scrollTo({ top: 0, behavior: "smooth" });
+      setError("Password tidak sama");
       return;
     }
 
@@ -57,97 +59,100 @@ export default function Register() {
         school: form.school,
       });
 
-      alert("Register berhasil, silakan login");
       navigate("/login");
     } catch {
-      setError("Register gagal");
+      setError("Register gagal, coba lagi");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="register-page">
-      <div className="container">
-        <div className="logo">
-          <h1>Daftar Peserta</h1>
-        </div>
+    <div className="auth-page">
+      <div className="auth-card">
+        <img src="/logo.png" alt="logo" />
 
-        <div className="subtitle">Isi data diri untuk membuat akun</div>
+        <h2 className="auth-title">Daftar Akun</h2>
+        <p className="auth-subtitle">Isi data diri untuk membuat akun</p>
 
-        <form onSubmit={handleSubmit}>
-          <label>Nama Lengkap</label>
-          <input
-            name="nama"
-            placeholder="Contoh: Budi Santoso"
-            value={form.nama}
-            onChange={handleChange}
-            autoComplete="name"
-            required
-          />
+        <form onSubmit={handleSubmit} className="auth-form">
+          <div className="form-group">
+            <label>Nama Lengkap</label>
+            <input
+              name="nama"
+              placeholder="Budi Santoso"
+              value={form.nama}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label>Tanggal Lahir</label>
-          <input
-            type="date"
-            name="birthDate"
-            value={form.birthDate}
-            onChange={handleChange}
-            autoComplete="bday"
-            required
-          />
+          <div className="form-group">
+            <label>Tanggal Lahir</label>
+            <input
+              type="date"
+              name="birthDate"
+              value={form.birthDate}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label>Sekolah / Instansi</label>
-          <input
-            name="school"
-            placeholder="Nama sekolah / kampus"
-            value={form.school}
-            onChange={handleChange}
-            autoComplete="organization"
-            required
-          />
+          <div className="form-group">
+            <label>Sekolah / Instansi</label>
+            <input
+              name="school"
+              placeholder="Nama sekolah / kampus"
+              value={form.school}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label>Email</label>
-          <input
-            type="email"
-            name="email"
-            inputMode="email"
-            autoComplete="email"
-            placeholder="email@gmail.com"
-            value={form.email}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-group">
+            <label>Email</label>
+            <input
+              type="email"
+              name="email"
+              placeholder="email@gmail.com"
+              value={form.email}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label>Password</label>
-          <input
-            type="password"
-            name="password"
-            autoComplete="new-password"
-            placeholder="Minimal 8 karakter"
-            value={form.password}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-group">
+            <label>Password</label>
+            <input
+              type="password"
+              name="password"
+              placeholder="Minimal 8 karakter"
+              value={form.password}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          <label>Konfirmasi Password</label>
-          <input
-            type="password"
-            name="password_confirmation"
-            autoComplete="new-password"
-            placeholder="Ulangi password"
-            value={form.password_confirmation}
-            onChange={handleChange}
-            required
-          />
+          <div className="form-group">
+            <label>Konfirmasi Password</label>
+            <input
+              type="password"
+              name="password_confirmation"
+              placeholder="Ulangi password"
+              value={form.password_confirmation}
+              onChange={handleChange}
+              required
+            />
+          </div>
 
-          {error && <p className="error">{error}</p>}
+          {error && <p className="form-error">{error}</p>}
 
-          <LoadingButton loading={loading} loadingText="Memuat...">
-            Masuk
+          <LoadingButton loading={loading} loadingText="Mendaftarkan...">
+            Daftar
           </LoadingButton>
         </form>
 
-        <div className="footer">
+        <div className="auth-footer">
           Sudah punya akun? <a href="/login">Login</a>
         </div>
       </div>
