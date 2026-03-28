@@ -33,9 +33,9 @@ body {
 
 /* ================= GLOBAL ================= */
 .container {
-  max-width: 1100px;
-  margin: auto;
-  padding: 20px;
+  max-width: 900px;
+  margin: 40px auto;
+  padding: 0 20px;
 }
 
 .title {
@@ -73,6 +73,24 @@ body {
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+}
+
+.logo {
+  font-size: 22px;
+  font-weight: 700;
+  cursor: pointer;
+  margin: 0;
+}
+
+.user {
+  font-size: 14px;
+  opacity: .9;
+}
+
+.user-menu {
+  display: flex;
+  align-items: center;
+  gap: 12px
 }
 
 /* ================= FOOTER ================= */
@@ -285,8 +303,10 @@ input:focus, select:focus, textarea:focus {
 /* ================= ADMIN ================= */
 .admin-page {
   min-height: 100vh;
+  background: #EAF4FF;
   display: flex;
   flex-direction: column;
+  font-family: Poppins, sans-serif;
 }
 
 .admin-header {
@@ -364,15 +384,16 @@ td, th {
 }
 
 .admin-page .container {
-  max-width: 1000px;
-  padding-top: 30px;
+  max-width: 1200px;
+  margin: 40px auto;
+  padding: 0 20px;
+  flex: 1;
 }
 
 .admin-tabs {
   display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin: 30px 0;
+  gap: 8px;
+  margin-bottom: 20px;
 }
 
 .admin-tabs button {
@@ -396,7 +417,8 @@ td, th {
 
 .admin-stats {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  /* grid-template-columns: repeat(2, 1fr); */
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
   gap: 18px;
   margin-bottom: 25px;
 }
@@ -416,6 +438,11 @@ td, th {
 
 .stat b {
   font-size: 22px;
+}
+
+.stat span {
+  font-size: 13px;
+  color: #666;
 }
 
 /* warna kiri */
@@ -488,10 +515,10 @@ tbody tr:hover {
 }
 
 .table-footer {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
   align-items: center;
-  margin-top: 16px;
+  padding: 16px 6px;
 }
 
 .nav {
@@ -736,9 +763,13 @@ input[type="file"] {
   color: #6b7280;
 }
 
+.table-footer .rows-per-page {
+  justify-self: end;
+}
+
 /* dropdown */
 .rows-per-page select {
-  appearance: none;
+  /* appearance: none;
 
   padding: 8px 28px 8px 12px;
   border-radius: 14px;
@@ -751,7 +782,14 @@ input[type="file"] {
 
   cursor: pointer;
 
-  transition: .2s;
+  transition: .2s; */
+  padding: 8px 12px;
+  border-radius: 10px;
+  border: 1px solid #E5E7EB;
+  background: #fff;
+  cursor: pointer;
+  font-weight: 500;
+  transition: .15s;
 }
 
 /* hover */
