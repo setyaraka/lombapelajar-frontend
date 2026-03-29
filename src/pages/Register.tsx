@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { register } from "../services/auth.service";
 import LoadingButton from "../components/LoadingButton";
+import { Eye, EyeOff } from "lucide-react";
 
 type FormData = {
   nama: string;
@@ -26,6 +27,8 @@ export default function Register() {
 
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm((prev) => ({
@@ -123,26 +126,46 @@ export default function Register() {
 
           <div className="form-group">
             <label>Password</label>
-            <input
-              type="password"
-              name="password"
-              placeholder="Minimal 8 karakter"
-              value={form.password}
-              onChange={handleChange}
-              required
-            />
+            <div className="password-wrapper">
+              <input
+                type={showPassword ? "text" : "password"}
+                name="password"
+                placeholder={showPassword ? "Masukan password" : "********"}
+                value={form.password}
+                onChange={handleChange}
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowPassword(!showPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           <div className="form-group">
             <label>Konfirmasi Password</label>
-            <input
-              type="password"
-              name="password_confirmation"
-              placeholder="Ulangi password"
-              value={form.password_confirmation}
-              onChange={handleChange}
-              required
-            />
+            <div className="password-wrapper">
+              <input
+                type={showConfirmPassword ? "text" : "password"}
+                name="password_confirmation"
+                placeholder={showConfirmPassword ? "Ulangi password" : "********"}
+                value={form.password_confirmation}
+                onChange={handleChange}
+                required
+              />
+
+              <button
+                type="button"
+                className="password-toggle"
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+              >
+                {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
           </div>
 
           {error && <p className="form-error">{error}</p>}

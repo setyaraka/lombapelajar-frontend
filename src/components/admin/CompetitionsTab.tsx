@@ -185,14 +185,7 @@ export default function CompetitionsTab() {
                   </td>
 
                   <td>
-                    <button
-                      className="btn-link"
-                      // onClick={() => {
-                      //   setSelectedCompetition(c);
-                      //   setParticipantOpen(true);
-                      // }}
-                      onClick={() => openParticipants(c)}
-                    >
+                    <button className="btn-link" onClick={() => openParticipants(c)}>
                       {c.participants}
                     </button>
                   </td>

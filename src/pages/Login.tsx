@@ -61,7 +61,7 @@ export default function Login() {
             <div className="password-wrapper">
               <input
                 type={showPassword ? "text" : "password"}
-                placeholder={showPassword ? "Masukan Password" : "********"}
+                placeholder={showPassword ? "Masukan password" : "********"}
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
               />

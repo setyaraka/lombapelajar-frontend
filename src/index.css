@@ -279,9 +279,7 @@ input:focus, select:focus, textarea:focus {
 
   padding: 40px 20px;
 
-  background:
-    linear-gradient(rgba(255,255,255,.4), rgba(255,255,255,.4)),
-    url('/bg-sky.png');
+  background: var(--background);
 
   background-size: cover;
   background-position: center;
