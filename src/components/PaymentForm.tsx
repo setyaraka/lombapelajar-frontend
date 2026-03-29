@@ -62,18 +62,20 @@ export default function PaymentForm({
         </div>
       </div>
 
-      <button type="button" className="btn-secondary" onClick={back}>
-        Kembali
-      </button>
+      <div className="competitions-footer mt-2">
+        <button type="button" className="btn secondary" onClick={back}>
+          Kembali
+        </button>
 
-      <button
-        type="button"
-        className="btn"
-        disabled={!form.paymentProof || !competition}
-        onClick={submit}
-      >
-        Kirim Pendaftaran
-      </button>
+        <button
+          type="button"
+          className="btn edit"
+          disabled={!form.paymentProof || !competition}
+          onClick={submit}
+        >
+          Kirim Pendaftaran
+        </button>
+      </div>
     </div>
   );
 }

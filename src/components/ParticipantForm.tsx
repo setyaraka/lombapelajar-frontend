@@ -34,19 +34,25 @@ export default function ParticipantForm({
     <div className="card form-control register-active">
       <div className="title">Data Peserta</div>
 
-      <label>NIS / NISN</label>
+      <label htmlFor="nisn">NIS / NISN</label>
       <input
+        id="nisn"
         className={errors.nisn ? "input-error" : ""}
         type="text"
+        maxLength={10}
         inputMode="numeric"
         placeholder="Masukkan NIS atau NISN (10 digit)"
         value={form.nisn}
-        onChange={(e) => updateForm({ nisn: e.target.value })}
+        onChange={(e) => {
+          const value = e.target.value.replace(/\D/g, "");
+          updateForm({ nisn: value });
+        }}
       />
       {errors.nisn && <div className="field-error">{errors.nisn}</div>}
 
-      <label>Asal Sekolah</label>
+      <label htmlFor="school_name">Asal Sekolah</label>
       <input
+        id="school_name"
         className={errors.school ? "input-error" : ""}
         type="text"
         placeholder="Contoh: SMA Negeri 1 Bandung"
@@ -55,12 +61,13 @@ export default function ParticipantForm({
       />
       {errors.school && <div className="field-error">{errors.school}</div>}
 
-      <label>No. WhatsApp</label>
+      <label htmlFor="whatsapp_number">No. WhatsApp</label>
 
       <div className="phone-input">
         <span className="prefix">+62</span>
 
         <input
+          id="whatsapp_number"
           className={`${errors.whatsapp ? "input-error" : ""} phone-input`}
           type="text"
           inputMode="numeric"
@@ -78,8 +85,10 @@ export default function ParticipantForm({
 
       {errors.whatsapp && <div className="field-error">{errors.whatsapp}</div>}
 
-      <label>Alamat</label>
+      <label htmlFor="address">Alamat</label>
       <textarea
+        id="address"
+        autoComplete="street-address"
         className={errors.address ? "input-error" : ""}
         rows={3}
         placeholder="Alamat lengkap (jalan, desa/kelurahan, kecamatan, kota)"
@@ -88,7 +97,7 @@ export default function ParticipantForm({
       />
       {errors.address && <div className="field-error">{errors.address}</div>}
 
-      <button type="button" className="btn" onClick={validate}>
+      <button type="button" className="btn approve mt-2" onClick={validate}>
         Lanjut ke Pembayaran
       </button>
     </div>
