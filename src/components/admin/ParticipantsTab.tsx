@@ -48,7 +48,11 @@ export default function ParticipantsTab() {
         status: statusFilter,
       });
 
-      setParticipants(res.data);
+      const result = res.data.map((item: Participant) => ({
+        ...item,
+        status: item.status.toUpperCase() as Status,
+      }));
+      setParticipants(result);
       setTotalPages(res.meta.totalPages);
       setStats(res.stats);
     } finally {
