@@ -26,6 +26,11 @@ body {
   --accent: #F4D35E;
   --background: #ecfeff;
 
+  --color-success: #10b981;
+  --color-danger: #ef4444;
+  --color-primary: #3b82f6;
+  --color-accent: #2EC4B6;
+
   --text-main: #0f172a;
   --text-soft: #64748b;
 
@@ -170,25 +175,24 @@ body {
   color: white;
 }
 .btn.view {
-  background: #e0f2fe;
-  color: #0369a1;
+  background: var(--color-primary);
+  color: white;
 }
 .btn.approve {
-  background: #10b981;
+  background: var(--color-success);
 }
 .btn.reject {
-  background: #ef4444;
+  background: var(--color-danger);
 }
 .btn.edit {
-  background: #3b82f6;
+  background: var(--color-primary);
 }
 .btn.send {
-  background: #2EC4B6;
+  background: var(--color-accent);
 }
 .btn.width {
   width: auto;
 }
-/* add button kecil */
 .btn-add {
   background: none;
   border: 1px dashed #cbd5f5;
@@ -203,12 +207,10 @@ body {
 
   transition: .2s;
 }
-
 .btn-add:hover {
   background: #f0f9ff;
   border-color: var(--secondary);
 }
-
 .btn-link {
   background: none;
   border: none;
@@ -216,7 +218,6 @@ body {
   font-weight: 600;
   cursor: pointer;
 }
-
 .btn-icon {
   background: none;
   border: none;
@@ -471,37 +472,113 @@ td, th {
 .proof-modal {
   position: fixed;
   inset: 0;
-
+  z-index: 999;
   display: flex;
   align-items: center;
   justify-content: center;
 }
-
 .proof-backdrop {
   position: absolute;
   inset: 0;
-
-  background: rgba(0,0,0,.55);
+  background: #0000008c;
+  -webkit-backdrop-filter: blur(4px);
   backdrop-filter: blur(4px);
+  animation: fadeIn .15s ease;
 }
-
 .proof-container {
   position: relative;
-  width: 90%;
-  max-width: 900px;
-
-  background: white;
+  width: 95%;
+  max-width: 1000px;
+  max-height: 90vh;
+  background: #fff;
   border-radius: 20px;
   overflow: hidden;
-
-  box-shadow: 0 25px 60px rgba(0,0,0,.3);
+  box-shadow: 0 25px 60px #00000059;
+  animation: scaleIn .18s ease;
 }
-
+.proof-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 18px 24px;
+  border-bottom: 1px solid #eee;
+}
+.proof-body {
+  display: grid;
+  grid-template-columns: 1fr 320px;
+  max-height: calc(90vh - 70px);
+}
+.proof-header h2 {
+  margin: 0;
+  font-size: 18px;
+}
+.proof-header p {
+  margin: 4px 0 0;
+  font-size: 13px;
+  color: #6b7280;
+}
+.proof-close {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  border: none;
+  background: #f3f4f6;
+  font-size: 20px;
+  cursor: pointer;
+}
+.proof-image {
+  background: #f3f4f6;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  padding: 20px;
+}
+.proof-image:before {
+  content: "";
+  display: block;
+}
+.proof-image img {
+  width: auto;
+  height: auto;
+  max-width: 100%;
+  max-height: calc(90vh - 140px);
+  object-fit: contain;
+  object-position: center;
+  border-radius: 12px;
+  box-shadow: 0 8px 25px #00000026;
+  transition: transform .25s ease;
+}
+.proof-image img:hover{
+  transform:scale(1.4);
+}
+.proof-info {
+  padding: 24px;
+  border-left: 1px solid #eee;
+}
+.proof-field {
+  margin-bottom: 14px;
+}
+.proof-field span {
+  display: block;
+  font-size: 12px;
+  color: #6b7280;
+}
+.proof-field b {
+  font-size: 14px;
+}
+.proof-actions {
+  margin-top: 20px;
+  display: flex;
+  gap: 10px;
+}
+.proof-actions .btn {
+  flex: 1;
+}
 .modal h2 {
   margin: 0 0 18px;
   color: #0369a1;
 }
-
 /* ================= COMPETITION ================= */
 .competitions-page {
   min-height: 100vh;

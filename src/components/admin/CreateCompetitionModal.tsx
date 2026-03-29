@@ -4,6 +4,8 @@ import {
   getCompetition,
   updateCompetition,
 } from "../../services/competition.service";
+import imageCompression from "browser-image-compression";
+import LoadingButton from "../LoadingButton";
 
 type Props = {
   open: boolean;
@@ -13,12 +15,12 @@ type Props = {
 };
 
 export default function CreateCompetitionModal({ open, onClose, competitionId, onSuccess }: Props) {
+  const defaultPoster = "/default-poster.png";
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [level, setLevel] = useState("");
   const [deadline, setDeadline] = useState("");
   const [price, setPrice] = useState("");
-  const [poster, setPoster] = useState<File | null>(null);
   const [description, setDescription] = useState("");
 
   const [requirements, setRequirements] = useState<string[]>([""]);
@@ -27,6 +29,12 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const [bankName, setBankName] = useState("");
   const [bankNumber, setBankNumber] = useState("");
   const [bankHolder, setBankHolder] = useState("");
+
+  const [poster, setPoster] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [posterUrl, setPosterUrl] = useState<string | null>(null);
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const addRequirement = () => setRequirements([...requirements, ""]);
   const removeRequirement = (i: number) =>
@@ -65,6 +73,28 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     setTimeline([{ title: "", startDate: "", endDate: "" }]);
   }, []);
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+      });
+
+      setPoster(compressedFile);
+
+      const previewUrl = URL.createObjectURL(compressedFile);
+      setPreview(previewUrl);
+
+      e.target.value = "";
+    } catch {
+      alert("Gagal memproses gambar");
+    }
+  };
+
   const submit = async () => {
     const formData = new FormData();
 
@@ -86,6 +116,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     formData.append("requirements", JSON.stringify(requirements));
     formData.append("timeline", JSON.stringify(timeline));
 
+    setLoading(true);
     try {
       if (competitionId) {
         await updateCompetition(competitionId, formData);
@@ -100,6 +131,8 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       resetForm();
     } catch {
       alert("Gagal menyimpan lomba");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -135,6 +168,9 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       setBankName(data.bankName || "");
       setBankNumber(data.bankNumber || "");
       setBankHolder(data.bankHolder || "");
+
+      setPoster(null);
+      setPosterUrl(data.poster);
     };
 
     load();
@@ -157,7 +193,6 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   }, [open, handleClose]);
 
   if (!open) return null;
-
   return (
     <div className="modal-overlay">
       <div className="modal large">
@@ -208,17 +243,22 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               value={formatRupiah(price)}
               onChange={handlePriceChange}
             />
-            <input
-              type="file"
-              accept="image/*"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (file) setPoster(file);
-              }}
-            />
-            {poster && (
+            <input type="file" accept="image/*" onChange={handleUpload} />
+            {(preview || posterUrl) && (
               <>
-                <img src={URL.createObjectURL(poster)} style={{ width: 500 }} />
+                <img
+                  src={
+                    preview
+                      ? preview
+                      : posterUrl
+                        ? `${import.meta.env.VITE_API_URL}/files/${posterUrl}`
+                        : defaultPoster
+                  }
+                  alt={title}
+                  loading="lazy"
+                  onError={(e) => (e.currentTarget.src = defaultPoster)}
+                  style={{ width: 500 }}
+                />
                 <br />
               </>
             )}
@@ -269,7 +309,6 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
             </button>
           </div>
 
-          {/* TIMELINE STEPPER */}
           <div className="section-title">Timeline</div>
           {timeline.map((t, i) => (
             <div key={i} className="dynamic-row">
@@ -317,9 +356,9 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
           <button className="btn secondary" onClick={handleClose}>
             Batal
           </button>
-          <button className="btn primary" onClick={submit}>
+          <LoadingButton loading={loading} className="btn primary" onClick={submit}>
             Simpan
-          </button>
+          </LoadingButton>
         </div>
       </div>
     </div>
