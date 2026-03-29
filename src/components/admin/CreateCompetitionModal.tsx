@@ -129,6 +129,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       onSuccess?.();
       onClose();
       resetForm();
+      setPosterUrl(null);
     } catch {
       alert("Gagal menyimpan lomba");
     } finally {
@@ -139,6 +140,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const handleClose = useCallback(() => {
     onClose();
     resetForm();
+    setPosterUrl(null);
   }, [onClose, resetForm]);
 
   useEffect(() => {
@@ -193,6 +195,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   }, [open, handleClose]);
 
   if (!open) return null;
+
   return (
     <div className="modal-overlay">
       <div className="modal large">
@@ -356,7 +359,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
           <button className="btn secondary" onClick={handleClose}>
             Batal
           </button>
-          <LoadingButton loading={loading} className="btn primary" onClick={submit}>
+          <LoadingButton loading={loading} className="btn approve" onClick={submit}>
             Simpan
           </LoadingButton>
         </div>

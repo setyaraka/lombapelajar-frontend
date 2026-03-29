@@ -22,15 +22,16 @@ body {
 :root {
   --primary: #2EC4B6;
   --primary-dark: #1FA79D;
-  --secondary: #3B82F6;
+  --secondary: #374151;
   --accent: #F4D35E;
-  --background: #ecfeff;
 
   --color-success: #10b981;
   --color-danger: #ef4444;
   --color-primary: #3b82f6;
   --color-accent: #2EC4B6;
+  --color-warning: #B45309;
 
+  --background: #ECFEFF;
   --text-main: #0f172a;
   --text-soft: #64748b;
 
@@ -167,7 +168,7 @@ body {
 }
 .btn.secondary {
   background: #e5e7eb;
-  color: #374151;
+  color: var(--secondary);
   box-shadow: none;
 }
 .btn.primary {
@@ -196,7 +197,7 @@ body {
 .btn-add {
   background: none;
   border: 1px dashed #cbd5f5;
-  color: var(--secondary);
+  color: var(--color-primary);
 
   padding: 8px 12px;
   border-radius: 8px;
@@ -209,7 +210,7 @@ body {
 }
 .btn-add:hover {
   background: #f0f9ff;
-  border-color: var(--secondary);
+  border-color: var(--color-primary);
 }
 .btn-link {
   background: none;
@@ -243,7 +244,7 @@ input, select, textarea {
   padding: 12px;
 
   border-radius: 10px;
-  border: 1px solid rgba(255,255,255,.4);
+  border: 1px solid rgba(15, 23, 42, 0.08);
 
   background: rgba(255,255,255,.5);
   backdrop-filter: blur(6px);
@@ -335,7 +336,7 @@ input:focus, select:focus, textarea:focus {
 }
 
 .auth-footer a {
-  color: var(--secondary);
+  color: var(--color-primary);
   text-decoration: none;
   font-weight: 500;
 }
@@ -417,12 +418,11 @@ input:focus, select:focus, textarea:focus {
 /* ================= ADMIN ================= */
 .admin-page {
   min-height: 100vh;
-  background: #EAF4FF;
+  background: var(--background);
   display: flex;
   flex-direction: column;
   font-family: Poppins, sans-serif;
 }
-
 .admin-header {
   background: var(--gradient-main);
   color: white;
@@ -463,10 +463,9 @@ td, th {
   font-size: 12px;
   font-weight: 600;
 }
-
-.pending { background:#FFF7ED; color:#B45309; }
-.approved { background:#ECFDF5; color:#065F46; }
-.rejected { background:#FEF2F2; color:#991B1B; }
+.pending { background:#FFF7ED; color: var(--color-warning); }
+.approved { background:#ECFDF5; color: var(--color-success); }
+.rejected { background:#FEF2F2; color: var(--color-danger); }
 
 /* ================= MODAL ================= */
 .proof-modal {
@@ -585,6 +584,7 @@ td, th {
   display: flex;
   flex-direction: column;
   font-family: Poppins, sans-serif;
+  background: var(--background);
 }
 .competitions-page .container {
   flex: 1;
@@ -648,6 +648,11 @@ td, th {
 .competitions-page .content {
   padding: 18px;
   flex: 1;
+}
+.competitions-page .grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 22px;
 }
 .competitions-page .competition-name {
   font-weight: 600;
@@ -723,7 +728,7 @@ td, th {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background: #f5f3ff;
+  background: var(--background);
 }
 .layout-page .container {
   max-width: 900px;
@@ -789,7 +794,7 @@ td, th {
   align-items: center;
   gap: 10px;
   font-size: 14px;
-  color: #374151;
+  color: var(--secondary);
   cursor: pointer;
   user-select: none;
 }
@@ -1030,7 +1035,7 @@ td, th {
   cursor: pointer;
 
   background: #e5e7eb;
-  color: #374151;
+  color: var(--secondary);
   font-weight: 500;
 
   transition: .2s;
@@ -1363,7 +1368,7 @@ input[type="file"] {
 /* focus */
 .rows-per-page select:focus {
   outline: none;
-  border-color: var(--secondary);
+  border-color: var(--color-primary);
   box-shadow: 0 0 0 3px rgba(59,130,246,.15);
 }
 
