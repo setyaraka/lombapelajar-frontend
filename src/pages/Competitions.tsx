@@ -80,7 +80,7 @@ export default function Competitions() {
           <p>Raih prestasi dan bangun portofolio sejak sekarang</p>
         </section>
 
-        <div className="title-row">
+        <div className="competition-title">
           <div className="title">Pilih Lomba</div>
 
           <label className="mine-toggle">
@@ -120,7 +120,7 @@ export default function Competitions() {
               ))}
             </div>
 
-            <div className="list-footer" style={{ marginTop: "25px" }}>
+            <div className="table-footer" style={{ marginTop: "25px" }}>
               <div></div>
 
               {totalPages > 1 ? (

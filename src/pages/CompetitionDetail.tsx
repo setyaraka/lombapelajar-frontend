@@ -68,7 +68,7 @@ export default function CompetitionDetail() {
               </div>
 
               <button
-                className="cta"
+                className="btn width"
                 onClick={() => navigate(`/competition/${competition.id}/register`)}
               >
                 Daftar Sekarang

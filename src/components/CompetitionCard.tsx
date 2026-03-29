@@ -38,22 +38,24 @@ export default function CompetitionCard({
       </div>
 
       <div className="content">
-        <div className="lomba-title">{title}</div>
+        <div className="competition-name">{title}</div>
         <div className="info">
           {level.toUpperCase()} | {date}
         </div>
 
         {submitted && <div className="submitted-info">Kamu sudah terdaftar di lomba ini</div>}
 
-        <button className="btn" onClick={openDetail}>
-          Lihat Detail
-        </button>
-
-        {onEdit && user?.role === "ADMIN" && (
-          <button className="btn secondary" onClick={onEdit}>
-            Edit
+        <div className="competitions-footer">
+          <button className="btn" onClick={openDetail}>
+            Lihat Detail
           </button>
-        )}
+
+          {onEdit && user?.role === "ADMIN" && (
+            <button className="btn secondary" onClick={onEdit}>
+              Edit
+            </button>
+          )}
+        </div>
       </div>
     </div>
   );

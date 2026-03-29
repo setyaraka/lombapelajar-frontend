@@ -37,7 +37,7 @@ export default function LoadingButton({
           height: 46px;
           border: none;
           border-radius: 10px;
-          background: linear-gradient(135deg, #7c5cf4, #5a3ff0);
+          background: linear-gradient(135deg, #2EC4B6, #3B82F6);
           color: white;
           font-size: 15px;
           font-weight: 600;
