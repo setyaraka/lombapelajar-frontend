@@ -86,13 +86,13 @@ export default function CompetitionsTab() {
         open={participantOpen}
         onClose={() => setParticipantOpen(false)}
         competitionTitle={selectedCompetition?.title}
-        participants={participants} // nanti kita lazy load API participants
+        participants={participants}
         loading={participantLoading}
       />
 
       {/* FILTER */}
       <div className="table-toolbar">
-        <button className="btn primary btn-inline add-btn" onClick={() => setOpen(true)}>
+        <button className="btn edit width" onClick={() => setOpen(true)}>
           + Tambah Lomba
         </button>
       </div>
@@ -185,21 +185,14 @@ export default function CompetitionsTab() {
                   </td>
 
                   <td>
-                    <button
-                      className="link-btn"
-                      // onClick={() => {
-                      //   setSelectedCompetition(c);
-                      //   setParticipantOpen(true);
-                      // }}
-                      onClick={() => openParticipants(c)}
-                    >
+                    <button className="btn-link" onClick={() => openParticipants(c)}>
                       {c.participants}
                     </button>
                   </td>
 
                   <td className="actions">
                     <button
-                      className="btn small warning"
+                      className="btn edit"
                       onClick={() => {
                         setEditingId(c.id);
                         setOpen(true);
@@ -208,7 +201,7 @@ export default function CompetitionsTab() {
                       Edit
                     </button>
                     <button
-                      className="btn small danger"
+                      className="btn reject"
                       onClick={async () => {
                         if (!confirm("Yakin hapus lomba?")) return;
 

@@ -4,6 +4,8 @@ import {
   getCompetition,
   updateCompetition,
 } from "../../services/competition.service";
+import imageCompression from "browser-image-compression";
+import LoadingButton from "../LoadingButton";
 
 type Props = {
   open: boolean;
@@ -13,12 +15,12 @@ type Props = {
 };
 
 export default function CreateCompetitionModal({ open, onClose, competitionId, onSuccess }: Props) {
+  const defaultPoster = "/default-poster.png";
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
   const [level, setLevel] = useState("");
   const [deadline, setDeadline] = useState("");
   const [price, setPrice] = useState("");
-  const [poster, setPoster] = useState<File | null>(null);
   const [description, setDescription] = useState("");
 
   const [requirements, setRequirements] = useState<string[]>([""]);
@@ -27,6 +29,12 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const [bankName, setBankName] = useState("");
   const [bankNumber, setBankNumber] = useState("");
   const [bankHolder, setBankHolder] = useState("");
+
+  const [poster, setPoster] = useState<File | null>(null);
+  const [preview, setPreview] = useState<string | null>(null);
+  const [posterUrl, setPosterUrl] = useState<string | null>(null);
+
+  const [loading, setLoading] = useState<boolean>(false);
 
   const addRequirement = () => setRequirements([...requirements, ""]);
   const removeRequirement = (i: number) =>
@@ -65,6 +73,28 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     setTimeline([{ title: "", startDate: "", endDate: "" }]);
   }, []);
 
+  const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+      });
+
+      setPoster(compressedFile);
+
+      const previewUrl = URL.createObjectURL(compressedFile);
+      setPreview(previewUrl);
+
+      e.target.value = "";
+    } catch {
+      alert("Gagal memproses gambar");
+    }
+  };
+
   const submit = async () => {
     const formData = new FormData();
 
@@ -86,6 +116,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     formData.append("requirements", JSON.stringify(requirements));
     formData.append("timeline", JSON.stringify(timeline));
 
+    setLoading(true);
     try {
       if (competitionId) {
         await updateCompetition(competitionId, formData);
@@ -98,14 +129,18 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       onSuccess?.();
       onClose();
       resetForm();
+      setPosterUrl(null);
     } catch {
       alert("Gagal menyimpan lomba");
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleClose = useCallback(() => {
     onClose();
     resetForm();
+    setPosterUrl(null);
   }, [onClose, resetForm]);
 
   useEffect(() => {
@@ -135,6 +170,9 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       setBankName(data.bankName || "");
       setBankNumber(data.bankNumber || "");
       setBankHolder(data.bankHolder || "");
+
+      setPoster(null);
+      setPosterUrl(data.poster);
     };
 
     load();
@@ -180,134 +218,150 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
           </button>
         </div>
 
-        <div className="form-grid">
-          <input
-            placeholder="Nama Lomba"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
+        <div className="modal-body">
+          <div className="form-grid">
+            <input
+              placeholder="Nama Lomba"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+            />
+
+            <select value={category} onChange={(e) => setCategory(e.target.value)}>
+              <option value="">Kategori</option>
+              <option value="akademi">Akademik</option>
+              <option value="bahasa">Bahasa</option>
+              <option value="sains">Sains</option>
+            </select>
+
+            <select value={level} onChange={(e) => setLevel(e.target.value)}>
+              <option value="">Jenjang</option>
+              <option value="sd">SD</option>
+              <option value="smp">SMP</option>
+              <option value="sma">SMA</option>
+            </select>
+
+            <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+            <input
+              placeholder="Harga (Rp)"
+              value={formatRupiah(price)}
+              onChange={handlePriceChange}
+            />
+            <input type="file" accept="image/*" onChange={handleUpload} />
+            {(preview || posterUrl) && (
+              <>
+                <img
+                  src={
+                    preview
+                      ? preview
+                      : posterUrl
+                        ? `${import.meta.env.VITE_API_URL}/files/${posterUrl}`
+                        : defaultPoster
+                  }
+                  alt={title}
+                  loading="lazy"
+                  onError={(e) => (e.currentTarget.src = defaultPoster)}
+                  style={{ width: 500 }}
+                />
+                <br />
+              </>
+            )}
+            <input
+              placeholder="Nama Bank (contoh: BCA)"
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              className="full"
+            />
+
+            <input
+              placeholder="Nomor Rekening"
+              value={bankNumber}
+              onChange={(e) => setBankNumber(e.target.value)}
+            />
+
+            <input
+              placeholder="Atas Nama Rekening"
+              value={bankHolder}
+              onChange={(e) => setBankHolder(e.target.value)}
+            />
+          </div>
+
+          <textarea
+            placeholder="Deskripsi lomba..."
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+            className="full"
           />
 
-          <select value={category} onChange={(e) => setCategory(e.target.value)}>
-            <option value="">Kategori</option>
-            <option value="akademi">Akademik</option>
-            <option value="bahasa">Bahasa</option>
-            <option value="sains">Sains</option>
-          </select>
+          <div className="section-title">Persyaratan</div>
+          {requirements.map((r, i) => (
+            <div key={i} className="dynamic-row">
+              <input
+                value={r}
+                onChange={(e) => {
+                  const copy = [...requirements];
+                  copy[i] = e.target.value;
+                  setRequirements(copy);
+                }}
+              />
+              <button onClick={() => removeRequirement(i)}>✕</button>
+            </div>
+          ))}
+          <div className="add-row">
+            <button className="btn-add" onClick={addRequirement}>
+              + Tambah Syarat
+            </button>
+          </div>
 
-          <select value={level} onChange={(e) => setLevel(e.target.value)}>
-            <option value="">Jenjang</option>
-            <option value="sd">SD</option>
-            <option value="smp">SMP</option>
-            <option value="sma">SMA</option>
-          </select>
+          <div className="section-title">Timeline</div>
+          {timeline.map((t, i) => (
+            <div key={i} className="dynamic-row">
+              <input
+                placeholder="Nama Tahap"
+                value={t.title}
+                onChange={(e) => {
+                  const copy = [...timeline];
+                  copy[i].title = e.target.value;
+                  setTimeline(copy);
+                }}
+              />
 
-          <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
-          <input
-            placeholder="Harga (Rp)"
-            value={formatRupiah(price)}
-            onChange={handlePriceChange}
-          />
-          <input
-            type="file"
-            accept="image/*"
-            onChange={(e) => {
-              const file = e.target.files?.[0];
-              if (file) setPoster(file);
-            }}
-          />
-          {poster && (
-            <>
-              <img src={URL.createObjectURL(poster)} style={{ width: 500 }} />
-              <br />
-            </>
-          )}
-          <input
-            placeholder="Nama Bank (contoh: BCA)"
-            value={bankName}
-            onChange={(e) => setBankName(e.target.value)}
-          />
+              <input
+                type="date"
+                value={t.startDate}
+                onChange={(e) => {
+                  const copy = [...timeline];
+                  copy[i].startDate = e.target.value;
+                  setTimeline(copy);
+                }}
+              />
 
-          <input
-            placeholder="Nomor Rekening"
-            value={bankNumber}
-            onChange={(e) => setBankNumber(e.target.value)}
-          />
+              <input
+                type="date"
+                value={t.endDate}
+                onChange={(e) => {
+                  const copy = [...timeline];
+                  copy[i].endDate = e.target.value;
+                  setTimeline(copy);
+                }}
+              />
 
-          <input
-            placeholder="Atas Nama Rekening"
-            value={bankHolder}
-            onChange={(e) => setBankHolder(e.target.value)}
-          />
+              <button onClick={() => removeTimeline(i)}>✕</button>
+            </div>
+          ))}
+          <div className="add-row">
+            <button className="btn-add" onClick={addTimeline}>
+              + Tambah Tahap
+            </button>
+          </div>
         </div>
 
-        <textarea
-          placeholder="Deskripsi lomba..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-        />
-
-        <h3>Persyaratan</h3>
-        {requirements.map((r, i) => (
-          <div key={i} className="dynamic-row">
-            <input
-              value={r}
-              onChange={(e) => {
-                const copy = [...requirements];
-                copy[i] = e.target.value;
-                setRequirements(copy);
-              }}
-            />
-            <button onClick={() => removeRequirement(i)}>✕</button>
-          </div>
-        ))}
-        <button onClick={addRequirement}>+ Tambah Syarat</button>
-
-        {/* TIMELINE STEPPER */}
-        <h3>Timeline</h3>
-        {timeline.map((t, i) => (
-          <div key={i} className="dynamic-row">
-            <input
-              placeholder="Nama Tahap"
-              value={t.title}
-              onChange={(e) => {
-                const copy = [...timeline];
-                copy[i].title = e.target.value;
-                setTimeline(copy);
-              }}
-            />
-
-            <input
-              type="date"
-              value={t.startDate}
-              onChange={(e) => {
-                const copy = [...timeline];
-                copy[i].startDate = e.target.value;
-                setTimeline(copy);
-              }}
-            />
-
-            <input
-              type="date"
-              value={t.endDate}
-              onChange={(e) => {
-                const copy = [...timeline];
-                copy[i].endDate = e.target.value;
-                setTimeline(copy);
-              }}
-            />
-
-            <button onClick={() => removeTimeline(i)}>✕</button>
-          </div>
-        ))}
-        <button onClick={addTimeline}>+ Tambah Tahap</button>
-
         <div className="modal-actions">
-          <button className="btn" onClick={handleClose}>
+          <button className="btn secondary" onClick={handleClose}>
             Batal
           </button>
-          <button className="btn primary" onClick={submit}>
+          <LoadingButton loading={loading} className="btn approve" onClick={submit}>
             Simpan
-          </button>
+          </LoadingButton>
         </div>
       </div>
     </div>

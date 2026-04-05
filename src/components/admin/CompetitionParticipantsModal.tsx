@@ -42,7 +42,7 @@ export default function CompetitionParticipantsModal({
       <div className="modal large">
         <div className="modal-header">
           <h2>Peserta - {competitionTitle}</h2>
-          <button className="icon-btn" onClick={onClose}>
+          <button className="btn-icon" onClick={onClose}>
             ✕
           </button>
         </div>

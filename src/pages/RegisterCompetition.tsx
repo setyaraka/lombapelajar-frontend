@@ -153,6 +153,7 @@ export default function RegisterCompetition() {
             updateForm={updateForm}
             back={() => setStep(1)}
             submit={submit}
+            loading={loading}
           />
         )}
       </div>

@@ -9,7 +9,7 @@ export default function RowsPerPage({ value, onChange, options = [5, 10, 25, 50]
     <div className="rows-per-page">
       <span className="label">Rows per page:</span>
 
-      <select value={value} onChange={(e) => onChange(Number(e.target.value))}>
+      <select id="select-rows" value={value} onChange={(e) => onChange(Number(e.target.value))}>
         {options.map((o) => (
           <option key={o} value={o}>
             {o}

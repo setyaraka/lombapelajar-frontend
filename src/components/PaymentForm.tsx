@@ -1,4 +1,5 @@
 import type { RegisterForm } from "../pages/RegisterCompetition";
+import LoadingButton from "./LoadingButton";
 export type CompetitionPaymentInfo = {
   title: string;
   price: number;
@@ -13,12 +14,14 @@ export default function PaymentForm({
   updateForm,
   back,
   submit,
+  loading,
 }: {
   form: RegisterForm;
   competition: CompetitionPaymentInfo | null;
   updateForm: (d: Partial<RegisterForm>) => void;
   back: () => void;
   submit: () => void;
+  loading: boolean;
 }) {
   const formatRupiah = (n?: number) => (n ? `Rp ${n.toLocaleString("id-ID")}` : "-");
 
@@ -26,7 +29,6 @@ export default function PaymentForm({
     <div className="card form-control register-active">
       <div className="title">Pembayaran</div>
 
-      {/* BANK INFO */}
       <div className="bank-box">
         {competition ? (
           <>
@@ -62,18 +64,21 @@ export default function PaymentForm({
         </div>
       </div>
 
-      <button type="button" className="btn-secondary" onClick={back}>
-        Kembali
-      </button>
+      <div className="competitions-footer mt-2">
+        <button type="button" className="btn secondary" onClick={back}>
+          Kembali
+        </button>
 
-      <button
-        type="button"
-        className="btn"
-        disabled={!form.paymentProof || !competition}
-        onClick={submit}
-      >
-        Kirim Pendaftaran
-      </button>
+        <LoadingButton
+          type="button"
+          loading={loading}
+          className="btn edit"
+          disabled={!form.paymentProof || !competition}
+          onClick={submit}
+        >
+          Kirim Pendaftaran
+        </LoadingButton>
+      </div>
     </div>
   );
 }
