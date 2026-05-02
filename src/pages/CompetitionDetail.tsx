@@ -8,6 +8,7 @@ import {
   type CompetitionDetailVM,
 } from "../mapper/competition-detail.mapper";
 import Loading from "../components/Loading";
+import LoadingButton from "../components/LoadingButton";
 
 export default function CompetitionDetail() {
   const { id } = useParams();
@@ -15,8 +16,10 @@ export default function CompetitionDetail() {
 
   const [preview, setPreview] = useState(false);
   const [competition, setCompetition] = useState<CompetitionDetailVM | null>(null);
-  const [loading, setLoading] = useState(true);
   const [imgError, setImgError] = useState(false);
+
+  const [loading, setLoading] = useState(true);
+  const [downloadJuknisLoading, setDownloadJuknisLoading] = useState(false);
 
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -87,6 +90,42 @@ export default function CompetitionDetail() {
       alert("Upload gagal");
     } finally {
       setUploadingJuknis(false);
+    }
+  };
+
+  const handleDownloadJuknis = async () => {
+    if (!competition?.juknis) {
+      return alert("Juknis tidak tersedia");
+    }
+
+    try {
+      setDownloadJuknisLoading(true);
+
+      const fileUrl = `${import.meta.env.VITE_API_URL}/files/${competition.juknis}`;
+
+      const response = await fetch(fileUrl);
+
+      if (!response.ok) {
+        throw new Error("Gagal download file");
+      }
+
+      const blob = await response.blob();
+
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+
+      a.href = url;
+      a.download = competition.juknis || "juknis.pdf";
+      document.body.appendChild(a);
+      a.click();
+
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error(err);
+      alert("Gagal download juknis");
+    } finally {
+      setDownloadJuknisLoading(false);
     }
   };
 
@@ -245,7 +284,13 @@ export default function CompetitionDetail() {
             <div className="detail-card">
               <h3>Deskripsi</h3>
               <p>{competition.description}</p>
-              <button className="btn width">Download Juknis</button>
+              <LoadingButton
+                onClick={handleDownloadJuknis}
+                loading={downloadJuknisLoading}
+                className="btn width"
+              >
+                Download Juknis
+              </LoadingButton>
             </div>
 
             <div className="detail-card">

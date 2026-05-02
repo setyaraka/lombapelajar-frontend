@@ -8,6 +8,7 @@ export type CompetitionDetailVM = {
   poster?: string | null;
   description: string;
   requirements: string[];
+  juknis?: string;
   timeline: { title: string; date: string }[];
 };
 
@@ -35,6 +36,7 @@ export type CompetitionDetailDTO = {
   createdAt?: string;
   requirements: CompetitionRequirementDTO[];
   timelines: CompetitionTimelineDTO[];
+  juknis?: string;
 };
 
 export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDetailVM {
@@ -47,6 +49,7 @@ export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDet
     price: formatRupiah(api.price),
     poster: api.poster,
     description: api.description || "",
+    juknis: api.juknis || "",
 
     requirements: api.requirements.map((r) => r.text),
 
