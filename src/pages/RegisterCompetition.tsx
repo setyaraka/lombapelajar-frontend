@@ -10,13 +10,19 @@ import { getCompetition } from "../services/competition.service";
 import api from "../api/axios";
 import { getErrorMessage } from "../helper/errorHandler";
 
+// export type RegisterForm = {
+//   name: string;
+//   nisn: string;
+//   school: string;
+//   level: string;
+//   whatsapp: string;
+//   address: string;
+//   paymentProof?: File | null;
+// };
 export type RegisterForm = {
-  name: string;
-  nisn: string;
-  school: string;
-  level: string;
-  whatsapp: string;
-  address: string;
+  leaderName: string;
+  members: string[];
+  parentName: string;
   paymentProof?: File | null;
 };
 
@@ -37,13 +43,19 @@ export default function RegisterCompetition() {
   const [loading, setLoading] = useState(false);
   const [competition, setCompetition] = useState<CompetitionPaymentInfo | null>(null);
 
+  // const [form, setForm] = useState<RegisterForm>({
+  //   name: "",
+  //   nisn: "",
+  //   school: "",
+  //   level: "",
+  //   whatsapp: "",
+  //   address: "",
+  //   paymentProof: null,
+  // });
   const [form, setForm] = useState<RegisterForm>({
-    name: "",
-    nisn: "",
-    school: "",
-    level: "",
-    whatsapp: "",
-    address: "",
+    leaderName: "",
+    members: [""],
+    parentName: "",
     paymentProof: null,
   });
 
@@ -94,11 +106,19 @@ export default function RegisterCompetition() {
         body: form.paymentProof,
       });
 
+      // await createRegistration(id, {
+      //   nisn: form.nisn,
+      //   school: form.school,
+      //   phone: `+62${form.whatsapp}`,
+      //   address: form.address,
+      //   fileKey,
+      // });
+      const cleanMembers = form.members.filter((m) => m && m.trim() !== "");
+
       await createRegistration(id, {
-        nisn: form.nisn,
-        school: form.school,
-        phone: `+62${form.whatsapp}`,
-        address: form.address,
+        leader_name: form.leaderName,
+        members: cleanMembers,
+        parent_name: form.parentName,
         fileKey,
       });
 

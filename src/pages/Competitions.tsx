@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { getCompetitions } from "../services/competition.service";
 import { toCompetitionCardVM, type CompetitionCardVM } from "../mapper/competition.mapper";
 import CreateCompetitionModal from "../components/admin/CreateCompetitionModal";
+import Loading from "../components/Loading";
 
 export default function Competitions() {
   const [competitions, setCompetitions] = useState<CompetitionCardVM[]>([]);
@@ -97,7 +98,7 @@ export default function Competitions() {
         </div>
 
         {loading ? (
-          <div className="loading">Loading...</div>
+          <Loading fullScreen text="Mengambil data..." />
         ) : competitions.length === 0 ? (
           <div className="empty">Tidak ada lomba ditemukan</div>
         ) : (
