@@ -7,6 +7,7 @@ import {
   toCompetitionDetailVM,
   type CompetitionDetailVM,
 } from "../mapper/competition-detail.mapper";
+import Loading from "../components/Loading";
 
 export default function CompetitionDetail() {
   const { id } = useParams();
@@ -17,11 +18,77 @@ export default function CompetitionDetail() {
   const [loading, setLoading] = useState(true);
   const [imgError, setImgError] = useState(false);
 
+  const [file, setFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [showUploadModal, setShowUploadModal] = useState(false);
+
+  const [showJuknisModal, setShowJuknisModal] = useState(false);
+  const [juknisFile, setJuknisFile] = useState<File | null>(null);
+  const [uploadingJuknis, setUploadingJuknis] = useState(false);
+
   const defaultPoster = "/default-poster.png";
   const safePoster =
     competition?.poster && !imgError
       ? `${import.meta.env.VITE_API_URL}/files/${competition.poster}`
       : defaultPoster;
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+
+    setFile(selected);
+  };
+
+  const handleUpload = async () => {
+    if (!file) return alert("Pilih file dulu!");
+
+    try {
+      setUploading(true);
+
+      const formData = new FormData();
+      formData.append("file", file);
+
+      // nanti ganti ke API kamu
+      console.log("UPLOAD FILE:", file);
+
+      alert("Upload berhasil (dummy)");
+      setFile(null);
+    } catch (err) {
+      console.error(err);
+      alert("Upload gagal");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleJuknisChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+
+    setJuknisFile(selected);
+  };
+
+  const handleUploadJuknis = async () => {
+    if (!juknisFile) return alert("Pilih file dulu!");
+
+    try {
+      setUploadingJuknis(true);
+
+      const formData = new FormData();
+      formData.append("file", juknisFile);
+
+      console.log("UPLOAD JUKNIS:", juknisFile);
+
+      alert("Upload juknis berhasil (dummy)");
+      setJuknisFile(null);
+      setShowJuknisModal(false);
+    } catch (err) {
+      console.error(err);
+      alert("Upload gagal");
+    } finally {
+      setUploadingJuknis(false);
+    }
+  };
 
   useEffect(() => {
     const load = async () => {
@@ -39,11 +106,83 @@ export default function CompetitionDetail() {
     load();
   }, [id]);
 
-  if (loading) return <div className="container">Loading...</div>;
+  if (loading) return <Loading fullScreen text="Memuat detail lomba..." />;
   if (!competition) return <div className="container">Lomba tidak ditemukan</div>;
 
   return (
     <>
+      {showUploadModal && (
+        <div className="modal-overlay" onClick={() => setShowUploadModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              Upload Karya
+              <button className="btn-icon" onClick={() => setShowUploadModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <p className="label">Upload file (PDF, PNG, JPG, JPEG)</p>
+
+              <input type="file" accept=".pdf,.png,.jpg,.jpeg" onChange={handleFileChange} />
+
+              {file && (
+                <div className="mt-2">
+                  📄 <b>{file.name}</b>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn secondary" onClick={() => setShowUploadModal(false)}>
+                Batal
+              </button>
+
+              <button className="btn" onClick={handleUpload} disabled={!file || uploading}>
+                {uploading ? "Uploading..." : "Upload"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+      {showJuknisModal && (
+        <div className="modal-overlay" onClick={() => setShowJuknisModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              Upload Juknis
+              <button className="btn-icon" onClick={() => setShowJuknisModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body">
+              <p className="label">Upload Juknis (PDF saja)</p>
+
+              <input type="file" accept=".pdf" onChange={handleJuknisChange} />
+
+              {juknisFile && (
+                <div className="mt-2">
+                  📄 <b>{juknisFile.name}</b>
+                </div>
+              )}
+            </div>
+
+            <div className="modal-actions">
+              <button className="btn secondary" onClick={() => setShowJuknisModal(false)}>
+                Batal
+              </button>
+
+              <button
+                className="btn"
+                onClick={handleUploadJuknis}
+                disabled={!juknisFile || uploadingJuknis}
+              >
+                {uploadingJuknis ? "Uploading..." : "Upload"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* IMAGE PREVIEW */}
       {preview && (
         <div className="image-viewer" onClick={() => setPreview(false)}>
@@ -67,12 +206,27 @@ export default function CompetitionDetail() {
                 <span>{competition.price}</span>
               </div>
 
-              <button
-                className="btn width"
-                onClick={() => navigate(`/competition/${competition.id}/register`)}
-              >
-                Daftar Sekarang
-              </button>
+              <div className="grid grid-cols-2">
+                <button
+                  className="btn width"
+                  onClick={() => navigate(`/competition/${competition.id}/register`)}
+                >
+                  Daftar Sekarang
+                </button>
+
+                <button className="btn width">Pengumuman</button>
+                {/* <button className="btn width">Juknis</button> */}
+                {/* <button className="btn width">Upload</button> */}
+                <button className="btn width" onClick={() => setShowJuknisModal(true)}>
+                  Juknis
+                </button>
+                <button className="btn width" onClick={() => setShowUploadModal(true)}>
+                  Upload
+                </button>
+              </div>
+              <div className="mt-1">
+                <span className="badge approved">Terverifikasi</span>
+              </div>
             </div>
 
             <div className="event-right">
@@ -91,6 +245,7 @@ export default function CompetitionDetail() {
             <div className="detail-card">
               <h3>Deskripsi</h3>
               <p>{competition.description}</p>
+              <button className="btn width">Download Juknis</button>
             </div>
 
             <div className="detail-card">
