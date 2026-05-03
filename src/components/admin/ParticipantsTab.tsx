@@ -4,6 +4,8 @@ import RowsPerPage from "../RowsPerPage";
 import PaymentProofModal from "../PaymentProofModal";
 import type { ProofData } from "../PaymentProofModal";
 import { getParticipants, updateParticipantStatus } from "../../services/participant.service";
+import type { CreationData } from "../CreationModal";
+import CreationModal from "../CreationModal";
 
 type Status = "PENDING" | "VERIFIED" | "REJECTED";
 
@@ -15,6 +17,7 @@ type Participant = {
   status: Status;
   proofUrl?: string;
   uploadedAt?: string;
+  creationFile?: string;
 };
 
 export default function ParticipantsTab() {
@@ -36,6 +39,9 @@ export default function ParticipantsTab() {
     rejected: 0,
     total: 0,
   });
+
+  const [creation, setCreation] = useState<CreationData | null>(null);
+  const [openCreation, setOpenCreation] = useState(false);
 
   // ================= LOAD DATA =================
   const loadParticipants = useCallback(async () => {
@@ -79,6 +85,7 @@ export default function ParticipantsTab() {
         onClose={() => setOpen(false)}
         changeStatus={changeStatus}
       />
+      <CreationModal open={openCreation} data={creation} onClose={() => setOpenCreation(false)} />
 
       <div className="admin-page">
         <div className="container">
@@ -145,6 +152,7 @@ export default function ParticipantsTab() {
                   <th>Sekolah</th>
                   <th>Lomba</th>
                   <th>Pembayaran</th>
+                  <th>Karya</th>
                   <th>Status</th>
                   <th>Aksi</th>
                 </tr>
@@ -193,6 +201,25 @@ export default function ParticipantsTab() {
                               }}
                             >
                               Lihat Bukti
+                            </button>
+                          ) : (
+                            <span className="muted">Belum upload</span>
+                          )}
+                        </td>
+                        <td>
+                          {p.creationFile ? (
+                            <button
+                              className="btn view"
+                              onClick={() => {
+                                setCreation({
+                                  name: p.name,
+                                  competition: p.competition,
+                                  fileUrl: `${import.meta.env.VITE_API_URL}/files/${p.creationFile}`,
+                                });
+                                setOpenCreation(true);
+                              }}
+                            >
+                              Lihat Karya
                             </button>
                           ) : (
                             <span className="muted">Belum upload</span>

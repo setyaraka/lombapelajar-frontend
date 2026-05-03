@@ -93,11 +93,7 @@ export const uploadJuknis = async (id: string, file: File) => {
   formData.append("file", file);
   formData.append("competitionId", id);
 
-  const res = await api.post("/competitions/upload-juknis", formData, {
-    headers: {
-      "Content-Type": "multipart/form-data",
-    },
-  });
+  const res = await api.post("/competitions/upload-juknis", formData);
 
   return res.data;
 };

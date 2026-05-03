@@ -9,6 +9,15 @@ import {
 } from "../mapper/competition-detail.mapper";
 import Loading from "../components/Loading";
 import LoadingButton from "../components/LoadingButton";
+import { uploadCreation } from "../services/registration.service";
+
+type ApiError = {
+  response?: {
+    data?: {
+      message?: string;
+    };
+  };
+};
 
 export default function CompetitionDetail() {
   const { id } = useParams();
@@ -42,28 +51,6 @@ export default function CompetitionDetail() {
     setFile(selected);
   };
 
-  const handleUpload = async () => {
-    if (!file) return alert("Pilih file dulu!");
-
-    try {
-      setUploading(true);
-
-      const formData = new FormData();
-      formData.append("file", file);
-
-      // nanti ganti ke API kamu
-      console.log("UPLOAD FILE:", file);
-
-      alert("Upload berhasil (dummy)");
-      setFile(null);
-    } catch (err) {
-      console.error(err);
-      alert("Upload gagal");
-    } finally {
-      setUploading(false);
-    }
-  };
-
   const handleJuknisChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
@@ -92,8 +79,8 @@ export default function CompetitionDetail() {
       setJuknisFile(null);
       setShowJuknisModal(false);
     } catch (err) {
-      console.error(err);
-      alert("Upload gagal");
+      const message = err instanceof Error ? err.message : "Upload gagal";
+      alert(message);
     } finally {
       setUploadingJuknis(false);
     }
@@ -132,6 +119,39 @@ export default function CompetitionDetail() {
       alert("Gagal download juknis");
     } finally {
       setDownloadJuknisLoading(false);
+    }
+  };
+
+  const handleUploadCreation = async () => {
+    if (!file || !id) return alert("Pilih file dulu!");
+
+    try {
+      setUploading(true);
+
+      const res = await uploadCreation(id, file);
+
+      alert("Upload karya berhasil");
+
+      setFile(null);
+      setShowUploadModal(false);
+
+      // optional: refresh data
+      setCompetition((prev) =>
+        prev
+          ? {
+              ...prev,
+              karyaFile: res.data.karyaFile,
+            }
+          : prev
+      );
+    } catch (err: unknown) {
+      const error = err as ApiError;
+
+      const message = error.response?.data?.message || "Upload gagal";
+
+      alert(message);
+    } finally {
+      setUploading(false);
     }
   };
 
@@ -183,7 +203,7 @@ export default function CompetitionDetail() {
                 Batal
               </button>
 
-              <button className="btn" onClick={handleUpload} disabled={!file || uploading}>
+              <button className="btn" onClick={handleUploadCreation} disabled={!file || uploading}>
                 {uploading ? "Uploading..." : "Upload"}
               </button>
             </div>
@@ -217,13 +237,14 @@ export default function CompetitionDetail() {
                 Batal
               </button>
 
-              <button
+              <LoadingButton
                 className="btn"
+                loading={uploadingJuknis}
                 onClick={handleUploadJuknis}
                 disabled={!juknisFile || uploadingJuknis}
               >
-                {uploadingJuknis ? "Uploading..." : "Upload"}
-              </button>
+                Upload
+              </LoadingButton>
             </div>
           </div>
         </div>
@@ -289,7 +310,7 @@ export default function CompetitionDetail() {
           <div className="info-grid">
             <div className="detail-card">
               <h3>Deskripsi</h3>
-              <p>{competition.description}</p>
+              <p style={{ whiteSpace: "pre-line" }}>{competition.description}</p>
               <LoadingButton
                 onClick={handleDownloadJuknis}
                 loading={downloadJuknisLoading}
