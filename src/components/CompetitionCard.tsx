@@ -39,8 +39,11 @@ export default function CompetitionCard({
 
       <div className="content">
         <div className="competition-name">{title}</div>
-        <div className="info">
-          {level.toUpperCase()} | {date}
+        <div className="flex items-center gap-2 mb-1">
+          <div className="info mt-1">
+            {level.toUpperCase()} | {date}
+          </div>
+          <div className="badge status border">Diikuti</div>
         </div>
 
         {submitted && <div className="submitted-info">Kamu sudah terdaftar di lomba ini</div>}

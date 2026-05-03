@@ -29,7 +29,7 @@ export default function Login() {
       if (loggedInUser.role === "ADMIN") {
         navigate("/admin/participants");
       } else {
-        navigate("/list");
+        navigate("/");
       }
     } catch {
       alert("Email atau password salah");

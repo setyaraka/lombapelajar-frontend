@@ -7,7 +7,12 @@ export default function Header() {
   const { user, logout } = useAuth();
 
   const go = (path: string) => navigate(path);
-  const isActive = (path: string) => location.pathname.startsWith(path);
+  const isActive = (path: string) => {
+    if (path === "/") {
+      return location.pathname === "/";
+    }
+    return location.pathname.startsWith(path);
+  };
 
   const handleLogout = () => {
     logout();
@@ -18,14 +23,14 @@ export default function Header() {
     <header className="app-header">
       <div className="app-header-inner">
         {/* LOGO */}
-        <h1 className="logo" onClick={() => go("/list")}>
+        <h1 className="logo" onClick={() => go("/")}>
           Maestro.id
         </h1>
 
         {/* NAVIGATION */}
         {user && (
           <nav className="nav">
-            <button className={isActive("/list") ? "active" : ""} onClick={() => go("/list")}>
+            <button className={isActive("/") ? "active" : ""} onClick={() => go("/")}>
               Daftar Lomba
             </button>
             {/* 

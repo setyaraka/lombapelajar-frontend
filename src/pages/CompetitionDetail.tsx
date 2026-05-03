@@ -2,7 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
-import { getCompetition } from "../services/competition.service";
+import { getCompetition, uploadJuknis } from "../services/competition.service";
 import {
   toCompetitionDetailVM,
   type CompetitionDetailVM,
@@ -72,17 +72,23 @@ export default function CompetitionDetail() {
   };
 
   const handleUploadJuknis = async () => {
-    if (!juknisFile) return alert("Pilih file dulu!");
+    if (!juknisFile || !id) return alert("Pilih file dulu!");
 
     try {
       setUploadingJuknis(true);
 
-      const formData = new FormData();
-      formData.append("file", juknisFile);
+      const res = await uploadJuknis(id, juknisFile);
 
-      console.log("UPLOAD JUKNIS:", juknisFile);
+      setCompetition((prev) =>
+        prev
+          ? {
+              ...prev,
+              juknis: res.data.juknis,
+            }
+          : prev
+      );
 
-      alert("Upload juknis berhasil (dummy)");
+      alert("Upload juknis berhasil");
       setJuknisFile(null);
       setShowJuknisModal(false);
     } catch (err) {
@@ -257,10 +263,10 @@ export default function CompetitionDetail() {
                 {/* <button className="btn width">Juknis</button> */}
                 {/* <button className="btn width">Upload</button> */}
                 <button className="btn width" onClick={() => setShowJuknisModal(true)}>
-                  Juknis
+                  Upload Juknis
                 </button>
                 <button className="btn width" onClick={() => setShowUploadModal(true)}>
-                  Upload
+                  Upload Karya
                 </button>
               </div>
               <div className="mt-1">

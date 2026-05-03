@@ -87,3 +87,17 @@ export const getCompetitionParticipants = async (id: string) => {
   const res = await api.get(`/competitions/${id}/participants`);
   return res.data;
 };
+
+export const uploadJuknis = async (id: string, file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("competitionId", id);
+
+  const res = await api.post("/competitions/upload-juknis", formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
+
+  return res.data;
+};

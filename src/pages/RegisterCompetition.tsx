@@ -123,7 +123,7 @@ export default function RegisterCompetition() {
       });
 
       alert("Pendaftaran berhasil!");
-      navigate("/list");
+      navigate("/");
     } catch (err) {
       const error = getErrorMessage(err);
       alert(error);
