@@ -125,6 +125,7 @@ export default function CompetitionsTab() {
             <option value="SD">SD</option>
             <option value="SMP">SMP</option>
             <option value="SMA">SMA</option>
+            <option value="MAHASISWA">MAHASISWA</option>
           </select>
 
           <select

@@ -235,9 +235,10 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
             <select value={level} onChange={(e) => setLevel(e.target.value)}>
               <option value="">Jenjang</option>
-              <option value="sd">SD</option>
-              <option value="smp">SMP</option>
-              <option value="sma">SMA</option>
+              <option value="SD">SD</option>
+              <option value="SMP">SMP</option>
+              <option value="SMA">SMA</option>
+              <option value="MAHASISWA">MAHASISWA</option>
             </select>
 
             <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
