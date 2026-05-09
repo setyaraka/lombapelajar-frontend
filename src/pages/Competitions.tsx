@@ -10,8 +10,10 @@ import { toCompetitionCardVM, type CompetitionCardVM } from "../mapper/competiti
 import CreateCompetitionModal from "../components/admin/CreateCompetitionModal";
 import Loading from "../components/Loading";
 import { Helmet } from "react-helmet-async";
+import { useAuth } from "../auth/useAuth";
 
 export default function Competitions() {
+  const { user } = useAuth();
   const [competitions, setCompetitions] = useState<CompetitionCardVM[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -89,17 +91,19 @@ export default function Competitions() {
         <div className="competition-title">
           <div className="title">Pilih Lomba</div>
 
-          <label className="mine-toggle">
-            <input
-              type="checkbox"
-              checked={onlyMine}
-              onChange={(e) => {
-                setOnlyMine(e.target.checked);
-                setPage(1);
-              }}
-            />
-            Lomba yang saya ikuti
-          </label>
+          {user && (
+            <label className="mine-toggle">
+              <input
+                type="checkbox"
+                checked={onlyMine}
+                onChange={(e) => {
+                  setOnlyMine(e.target.checked);
+                  setPage(1);
+                }}
+              />
+              Lomba yang saya ikuti
+            </label>
+          )}
         </div>
 
         {loading ? (
