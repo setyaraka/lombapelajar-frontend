@@ -13,6 +13,7 @@ import imageCompression from "browser-image-compression";
 import { uploadCreation } from "../services/registration.service";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
+import { useAuth } from "../auth/useAuth";
 
 type ApiError = {
   response?: {
@@ -25,6 +26,7 @@ type ApiError = {
 export default function CompetitionDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
 
   const [preview, setPreview] = useState(false);
   const [competition, setCompetition] = useState<CompetitionDetailVM | null>(null);
@@ -385,9 +387,11 @@ export default function CompetitionDetail() {
                 <button className="btn width">Pengumuman</button>
                 {/* <button className="btn width">Juknis</button> */}
                 {/* <button className="btn width">Upload</button> */}
-                <button className="btn width" onClick={() => setShowJuknisModal(true)}>
-                  Upload Juknis
-                </button>
+                {user?.role === "ADMIN" && (
+                  <button className="btn width" onClick={() => setShowJuknisModal(true)}>
+                    Upload Juknis
+                  </button>
+                )}
                 {competition.registrationStatus === "verified" && (
                   competition.creationFile ? (
                     <button
