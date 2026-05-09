@@ -174,24 +174,24 @@ export default function CompetitionsTab() {
             ) : (
               competitions.map((c) => (
                 <tr key={c.id}>
-                  <td>{c.title.toLocaleUpperCase()}</td>
-                  <td>{c.category.toLocaleUpperCase()}</td>
-                  <td>{c.level.join(", ").toLocaleUpperCase()}</td>
-                  <td>{new Date(c.deadline).toLocaleDateString("id-ID")}</td>
+                  <td data-label="Lomba">{c.title.toLocaleUpperCase()}</td>
+                  <td data-label="Kategori">{c.category.toLocaleUpperCase()}</td>
+                  <td data-label="Jenjang">{c.level.join(", ").toLocaleUpperCase()}</td>
+                  <td data-label="Deadline">{new Date(c.deadline).toLocaleDateString("id-ID")}</td>
 
-                  <td>
+                  <td data-label="Status">
                     <span className={`status ${c.status}`}>
                       {c.status === "open" ? "Dibuka" : "Ditutup"}
                     </span>
                   </td>
 
-                  <td>
+                  <td data-label="Peserta">
                     <button className="btn-link" onClick={() => openParticipants(c)}>
                       {c.participants}
                     </button>
                   </td>
 
-                  <td className="actions">
+                  <td data-label="Aksi" className="actions">
                     <button
                       className="btn edit"
                       onClick={() => {

@@ -178,12 +178,12 @@ export default function ParticipantsTab() {
 
                     return (
                       <tr key={p.id}>
-                        <td>{p.name}</td>
-                        <td>{p.school}</td>
-                        <td>{p.competition}</td>
+                        <td data-label="Nama">{p.name}</td>
+                        <td data-label="Sekolah">{p.school}</td>
+                        <td data-label="Lomba">{p.competition}</td>
 
                         {/* ===== BUKTI ===== */}
-                        <td>
+                        <td data-label="Pembayaran">
                           {imageUrl ? (
                             <button
                               className="btn view"
@@ -206,7 +206,7 @@ export default function ParticipantsTab() {
                             <span className="muted">Belum upload</span>
                           )}
                         </td>
-                        <td>
+                        <td data-label="Karya">
                           {p.creationFile ? (
                             <button
                               className="btn view"
@@ -227,7 +227,7 @@ export default function ParticipantsTab() {
                         </td>
 
                         {/* ===== STATUS ===== */}
-                        <td>
+                        <td data-label="Status">
                           <span className={badgeClass(p.status)}>
                             {p.status === "PENDING" && "Menunggu"}
                             {p.status === "VERIFIED" && "Diterima"}
@@ -237,7 +237,7 @@ export default function ParticipantsTab() {
 
                         {/* ===== ACTION ===== */}
                         {p.status === "PENDING" ? (
-                          <td className="actions">
+                          <td data-label="Aksi" className="actions">
                             <button
                               className="btn approve"
                               disabled={!paymentUploaded}
@@ -251,17 +251,15 @@ export default function ParticipantsTab() {
 
                             <button
                               className="btn reject"
-                              disabled={!paymentUploaded}
-                              title={
-                                !paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""
-                              }
                               onClick={() => changeStatus(p.id, "REJECTED")}
                             >
                               Tolak
                             </button>
                           </td>
                         ) : (
-                          <td></td>
+                          <td data-label="Aksi" className="muted">
+                            Selesai
+                          </td>
                         )}
                       </tr>
                     );
