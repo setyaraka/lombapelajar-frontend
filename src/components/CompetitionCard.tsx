@@ -4,7 +4,7 @@ import { useAuth } from "../auth/useAuth";
 type Props = {
   id: string;
   title: string;
-  level: string;
+  level: string[];
   date: string;
   poster?: string | null;
   submitted?: boolean;
@@ -39,11 +39,18 @@ export default function CompetitionCard({
 
       <div className="content">
         <div className="competition-name">{title}</div>
-        <div className="flex items-center gap-2 mb-1">
-          <div className="info mt-1">
-            {level.toUpperCase()} | {date}
+        <div className="flex flex-wrap items-center gap-3 mt-1 mb-2">
+          <div className="flex flex-wrap gap-1">
+            {level.map((lv) => (
+              <span key={lv} className={`badge-level ${lv.toLowerCase()}`}>
+                {lv}
+              </span>
+            ))}
           </div>
-          {user && submitted && <div className="badge status border">Diikuti</div>}
+          <div className="info-row">
+            <span className="date-info">{date}</span>
+          </div>
+          {user && submitted && <div className="badge followed-badge">Diikuti</div>}
         </div>
 
         <div className="competitions-footer">

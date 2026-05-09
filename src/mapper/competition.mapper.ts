@@ -1,7 +1,7 @@
 export type CompetitionCardVM = {
   id: string;
   title: string;
-  level: string;
+  level: string[];
   date: string;
   poster: string;
   closed: boolean;
@@ -12,7 +12,7 @@ export type CompetitionListItemDTO = {
   id: string;
   title: string;
   category: string;
-  level: string;
+  level: string[];
   deadline: string;
   poster: string | null;
   participants: number;
@@ -24,7 +24,7 @@ export function toCompetitionCardVM(api: CompetitionListItemDTO): CompetitionCar
   return {
     id: api.id,
     title: api.title,
-    level: api.level,
+    level: Array.isArray(api.level) ? api.level : [api.level],
     date: new Date(api.deadline).toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",

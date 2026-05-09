@@ -13,7 +13,7 @@ type Competition = {
   id: string;
   title: string;
   category: string;
-  level: string;
+  level: string[];
   participants: number;
   deadline: string;
   status: "open" | "closed";
@@ -176,7 +176,7 @@ export default function CompetitionsTab() {
                 <tr key={c.id}>
                   <td>{c.title.toLocaleUpperCase()}</td>
                   <td>{c.category.toLocaleUpperCase()}</td>
-                  <td>{c.level.toLocaleUpperCase()}</td>
+                  <td>{c.level.join(", ").toLocaleUpperCase()}</td>
                   <td>{new Date(c.deadline).toLocaleDateString("id-ID")}</td>
 
                   <td>

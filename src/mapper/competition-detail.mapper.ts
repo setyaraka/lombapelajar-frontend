@@ -29,7 +29,7 @@ export type CompetitionDetailDTO = {
   title: string;
   description: string | null;
   poster: string | null;
-  level: string;
+  level: string[];
   category: string;
   deadline: string;
   price: number;
@@ -44,7 +44,7 @@ export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDet
     id: api.id,
     title: api.title,
     category: api.category,
-    level: api.level,
+    level: Array.isArray(api.level) ? api.level.join(", ") : api.level,
     deadline: formatDate(api.deadline),
     price: formatRupiah(api.price),
     poster: api.poster,

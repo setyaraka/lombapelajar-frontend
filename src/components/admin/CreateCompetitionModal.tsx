@@ -21,7 +21,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const defaultPoster = "/default-poster.png";
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
-  const [level, setLevel] = useState("");
+  const [levels, setLevels] = useState<string[]>([]);
   const [deadline, setDeadline] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -62,7 +62,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const resetForm = useCallback(() => {
     setTitle("");
     setCategory("");
-    setLevel("");
+    setLevels([]);
     setDeadline("");
     setPrice("");
     setPoster(null);
@@ -103,7 +103,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
     formData.append("title", title);
     formData.append("category", category);
-    formData.append("level", level);
+    formData.append("level", JSON.stringify(levels));
     formData.append("deadline", deadline);
     formData.append("price", price);
     formData.append("description", description);
@@ -154,7 +154,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
       setTitle(data.title);
       setCategory(data.category);
-      setLevel(data.level);
+      setLevels(Array.isArray(data.level) ? data.level : [data.level]);
       setDeadline(data.deadline.slice(0, 10));
       setPrice(String(data.price));
       setPoster(null);
@@ -236,13 +236,24 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               <option value="sains">Sains</option>
             </select>
 
-            <select value={level} onChange={(e) => setLevel(e.target.value)}>
-              <option value="">Jenjang</option>
-              <option value="SD">SD</option>
-              <option value="SMP">SMP</option>
-              <option value="SMA">SMA</option>
-              <option value="MAHASISWA">MAHASISWA</option>
-            </select>
+            <div className="checkbox-group-wrapper full">
+              <label>Jenjang</label>
+              <div className="checkbox-group">
+                {["SD", "SMP", "SMA", "MAHASISWA"].map((lv) => (
+                  <label key={lv} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={levels.includes(lv)}
+                      onChange={(e) => {
+                        if (e.target.checked) setLevels([...levels, lv]);
+                        else setLevels(levels.filter((l) => l !== lv));
+                      }}
+                    />
+                    <span>{lv}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
             <DatePicker
               selected={deadline ? new Date(deadline) : null}

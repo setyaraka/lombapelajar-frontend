@@ -26,7 +26,7 @@ export type CompetitionDetail = {
   title: string;
   description: string | null;
   poster: string | null;
-  level: string;
+  level: string[];
   category: string;
   deadline: string;
   price: number;
