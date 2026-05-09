@@ -43,10 +43,8 @@ export default function CompetitionCard({
           <div className="info mt-1">
             {level.toUpperCase()} | {date}
           </div>
-          <div className="badge status border">Diikuti</div>
+          {user && submitted && <div className="badge status border">Diikuti</div>}
         </div>
-
-        {submitted && <div className="submitted-info">Kamu sudah terdaftar di lomba ini</div>}
 
         <div className="competitions-footer">
           <button className="btn" onClick={openDetail}>
