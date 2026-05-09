@@ -9,6 +9,7 @@ import { getCompetitions } from "../services/competition.service";
 import { toCompetitionCardVM, type CompetitionCardVM } from "../mapper/competition.mapper";
 import CreateCompetitionModal from "../components/admin/CreateCompetitionModal";
 import Loading from "../components/Loading";
+import { Helmet } from "react-helmet-async";
 
 export default function Competitions() {
   const [competitions, setCompetitions] = useState<CompetitionCardVM[]>([]);
@@ -67,6 +68,10 @@ export default function Competitions() {
 
   return (
     <div className="competitions-page">
+      <Helmet>
+        <title>Daftar Lomba Pelajar Terbaru 2024 - LombaPelajar</title>
+        <meta name="description" content="Temukan daftar lomba pelajar terbaru untuk tingkat SD, SMP, SMA, dan Mahasiswa. Mulai dari olimpiade sains, lomba seni, hingga kompetisi teknologi." />
+      </Helmet>
       <CreateCompetitionModal
         open={modalOpen}
         onClose={handleModalClose}

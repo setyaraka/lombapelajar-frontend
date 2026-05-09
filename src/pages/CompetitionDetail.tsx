@@ -12,6 +12,7 @@ import LoadingButton from "../components/LoadingButton";
 import imageCompression from "browser-image-compression";
 import { uploadCreation } from "../services/registration.service";
 import toast from "react-hot-toast";
+import { Helmet } from "react-helmet-async";
 
 type ApiError = {
   response?: {
@@ -192,6 +193,13 @@ export default function CompetitionDetail() {
 
   return (
     <>
+      <Helmet>
+        <title>{competition.title} - LombaPelajar</title>
+        <meta name="description" content={competition.description?.slice(0, 150) || `Informasi lengkap mengenai ${competition.title}. Daftar sekarang dan raih prestasimu di LombaPelajar.`} />
+        <meta property="og:title" content={`${competition.title} - LombaPelajar`} />
+        <meta property="og:description" content={competition.description?.slice(0, 150) || `Informasi lengkap mengenai ${competition.title}.`} />
+        {competition.poster && <meta property="og:image" content={`${import.meta.env.VITE_API_URL}/files/${competition.poster}`} />}
+      </Helmet>
       {showUploadModal && (
         <div className="modal-overlay" onClick={() => setShowUploadModal(false)}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
