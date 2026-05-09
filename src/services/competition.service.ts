@@ -46,6 +46,7 @@ export type CompetitionDetail = {
   bankName: string;
   bankNumber: string;
   bankHolder: string;
+  qris: string | null;
   registrationStatus: string | null;
   creationFile: string | null;
 };

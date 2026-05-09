@@ -34,6 +34,7 @@ type CompetitionPaymentInfo = {
   bankName?: string | null;
   bankNumber?: string | null;
   bankHolder?: string | null;
+  qris?: string | null;
 };
 
 export default function RegisterCompetition() {
@@ -77,6 +78,7 @@ export default function RegisterCompetition() {
           bankName: c.bankName,
           bankNumber: c.bankNumber,
           bankHolder: c.bankHolder,
+          qris: c.qris,
         });
       } catch {
         toast.error("Lomba tidak ditemukan");

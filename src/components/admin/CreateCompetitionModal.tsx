@@ -38,6 +38,11 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const [preview, setPreview] = useState<string | null>(null);
   const [posterUrl, setPosterUrl] = useState<string | null>(null);
 
+  const [paymentMethods, setPaymentMethods] = useState<string[]>(["BANK"]);
+  const [qris, setQris] = useState<File | null>(null);
+  const [qrisPreview, setQrisPreview] = useState<string | null>(null);
+  const [qrisUrl, setQrisUrl] = useState<string | null>(null);
+
   const [loading, setLoading] = useState<boolean>(false);
 
   const addRequirement = () => setRequirements([...requirements, ""]);
@@ -73,6 +78,11 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     setBankNumber("");
     setBankHolder("");
 
+    setPaymentMethods(["BANK"]);
+    setQris(null);
+    setQrisPreview(null);
+    setQrisUrl(null);
+
     setRequirements([""]);
     setTimeline([{ title: "", startDate: "", endDate: "" }]);
   }, []);
@@ -99,8 +109,45 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     }
   };
 
+  const handleQrisUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+      });
+
+      setQris(compressedFile);
+
+      const previewUrl = URL.createObjectURL(compressedFile);
+      setQrisPreview(previewUrl);
+
+      e.target.value = "";
+    } catch {
+      toast.error("Gagal memproses QRIS");
+    }
+  };
+
   const submit = async () => {
     const formData = new FormData();
+
+    if (levels.length === 0) return toast.error("Pilih minimal satu jenjang!");
+    if (paymentMethods.length === 0) return toast.error("Pilih minimal satu metode pembayaran!");
+
+    if (paymentMethods.includes("BANK")) {
+      if (!bankName || !bankNumber || !bankHolder) {
+        return toast.error("Lengkapi data rekening bank!");
+      }
+    }
+
+    if (paymentMethods.includes("QRIS")) {
+      if (!qris && !qrisUrl) {
+        return toast.error("Upload file QRIS!");
+      }
+    }
 
     formData.append("title", title);
     formData.append("category", category);
@@ -109,12 +156,30 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     formData.append("price", price);
     formData.append("description", description);
 
-    formData.append("bankName", bankName);
-    formData.append("bankNumber", bankNumber);
-    formData.append("bankHolder", bankHolder);
+    if (paymentMethods.includes("BANK")) {
+      formData.append("bankName", bankName);
+      formData.append("bankNumber", bankNumber);
+      formData.append("bankHolder", bankHolder);
+    } else {
+      formData.append("bankName", "");
+      formData.append("bankNumber", "");
+      formData.append("bankHolder", "");
+    }
 
     if (poster) {
       formData.append("poster", poster);
+    } else if (posterUrl) {
+      formData.append("poster", posterUrl);
+    }
+
+    if (paymentMethods.includes("QRIS")) {
+      if (qris) {
+        formData.append("qris", qris);
+      } else if (qrisUrl) {
+        formData.append("qris", qrisUrl);
+      }
+    } else {
+      formData.append("qris", "");
     }
 
     formData.append("requirements", JSON.stringify(requirements));
@@ -174,6 +239,12 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       setBankName(data.bankName || "");
       setBankNumber(data.bankNumber || "");
       setBankHolder(data.bankHolder || "");
+      setQrisUrl(data.qris || null);
+
+      const methods = [];
+      if (data.bankName) methods.push("BANK");
+      if (data.qris) methods.push("QRIS");
+      setPaymentMethods(methods.length > 0 ? methods : ["BANK"]);
 
       setPoster(null);
       setPosterUrl(data.poster);
@@ -295,24 +366,76 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
                 <br />
               </>
             )}
-            <input
-              placeholder="Nama Bank (contoh: BCA)"
-              value={bankName}
-              onChange={(e) => setBankName(e.target.value)}
-              className="full"
-            />
+            <div className="checkbox-group-wrapper full">
+              <label>Metode Pembayaran (Pilih minimal satu)</label>
+              <div className="checkbox-group">
+                {["BANK", "QRIS"].map((m) => (
+                  <label key={m} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={paymentMethods.includes(m)}
+                      onChange={() => {
+                        if (paymentMethods.includes(m)) {
+                          if (paymentMethods.length > 1) {
+                            setPaymentMethods(paymentMethods.filter((item) => item !== m));
+                          } else {
+                            toast.error("Minimal pilih satu metode pembayaran");
+                          }
+                        } else {
+                          setPaymentMethods([...paymentMethods, m]);
+                        }
+                      }}
+                    />
+                    <span>{m === "BANK" ? "Transfer Bank" : "QRIS"}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-            <input
-              placeholder="Nomor Rekening"
-              value={bankNumber}
-              onChange={(e) => setBankNumber(e.target.value)}
-            />
+            {paymentMethods.includes("BANK") && (
+              <>
+                <input
+                  placeholder="Nama Bank (contoh: BCA)"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="full"
+                />
 
-            <input
-              placeholder="Atas Nama Rekening"
-              value={bankHolder}
-              onChange={(e) => setBankHolder(e.target.value)}
-            />
+                <input
+                  placeholder="Nomor Rekening"
+                  value={bankNumber}
+                  onChange={(e) => setBankNumber(e.target.value)}
+                />
+
+                <input
+                  placeholder="Atas Nama Rekening"
+                  value={bankHolder}
+                  onChange={(e) => setBankHolder(e.target.value)}
+                />
+              </>
+            )}
+
+            {paymentMethods.includes("QRIS") && (
+              <div className="full">
+                <div className="upload-field">
+                  <label style={{ fontSize: 13, color: "#64748b", marginBottom: 8, display: "block" }}>
+                    Upload QRIS
+                  </label>
+                  <input type="file" accept="image/*" onChange={handleQrisUpload} />
+                </div>
+                {(qrisPreview || qrisUrl) && (
+                  <img
+                    src={
+                      qrisPreview
+                        ? qrisPreview
+                        : `${import.meta.env.VITE_API_URL}/files/${qrisUrl}`
+                    }
+                    alt="QRIS"
+                    style={{ maxWidth: "200px", marginTop: 10, borderRadius: 8 }}
+                  />
+                )}
+              </div>
+            )}
           </div>
 
           <textarea

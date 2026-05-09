@@ -12,6 +12,7 @@ export type CompetitionDetailVM = {
   timeline: { title: string; date: string }[];
   registrationStatus: string | null;
   creationFile: string | null;
+  qris: string | null;
 };
 
 export type CompetitionRequirementDTO = {
@@ -41,6 +42,7 @@ export type CompetitionDetailDTO = {
   juknis?: string;
   registrationStatus: string | null;
   creationFile: string | null;
+  qris: string | null;
 };
 
 export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDetailVM {
@@ -63,6 +65,7 @@ export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDet
     })),
     registrationStatus: api.registrationStatus,
     creationFile: api.creationFile,
+    qris: api.qris,
   };
 }
 /* helpers */
