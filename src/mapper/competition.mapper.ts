@@ -6,6 +6,7 @@ export type CompetitionCardVM = {
   poster: string;
   closed: boolean;
   submitted: boolean;
+  creationFile: string | null;
 };
 
 export type CompetitionListItemDTO = {
@@ -18,6 +19,7 @@ export type CompetitionListItemDTO = {
   participants: number;
   status: "open" | "closed";
   submitted: boolean;
+  creationFile: string | null;
 };
 
 export function toCompetitionCardVM(api: CompetitionListItemDTO): CompetitionCardVM {
@@ -33,5 +35,6 @@ export function toCompetitionCardVM(api: CompetitionListItemDTO): CompetitionCar
     poster: api.poster ?? "/default-competition.png",
     closed: api.status === "closed",
     submitted: api.submitted,
+    creationFile: api.creationFile,
   };
 }

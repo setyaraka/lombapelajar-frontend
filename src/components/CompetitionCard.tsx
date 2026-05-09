@@ -8,6 +8,7 @@ type Props = {
   date: string;
   poster?: string | null;
   submitted?: boolean;
+  creationFile?: string | null;
   onEdit?: () => void;
 };
 
@@ -18,6 +19,7 @@ export default function CompetitionCard({
   date,
   poster,
   submitted,
+  creationFile,
   onEdit,
 }: Props) {
   const navigate = useNavigate();
@@ -50,7 +52,15 @@ export default function CompetitionCard({
           <div className="info-row">
             <span className="date-info">{date}</span>
           </div>
-          {user && submitted && <div className="badge followed-badge">Diikuti</div>}
+          {user && submitted && (
+            <>
+              {creationFile ? (
+                <div className="badge approved">Karya Terupload</div>
+              ) : (
+                <div className="badge pending">Belum Upload Karya</div>
+              )}
+            </>
+          )}
         </div>
 
         <div className="competitions-footer">

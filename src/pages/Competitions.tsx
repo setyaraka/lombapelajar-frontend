@@ -113,6 +113,7 @@ export default function Competitions() {
                   date={c.date}
                   poster={c.poster}
                   submitted={c.submitted}
+                  creationFile={c.creationFile}
                   onEdit={() => {
                     setSelectedCompetitionId(c.id);
                     setModalOpen(true);
