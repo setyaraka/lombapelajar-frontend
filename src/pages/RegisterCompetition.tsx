@@ -9,6 +9,7 @@ import { createRegistration } from "../services/registration.service";
 import { getCompetition } from "../services/competition.service";
 import api from "../api/axios";
 import { getErrorMessage } from "../helper/errorHandler";
+import toast from "react-hot-toast";
 
 // export type RegisterForm = {
 //   name: string;
@@ -78,7 +79,7 @@ export default function RegisterCompetition() {
           bankHolder: c.bankHolder,
         });
       } catch {
-        alert("Lomba tidak ditemukan");
+        toast.error("Lomba tidak ditemukan");
         navigate("/");
       }
     };
@@ -122,11 +123,11 @@ export default function RegisterCompetition() {
         fileKey,
       });
 
-      alert("Pendaftaran berhasil!");
+      toast.success("Pendaftaran berhasil!");
       navigate("/");
     } catch (err) {
       const error = getErrorMessage(err);
-      alert(error);
+      toast.error(error);
     } finally {
       setLoading(false);
     }

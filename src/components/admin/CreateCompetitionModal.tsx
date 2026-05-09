@@ -9,6 +9,7 @@ import LoadingButton from "../LoadingButton";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { id } from "date-fns/locale";
+import toast from "react-hot-toast";
 
 type Props = {
   open: boolean;
@@ -94,7 +95,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
       e.target.value = "";
     } catch {
-      alert("Gagal memproses gambar");
+      toast.error("Gagal memproses gambar");
     }
   };
 
@@ -123,10 +124,10 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     try {
       if (competitionId) {
         await updateCompetition(competitionId, formData);
-        alert("Lomba berhasil diupdate!");
+        toast.success("Lomba berhasil diupdate!");
       } else {
         await createCompetition(formData);
-        alert("Lomba berhasil dibuat!");
+        toast.success("Lomba berhasil dibuat!");
       }
 
       onSuccess?.();
@@ -134,7 +135,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       resetForm();
       setPosterUrl(null);
     } catch {
-      alert("Gagal menyimpan lomba");
+      toast.error("Gagal menyimpan lomba");
     } finally {
       setLoading(false);
     }
@@ -273,7 +274,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
             <div className="upload-field">
               <input type="file" accept="image/*" onChange={handleUpload} />
               <small style={{ fontSize: 11, color: "#777", display: "block", marginTop: 4 }}>
-                Format JPG/PNG, maks 1MB (otomatis dikompres)
+                Format JPG/PNG
               </small>
             </div>
             {(preview || posterUrl) && (

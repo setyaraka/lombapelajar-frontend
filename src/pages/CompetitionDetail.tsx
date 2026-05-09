@@ -11,6 +11,7 @@ import Loading from "../components/Loading";
 import LoadingButton from "../components/LoadingButton";
 import imageCompression from "browser-image-compression";
 import { uploadCreation } from "../services/registration.service";
+import toast from "react-hot-toast";
 
 type ApiError = {
   response?: {
@@ -73,7 +74,7 @@ export default function CompetitionDetail() {
   };
 
   const handleUploadJuknis = async () => {
-    if (!juknisFile || !id) return alert("Pilih file dulu!");
+    if (!juknisFile || !id) return toast.error("Pilih file dulu!");
 
     try {
       setUploadingJuknis(true);
@@ -89,12 +90,12 @@ export default function CompetitionDetail() {
           : prev
       );
 
-      alert("Upload juknis berhasil");
+      toast.success("Upload juknis berhasil");
       setJuknisFile(null);
       setShowJuknisModal(false);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Upload gagal";
-      alert(message);
+      toast.error(message);
     } finally {
       setUploadingJuknis(false);
     }
@@ -102,7 +103,7 @@ export default function CompetitionDetail() {
 
   const handleDownloadJuknis = async () => {
     if (!competition?.juknis) {
-      return alert("Juknis tidak tersedia");
+      return toast.error("Juknis tidak tersedia");
     }
 
     try {
@@ -130,21 +131,21 @@ export default function CompetitionDetail() {
       window.URL.revokeObjectURL(url);
     } catch (err) {
       console.error(err);
-      alert("Gagal download juknis");
+      toast.error("Gagal download juknis");
     } finally {
       setDownloadJuknisLoading(false);
     }
   };
 
   const handleUploadCreation = async () => {
-    if (!file || !id) return alert("Pilih file dulu!");
+    if (!file || !id) return toast.error("Pilih file dulu!");
 
     try {
       setUploading(true);
 
       const res = await uploadCreation(id, file);
 
-      alert("Upload karya berhasil");
+      toast.success("Upload karya berhasil");
 
       setFile(null);
       setShowUploadModal(false);
@@ -163,7 +164,7 @@ export default function CompetitionDetail() {
 
       const message = error.response?.data?.message || "Upload gagal";
 
-      alert(message);
+      toast.error(message);
     } finally {
       setUploading(false);
     }

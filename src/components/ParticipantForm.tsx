@@ -1,5 +1,6 @@
 import { useState } from "react";
 import type { RegisterForm } from "../pages/RegisterCompetition";
+import toast from "react-hot-toast";
 
 export default function ParticipantForm({
   form,
@@ -25,7 +26,7 @@ export default function ParticipantForm({
     setErrors(e);
 
     if (Object.keys(e).length > 0) {
-      alert("Masih ada data yang belum diisi");
+      toast.error("Masih ada data yang belum diisi");
       return;
     }
 
