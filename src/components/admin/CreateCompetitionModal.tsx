@@ -270,7 +270,12 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               value={formatRupiah(price)}
               onChange={handlePriceChange}
             />
-            <input type="file" accept="image/*" onChange={handleUpload} />
+            <div className="upload-field">
+              <input type="file" accept="image/*" onChange={handleUpload} />
+              <small style={{ fontSize: 11, color: "#777", display: "block", marginTop: 4 }}>
+                Format JPG/PNG, maks 1MB (otomatis dikompres)
+              </small>
+            </div>
             {(preview || posterUrl) && (
               <>
                 <img

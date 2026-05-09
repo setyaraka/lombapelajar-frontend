@@ -1,3 +1,4 @@
+import imageCompression from "browser-image-compression";
 import type { RegisterForm } from "../pages/RegisterCompetition";
 import LoadingButton from "./LoadingButton";
 export type CompetitionPaymentInfo = {
@@ -54,13 +55,27 @@ export default function PaymentForm({
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => updateForm({ paymentProof: e.target.files?.[0] })}
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            try {
+              const compressed = await imageCompression(file, {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1280,
+                useWebWorker: true,
+              });
+              updateForm({ paymentProof: compressed });
+            } catch {
+              updateForm({ paymentProof: file });
+            }
+          }}
         />
 
         {form.paymentProof && <div className="file-selected">{form.paymentProof.name}</div>}
 
         <div style={{ fontSize: 13, color: "#777", marginTop: 8 }}>
-          Format JPG/PNG, maksimal 2MB
+          Format JPG/PNG, maksimal 1MB
         </div>
       </div>
 

@@ -9,6 +9,7 @@ import {
 } from "../mapper/competition-detail.mapper";
 import Loading from "../components/Loading";
 import LoadingButton from "../components/LoadingButton";
+import imageCompression from "browser-image-compression";
 import { uploadCreation } from "../services/registration.service";
 
 type ApiError = {
@@ -44,11 +45,24 @@ export default function CompetitionDetail() {
       ? `${import.meta.env.VITE_API_URL}/files/${competition.poster}`
       : defaultPoster;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const selected = e.target.files?.[0];
     if (!selected) return;
 
-    setFile(selected);
+    if (selected.type.startsWith("image/")) {
+      try {
+        const compressed = await imageCompression(selected, {
+          maxSizeMB: 1,
+          maxWidthOrHeight: 1280,
+          useWebWorker: true,
+        });
+        setFile(compressed);
+      } catch {
+        setFile(selected);
+      }
+    } else {
+      setFile(selected);
+    }
   };
 
   const handleJuknisChange = (e: React.ChangeEvent<HTMLInputElement>) => {
