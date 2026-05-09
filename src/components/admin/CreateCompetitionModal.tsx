@@ -246,7 +246,9 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
             <DatePicker
               selected={deadline ? new Date(deadline) : null}
-              onChange={(date) => setDeadline(date ? date.toISOString().split("T")[0] : "")}
+              onChange={(date: Date | null) =>
+                setDeadline(date ? date.toISOString().split("T")[0] : "")
+              }
               locale={id}
               dateFormat="dd/MM/yyyy"
               placeholderText="Deadline Lomba"
@@ -340,7 +342,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
                 selectsRange={true}
                 startDate={t.startDate ? new Date(t.startDate) : undefined}
                 endDate={t.endDate ? new Date(t.endDate) : undefined}
-                onChange={(update) => {
+                onChange={(update: [Date | null, Date | null]) => {
                   const [start, end] = update;
                   const copy = [...timeline];
                   copy[i].startDate = start ? start.toISOString().split("T")[0] : "";
