@@ -46,6 +46,7 @@ export type CompetitionDetail = {
   bankName: string;
   bankNumber: string;
   bankHolder: string;
+  registrationStatus: string | null;
 };
 
 export const getCompetitions = async (params: CompetitionQuery) => {

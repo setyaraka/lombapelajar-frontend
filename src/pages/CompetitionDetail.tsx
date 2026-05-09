@@ -69,9 +69,9 @@ export default function CompetitionDetail() {
       setCompetition((prev) =>
         prev
           ? {
-              ...prev,
-              juknis: res.data.juknis,
-            }
+            ...prev,
+            juknis: res.data.juknis,
+          }
           : prev
       );
 
@@ -139,9 +139,9 @@ export default function CompetitionDetail() {
       setCompetition((prev) =>
         prev
           ? {
-              ...prev,
-              karyaFile: res.data.karyaFile,
-            }
+            ...prev,
+            karyaFile: res.data.karyaFile,
+          }
           : prev
       );
     } catch (err: unknown) {
@@ -273,12 +273,14 @@ export default function CompetitionDetail() {
               </div>
 
               <div className="grid grid-cols-2">
-                <button
-                  className="btn width"
-                  onClick={() => navigate(`/competition/${competition.id}/register`)}
-                >
-                  Daftar Sekarang
-                </button>
+                {(!competition.registrationStatus || competition.registrationStatus === "REJECTED") && (
+                  <button
+                    className="btn width"
+                    onClick={() => navigate(`/competition/${competition.id}/register`)}
+                  >
+                    Daftar Sekarang
+                  </button>
+                )}
 
                 <button className="btn width">Pengumuman</button>
                 {/* <button className="btn width">Juknis</button> */}
@@ -291,7 +293,15 @@ export default function CompetitionDetail() {
                 </button>
               </div>
               <div className="mt-1">
-                <span className="badge approved">Terverifikasi</span>
+                {competition.registrationStatus === "verified" && (
+                  <span className="badge approved">Terverifikasi</span>
+                )}
+                {competition.registrationStatus === "rejected" && (
+                  <span className="badge rejected">Ditolak</span>
+                )}
+                {competition.registrationStatus === "pending" && (
+                  <span className="badge pending">Menunggu Verifikasi</span>
+                )}
               </div>
             </div>
 

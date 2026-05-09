@@ -10,6 +10,7 @@ export type CompetitionDetailVM = {
   requirements: string[];
   juknis?: string;
   timeline: { title: string; date: string }[];
+  registrationStatus: string | null;
 };
 
 export type CompetitionRequirementDTO = {
@@ -37,6 +38,7 @@ export type CompetitionDetailDTO = {
   requirements: CompetitionRequirementDTO[];
   timelines: CompetitionTimelineDTO[];
   juknis?: string;
+  registrationStatus: string | null;
 };
 
 export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDetailVM {
@@ -57,6 +59,7 @@ export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDet
       title: t.title,
       date: `${formatDate(t.startDate)} - ${formatDate(t.endDate)}`,
     })),
+    registrationStatus: api.registrationStatus,
   };
 }
 /* helpers */
