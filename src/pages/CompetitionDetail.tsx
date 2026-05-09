@@ -380,14 +380,22 @@ export default function CompetitionDetail() {
                 <button className="btn width" onClick={() => setShowJuknisModal(true)}>
                   Upload Juknis
                 </button>
-                {competition.creationFile ? (
-                  <button className="btn width" onClick={() => setShowCreationModal(true)}>
-                    Lihat File yang Diunggah
-                  </button>
-                ) : (
-                  <button className="btn width" onClick={() => setShowUploadModal(true)}>
-                    Upload Karya
-                  </button>
+                {competition.registrationStatus === "verified" && (
+                  competition.creationFile ? (
+                    <button
+                      className="btn width"
+                      onClick={() => setShowCreationModal(true)}
+                    >
+                      Lihat File yang Diunggah
+                    </button>
+                  ) : (
+                    <button
+                      className="btn width"
+                      onClick={() => setShowUploadModal(true)}
+                    >
+                      Upload Karya
+                    </button>
+                  )
                 )}
               </div>
               <div className="mt-1">
