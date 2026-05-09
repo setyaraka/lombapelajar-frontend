@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import LoadingButton from "../components/LoadingButton";
 import { useAuth } from "../auth/useAuth";
 import { Eye, EyeOff } from "lucide-react";
+import toast from "react-hot-toast";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -17,7 +18,7 @@ export default function Login() {
     e.preventDefault();
 
     if (!email || !password) {
-      alert("Isi email & password");
+      toast.error("Isi email & password");
       return;
     }
 
@@ -29,10 +30,10 @@ export default function Login() {
       if (loggedInUser.role === "ADMIN") {
         navigate("/admin/participants");
       } else {
-        navigate("/list");
+        navigate("/");
       }
     } catch {
-      alert("Email atau password salah");
+      toast.error("Email atau password salah");
     } finally {
       setLoading(false);
     }

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Loading from "./Loading";
 
 type Status = "PENDING" | "VERIFIED" | "REJECTED";
 
@@ -74,7 +75,7 @@ export default function PaymentProofModal({ open, data, onClose, changeStatus }:
         <div className="proof-body">
           {/* IMAGE */}
           <div className="proof-image">
-            {imageLoading && <div className="proof-image-loading">Loading image...</div>}
+            {imageLoading && <Loading text="Mengambil data..." />}
 
             <img
               src={data.imageUrl}

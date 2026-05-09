@@ -13,7 +13,7 @@ type Competition = {
   id: string;
   title: string;
   category: string;
-  level: string;
+  level: string[];
   participants: number;
   deadline: string;
   status: "open" | "closed";
@@ -125,6 +125,7 @@ export default function CompetitionsTab() {
             <option value="SD">SD</option>
             <option value="SMP">SMP</option>
             <option value="SMA">SMA</option>
+            <option value="MAHASISWA">MAHASISWA</option>
           </select>
 
           <select
@@ -173,24 +174,24 @@ export default function CompetitionsTab() {
             ) : (
               competitions.map((c) => (
                 <tr key={c.id}>
-                  <td>{c.title.toLocaleUpperCase()}</td>
-                  <td>{c.category.toLocaleUpperCase()}</td>
-                  <td>{c.level.toLocaleUpperCase()}</td>
-                  <td>{new Date(c.deadline).toLocaleDateString("id-ID")}</td>
+                  <td data-label="Lomba">{c.title.toLocaleUpperCase()}</td>
+                  <td data-label="Kategori">{c.category.toLocaleUpperCase()}</td>
+                  <td data-label="Jenjang">{c.level.join(", ").toLocaleUpperCase()}</td>
+                  <td data-label="Deadline">{new Date(c.deadline).toLocaleDateString("id-ID")}</td>
 
-                  <td>
+                  <td data-label="Status">
                     <span className={`status ${c.status}`}>
                       {c.status === "open" ? "Dibuka" : "Ditutup"}
                     </span>
                   </td>
 
-                  <td>
+                  <td data-label="Peserta">
                     <button className="btn-link" onClick={() => openParticipants(c)}>
                       {c.participants}
                     </button>
                   </td>
 
-                  <td className="actions">
+                  <td data-label="Aksi" className="actions">
                     <button
                       className="btn edit"
                       onClick={() => {

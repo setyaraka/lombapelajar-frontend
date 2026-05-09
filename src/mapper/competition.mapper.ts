@@ -1,30 +1,32 @@
 export type CompetitionCardVM = {
   id: string;
   title: string;
-  level: string;
+  level: string[];
   date: string;
   poster: string;
   closed: boolean;
   submitted: boolean;
+  creationFile: string | null;
 };
 
 export type CompetitionListItemDTO = {
   id: string;
   title: string;
   category: string;
-  level: string;
+  level: string[];
   deadline: string;
   poster: string | null;
   participants: number;
   status: "open" | "closed";
-  registrations?: { id: string }[];
+  submitted: boolean;
+  creationFile: string | null;
 };
 
 export function toCompetitionCardVM(api: CompetitionListItemDTO): CompetitionCardVM {
   return {
     id: api.id,
     title: api.title,
-    level: api.level,
+    level: Array.isArray(api.level) ? api.level : [api.level],
     date: new Date(api.deadline).toLocaleDateString("id-ID", {
       day: "numeric",
       month: "long",
@@ -32,6 +34,7 @@ export function toCompetitionCardVM(api: CompetitionListItemDTO): CompetitionCar
     }),
     poster: api.poster ?? "/default-competition.png",
     closed: api.status === "closed",
-    submitted: (api.registrations?.length ?? 0) > 0,
+    submitted: api.submitted,
+    creationFile: api.creationFile,
   };
 }

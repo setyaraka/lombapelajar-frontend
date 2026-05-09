@@ -4,10 +4,11 @@ import { useAuth } from "../auth/useAuth";
 type Props = {
   id: string;
   title: string;
-  level: string;
+  level: string[];
   date: string;
   poster?: string | null;
   submitted?: boolean;
+  creationFile?: string | null;
   onEdit?: () => void;
 };
 
@@ -18,6 +19,7 @@ export default function CompetitionCard({
   date,
   poster,
   submitted,
+  creationFile,
   onEdit,
 }: Props) {
   const navigate = useNavigate();
@@ -39,11 +41,27 @@ export default function CompetitionCard({
 
       <div className="content">
         <div className="competition-name">{title}</div>
-        <div className="info">
-          {level.toUpperCase()} | {date}
+        <div className="flex flex-wrap items-center gap-3 mt-1 mb-2">
+          <div className="flex flex-wrap gap-1">
+            {level.map((lv) => (
+              <span key={lv} className={`badge-level ${lv.toLowerCase()}`}>
+                {lv}
+              </span>
+            ))}
+          </div>
+          <div className="info-row">
+            <span className="date-info">{date}</span>
+          </div>
+          {user && submitted && (
+            <>
+              {creationFile ? (
+                <div className="badge approved">Karya Terupload</div>
+              ) : (
+                <div className="badge pending">Belum Upload Karya</div>
+              )}
+            </>
+          )}
         </div>
-
-        {submitted && <div className="submitted-info">Kamu sudah terdaftar di lomba ini</div>}
 
         <div className="competitions-footer">
           <button className="btn" onClick={openDetail}>

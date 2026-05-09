@@ -8,7 +8,11 @@ export type CompetitionDetailVM = {
   poster?: string | null;
   description: string;
   requirements: string[];
+  juknis?: string;
   timeline: { title: string; date: string }[];
+  registrationStatus: string | null;
+  creationFile: string | null;
+  qris: string | null;
 };
 
 export type CompetitionRequirementDTO = {
@@ -28,13 +32,17 @@ export type CompetitionDetailDTO = {
   title: string;
   description: string | null;
   poster: string | null;
-  level: string;
+  level: string[];
   category: string;
   deadline: string;
   price: number;
   createdAt?: string;
   requirements: CompetitionRequirementDTO[];
   timelines: CompetitionTimelineDTO[];
+  juknis?: string;
+  registrationStatus: string | null;
+  creationFile: string | null;
+  qris: string | null;
 };
 
 export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDetailVM {
@@ -42,11 +50,12 @@ export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDet
     id: api.id,
     title: api.title,
     category: api.category,
-    level: api.level,
+    level: Array.isArray(api.level) ? api.level.join(", ") : api.level,
     deadline: formatDate(api.deadline),
     price: formatRupiah(api.price),
     poster: api.poster,
     description: api.description || "",
+    juknis: api.juknis || "",
 
     requirements: api.requirements.map((r) => r.text),
 
@@ -54,6 +63,9 @@ export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDet
       title: t.title,
       date: `${formatDate(t.startDate)} - ${formatDate(t.endDate)}`,
     })),
+    registrationStatus: api.registrationStatus,
+    creationFile: api.creationFile,
+    qris: api.qris,
   };
 }
 /* helpers */

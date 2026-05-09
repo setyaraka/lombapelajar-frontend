@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { AuthProvider } from "./auth/AuthProvider";
+import { Toaster } from "react-hot-toast";
 import Login from "./pages/Login";
 import ProtectedRoute from "./routes/ProtectedRoute";
 import Register from "./pages/Register";
@@ -7,20 +8,22 @@ import Competitions from "./pages/Competitions";
 import CompetitionDetail from "./pages/CompetitionDetail";
 import RegisterCompetition from "./pages/RegisterCompetition";
 import AdminParticipants from "./pages/AdminParticipants";
+import WhatsAppButton from "./components/WhatsAppButton";
 
 export default function App() {
   return (
     <BrowserRouter>
+      <Toaster position="top-center" reverseOrder={false} />
       <AuthProvider>
         <Routes>
           {/* public */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/" element={<Competitions />} />
+          <Route path="/competition/:id" element={<CompetitionDetail />} />
 
           {/* private */}
           <Route element={<ProtectedRoute />}>
-            <Route path="/list" element={<Competitions />} />
-            <Route path="/competition/:id" element={<CompetitionDetail />} />
             <Route path="/competition/:id/register" element={<RegisterCompetition />} />
             <Route path="/admin/participants" element={<AdminParticipants />} />
           </Route>
@@ -28,6 +31,7 @@ export default function App() {
           {/* NOT FOUND -> LOGIN */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
+        <WhatsAppButton />
       </AuthProvider>
     </BrowserRouter>
   );

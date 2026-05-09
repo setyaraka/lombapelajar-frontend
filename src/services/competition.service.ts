@@ -26,7 +26,7 @@ export type CompetitionDetail = {
   title: string;
   description: string | null;
   poster: string | null;
-  level: string;
+  level: string[];
   category: string;
   deadline: string;
   price: number;
@@ -46,6 +46,9 @@ export type CompetitionDetail = {
   bankName: string;
   bankNumber: string;
   bankHolder: string;
+  qris: string | null;
+  registrationStatus: string | null;
+  creationFile: string | null;
 };
 
 export const getCompetitions = async (params: CompetitionQuery) => {
@@ -85,5 +88,15 @@ export const deleteCompetition = async (id: string) => {
 
 export const getCompetitionParticipants = async (id: string) => {
   const res = await api.get(`/competitions/${id}/participants`);
+  return res.data;
+};
+
+export const uploadJuknis = async (id: string, file: File) => {
+  const formData = new FormData();
+  formData.append("file", file);
+  formData.append("competitionId", id);
+
+  const res = await api.post("/competitions/upload-juknis", formData);
+
   return res.data;
 };

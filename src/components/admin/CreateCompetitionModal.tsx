@@ -6,6 +6,10 @@ import {
 } from "../../services/competition.service";
 import imageCompression from "browser-image-compression";
 import LoadingButton from "../LoadingButton";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { id } from "date-fns/locale";
+import toast from "react-hot-toast";
 
 type Props = {
   open: boolean;
@@ -18,7 +22,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const defaultPoster = "/default-poster.png";
   const [title, setTitle] = useState("");
   const [category, setCategory] = useState("");
-  const [level, setLevel] = useState("");
+  const [levels, setLevels] = useState<string[]>([]);
   const [deadline, setDeadline] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -33,6 +37,11 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const [poster, setPoster] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [posterUrl, setPosterUrl] = useState<string | null>(null);
+
+  const [paymentMethods, setPaymentMethods] = useState<string[]>(["BANK"]);
+  const [qris, setQris] = useState<File | null>(null);
+  const [qrisPreview, setQrisPreview] = useState<string | null>(null);
+  const [qrisUrl, setQrisUrl] = useState<string | null>(null);
 
   const [loading, setLoading] = useState<boolean>(false);
 
@@ -59,7 +68,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const resetForm = useCallback(() => {
     setTitle("");
     setCategory("");
-    setLevel("");
+    setLevels([]);
     setDeadline("");
     setPrice("");
     setPoster(null);
@@ -68,6 +77,11 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     setBankName("");
     setBankNumber("");
     setBankHolder("");
+
+    setPaymentMethods(["BANK"]);
+    setQris(null);
+    setQrisPreview(null);
+    setQrisUrl(null);
 
     setRequirements([""]);
     setTimeline([{ title: "", startDate: "", endDate: "" }]);
@@ -91,26 +105,81 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
       e.target.value = "";
     } catch {
-      alert("Gagal memproses gambar");
+      toast.error("Gagal memproses gambar");
+    }
+  };
+
+  const handleQrisUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const compressedFile = await imageCompression(file, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+      });
+
+      setQris(compressedFile);
+
+      const previewUrl = URL.createObjectURL(compressedFile);
+      setQrisPreview(previewUrl);
+
+      e.target.value = "";
+    } catch {
+      toast.error("Gagal memproses QRIS");
     }
   };
 
   const submit = async () => {
     const formData = new FormData();
 
+    if (levels.length === 0) return toast.error("Pilih minimal satu jenjang!");
+    if (paymentMethods.length === 0) return toast.error("Pilih minimal satu metode pembayaran!");
+
+    if (paymentMethods.includes("BANK")) {
+      if (!bankName || !bankNumber || !bankHolder) {
+        return toast.error("Lengkapi data rekening bank!");
+      }
+    }
+
+    if (paymentMethods.includes("QRIS")) {
+      if (!qris && !qrisUrl) {
+        return toast.error("Upload file QRIS!");
+      }
+    }
+
     formData.append("title", title);
     formData.append("category", category);
-    formData.append("level", level);
+    formData.append("level", JSON.stringify(levels));
     formData.append("deadline", deadline);
     formData.append("price", price);
     formData.append("description", description);
 
-    formData.append("bankName", bankName);
-    formData.append("bankNumber", bankNumber);
-    formData.append("bankHolder", bankHolder);
+    if (paymentMethods.includes("BANK")) {
+      formData.append("bankName", bankName);
+      formData.append("bankNumber", bankNumber);
+      formData.append("bankHolder", bankHolder);
+    } else {
+      formData.append("bankName", "");
+      formData.append("bankNumber", "");
+      formData.append("bankHolder", "");
+    }
 
     if (poster) {
       formData.append("poster", poster);
+    } else if (posterUrl) {
+      formData.append("poster", posterUrl);
+    }
+
+    if (paymentMethods.includes("QRIS")) {
+      if (qris) {
+        formData.append("qris", qris);
+      } else if (qrisUrl) {
+        formData.append("qris", qrisUrl);
+      }
+    } else {
+      formData.append("qris", "");
     }
 
     formData.append("requirements", JSON.stringify(requirements));
@@ -120,10 +189,10 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     try {
       if (competitionId) {
         await updateCompetition(competitionId, formData);
-        alert("Lomba berhasil diupdate!");
+        toast.success("Lomba berhasil diupdate!");
       } else {
         await createCompetition(formData);
-        alert("Lomba berhasil dibuat!");
+        toast.success("Lomba berhasil dibuat!");
       }
 
       onSuccess?.();
@@ -131,7 +200,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       resetForm();
       setPosterUrl(null);
     } catch {
-      alert("Gagal menyimpan lomba");
+      toast.error("Gagal menyimpan lomba");
     } finally {
       setLoading(false);
     }
@@ -151,7 +220,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
 
       setTitle(data.title);
       setCategory(data.category);
-      setLevel(data.level);
+      setLevels(Array.isArray(data.level) ? data.level : [data.level]);
       setDeadline(data.deadline.slice(0, 10));
       setPrice(String(data.price));
       setPoster(null);
@@ -170,6 +239,12 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       setBankName(data.bankName || "");
       setBankNumber(data.bankNumber || "");
       setBankHolder(data.bankHolder || "");
+      setQrisUrl(data.qris || null);
+
+      const methods = [];
+      if (data.bankName) methods.push("BANK");
+      if (data.qris) methods.push("QRIS");
+      setPaymentMethods(methods.length > 0 ? methods : ["BANK"]);
 
       setPoster(null);
       setPosterUrl(data.poster);
@@ -233,20 +308,46 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               <option value="sains">Sains</option>
             </select>
 
-            <select value={level} onChange={(e) => setLevel(e.target.value)}>
-              <option value="">Jenjang</option>
-              <option value="sd">SD</option>
-              <option value="smp">SMP</option>
-              <option value="sma">SMA</option>
-            </select>
+            <div className="checkbox-group-wrapper full">
+              <label>Jenjang</label>
+              <div className="checkbox-group">
+                {["SD", "SMP", "SMA", "MAHASISWA"].map((lv) => (
+                  <label key={lv} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={levels.includes(lv)}
+                      onChange={(e) => {
+                        if (e.target.checked) setLevels([...levels, lv]);
+                        else setLevels(levels.filter((l) => l !== lv));
+                      }}
+                    />
+                    <span>{lv}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-            <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+            <DatePicker
+              selected={deadline ? new Date(deadline) : null}
+              onChange={(date: Date | null) =>
+                setDeadline(date ? date.toISOString().split("T")[0] : "")
+              }
+              locale={id}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Deadline Lomba"
+              className="datepicker-input"
+            />
             <input
               placeholder="Harga (Rp)"
               value={formatRupiah(price)}
               onChange={handlePriceChange}
             />
-            <input type="file" accept="image/*" onChange={handleUpload} />
+            <div className="upload-field">
+              <input type="file" accept="image/*" onChange={handleUpload} />
+              <small style={{ fontSize: 11, color: "#777", display: "block", marginTop: 4 }}>
+                Format JPG/PNG
+              </small>
+            </div>
             {(preview || posterUrl) && (
               <>
                 <img
@@ -265,24 +366,76 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
                 <br />
               </>
             )}
-            <input
-              placeholder="Nama Bank (contoh: BCA)"
-              value={bankName}
-              onChange={(e) => setBankName(e.target.value)}
-              className="full"
-            />
+            <div className="checkbox-group-wrapper full">
+              <label>Metode Pembayaran (Pilih minimal satu)</label>
+              <div className="checkbox-group">
+                {["BANK", "QRIS"].map((m) => (
+                  <label key={m} className="checkbox-item">
+                    <input
+                      type="checkbox"
+                      checked={paymentMethods.includes(m)}
+                      onChange={() => {
+                        if (paymentMethods.includes(m)) {
+                          if (paymentMethods.length > 1) {
+                            setPaymentMethods(paymentMethods.filter((item) => item !== m));
+                          } else {
+                            toast.error("Minimal pilih satu metode pembayaran");
+                          }
+                        } else {
+                          setPaymentMethods([...paymentMethods, m]);
+                        }
+                      }}
+                    />
+                    <span>{m === "BANK" ? "Transfer Bank" : "QRIS"}</span>
+                  </label>
+                ))}
+              </div>
+            </div>
 
-            <input
-              placeholder="Nomor Rekening"
-              value={bankNumber}
-              onChange={(e) => setBankNumber(e.target.value)}
-            />
+            {paymentMethods.includes("BANK") && (
+              <>
+                <input
+                  placeholder="Nama Bank (contoh: BCA)"
+                  value={bankName}
+                  onChange={(e) => setBankName(e.target.value)}
+                  className="full"
+                />
 
-            <input
-              placeholder="Atas Nama Rekening"
-              value={bankHolder}
-              onChange={(e) => setBankHolder(e.target.value)}
-            />
+                <input
+                  placeholder="Nomor Rekening"
+                  value={bankNumber}
+                  onChange={(e) => setBankNumber(e.target.value)}
+                />
+
+                <input
+                  placeholder="Atas Nama Rekening"
+                  value={bankHolder}
+                  onChange={(e) => setBankHolder(e.target.value)}
+                />
+              </>
+            )}
+
+            {paymentMethods.includes("QRIS") && (
+              <div className="full">
+                <div className="upload-field">
+                  <label style={{ fontSize: 13, color: "#64748b", marginBottom: 8, display: "block" }}>
+                    Upload QRIS
+                  </label>
+                  <input type="file" accept="image/*" onChange={handleQrisUpload} />
+                </div>
+                {(qrisPreview || qrisUrl) && (
+                  <img
+                    src={
+                      qrisPreview
+                        ? qrisPreview
+                        : `${import.meta.env.VITE_API_URL}/files/${qrisUrl}`
+                    }
+                    alt="QRIS"
+                    style={{ maxWidth: "200px", marginTop: 10, borderRadius: 8 }}
+                  />
+                )}
+              </div>
+            )}
           </div>
 
           <textarea
@@ -325,24 +478,21 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
                 }}
               />
 
-              <input
-                type="date"
-                value={t.startDate}
-                onChange={(e) => {
+              <DatePicker
+                selectsRange={true}
+                startDate={t.startDate ? new Date(t.startDate) : undefined}
+                endDate={t.endDate ? new Date(t.endDate) : undefined}
+                onChange={(update: [Date | null, Date | null]) => {
+                  const [start, end] = update;
                   const copy = [...timeline];
-                  copy[i].startDate = e.target.value;
+                  copy[i].startDate = start ? start.toISOString().split("T")[0] : "";
+                  copy[i].endDate = end ? end.toISOString().split("T")[0] : "";
                   setTimeline(copy);
                 }}
-              />
-
-              <input
-                type="date"
-                value={t.endDate}
-                onChange={(e) => {
-                  const copy = [...timeline];
-                  copy[i].endDate = e.target.value;
-                  setTimeline(copy);
-                }}
+                locale={id}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Pilih rentang tanggal"
+                className="datepicker-input"
               />
 
               <button onClick={() => removeTimeline(i)}>✕</button>

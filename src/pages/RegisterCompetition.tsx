@@ -9,14 +9,21 @@ import { createRegistration } from "../services/registration.service";
 import { getCompetition } from "../services/competition.service";
 import api from "../api/axios";
 import { getErrorMessage } from "../helper/errorHandler";
+import toast from "react-hot-toast";
 
+// export type RegisterForm = {
+//   name: string;
+//   nisn: string;
+//   school: string;
+//   level: string;
+//   whatsapp: string;
+//   address: string;
+//   paymentProof?: File | null;
+// };
 export type RegisterForm = {
-  name: string;
-  nisn: string;
-  school: string;
-  level: string;
-  whatsapp: string;
-  address: string;
+  leaderName: string;
+  members: string[];
+  parentName: string;
   paymentProof?: File | null;
 };
 
@@ -27,6 +34,7 @@ type CompetitionPaymentInfo = {
   bankName?: string | null;
   bankNumber?: string | null;
   bankHolder?: string | null;
+  qris?: string | null;
 };
 
 export default function RegisterCompetition() {
@@ -37,13 +45,19 @@ export default function RegisterCompetition() {
   const [loading, setLoading] = useState(false);
   const [competition, setCompetition] = useState<CompetitionPaymentInfo | null>(null);
 
+  // const [form, setForm] = useState<RegisterForm>({
+  //   name: "",
+  //   nisn: "",
+  //   school: "",
+  //   level: "",
+  //   whatsapp: "",
+  //   address: "",
+  //   paymentProof: null,
+  // });
   const [form, setForm] = useState<RegisterForm>({
-    name: "",
-    nisn: "",
-    school: "",
-    level: "",
-    whatsapp: "",
-    address: "",
+    leaderName: "",
+    members: [""],
+    parentName: "",
     paymentProof: null,
   });
 
@@ -64,9 +78,10 @@ export default function RegisterCompetition() {
           bankName: c.bankName,
           bankNumber: c.bankNumber,
           bankHolder: c.bankHolder,
+          qris: c.qris,
         });
       } catch {
-        alert("Lomba tidak ditemukan");
+        toast.error("Lomba tidak ditemukan");
         navigate("/");
       }
     };
@@ -94,19 +109,27 @@ export default function RegisterCompetition() {
         body: form.paymentProof,
       });
 
+      // await createRegistration(id, {
+      //   nisn: form.nisn,
+      //   school: form.school,
+      //   phone: `+62${form.whatsapp}`,
+      //   address: form.address,
+      //   fileKey,
+      // });
+      const cleanMembers = form.members.filter((m) => m && m.trim() !== "");
+
       await createRegistration(id, {
-        nisn: form.nisn,
-        school: form.school,
-        phone: `+62${form.whatsapp}`,
-        address: form.address,
+        leader_name: form.leaderName,
+        members: cleanMembers,
+        parent_name: form.parentName,
         fileKey,
       });
 
-      alert("Pendaftaran berhasil!");
-      navigate("/list");
+      toast.success("Pendaftaran berhasil!");
+      navigate("/");
     } catch (err) {
       const error = getErrorMessage(err);
-      alert(error);
+      toast.error(error);
     } finally {
       setLoading(false);
     }

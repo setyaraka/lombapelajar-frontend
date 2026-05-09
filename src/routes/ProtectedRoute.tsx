@@ -12,7 +12,7 @@ export default function ProtectedRoute({ adminOnly = false }: Props) {
 
   if (!user) return <Navigate to="/login" replace />;
 
-  if (adminOnly && user.role !== "ADMIN") return <Navigate to="/list" replace />;
+  if (adminOnly && user.role !== "ADMIN") return <Navigate to="/" replace />;
 
   return <Outlet />;
 }

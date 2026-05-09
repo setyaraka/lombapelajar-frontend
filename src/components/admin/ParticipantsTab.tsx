@@ -4,6 +4,8 @@ import RowsPerPage from "../RowsPerPage";
 import PaymentProofModal from "../PaymentProofModal";
 import type { ProofData } from "../PaymentProofModal";
 import { getParticipants, updateParticipantStatus } from "../../services/participant.service";
+import type { CreationData } from "../CreationModal";
+import CreationModal from "../CreationModal";
 
 type Status = "PENDING" | "VERIFIED" | "REJECTED";
 
@@ -15,6 +17,7 @@ type Participant = {
   status: Status;
   proofUrl?: string;
   uploadedAt?: string;
+  creationFile?: string;
 };
 
 export default function ParticipantsTab() {
@@ -36,6 +39,9 @@ export default function ParticipantsTab() {
     rejected: 0,
     total: 0,
   });
+
+  const [creation, setCreation] = useState<CreationData | null>(null);
+  const [openCreation, setOpenCreation] = useState(false);
 
   // ================= LOAD DATA =================
   const loadParticipants = useCallback(async () => {
@@ -79,6 +85,7 @@ export default function ParticipantsTab() {
         onClose={() => setOpen(false)}
         changeStatus={changeStatus}
       />
+      <CreationModal open={openCreation} data={creation} onClose={() => setOpenCreation(false)} />
 
       <div className="admin-page">
         <div className="container">
@@ -145,6 +152,7 @@ export default function ParticipantsTab() {
                   <th>Sekolah</th>
                   <th>Lomba</th>
                   <th>Pembayaran</th>
+                  <th>Karya</th>
                   <th>Status</th>
                   <th>Aksi</th>
                 </tr>
@@ -170,12 +178,12 @@ export default function ParticipantsTab() {
 
                     return (
                       <tr key={p.id}>
-                        <td>{p.name}</td>
-                        <td>{p.school}</td>
-                        <td>{p.competition}</td>
+                        <td data-label="Nama">{p.name}</td>
+                        <td data-label="Sekolah">{p.school}</td>
+                        <td data-label="Lomba">{p.competition}</td>
 
                         {/* ===== BUKTI ===== */}
-                        <td>
+                        <td data-label="Pembayaran">
                           {imageUrl ? (
                             <button
                               className="btn view"
@@ -198,9 +206,28 @@ export default function ParticipantsTab() {
                             <span className="muted">Belum upload</span>
                           )}
                         </td>
+                        <td data-label="Karya">
+                          {p.creationFile ? (
+                            <button
+                              className="btn view"
+                              onClick={() => {
+                                setCreation({
+                                  name: p.name,
+                                  competition: p.competition,
+                                  fileUrl: `${import.meta.env.VITE_API_URL}/files/${p.creationFile}`,
+                                });
+                                setOpenCreation(true);
+                              }}
+                            >
+                              Lihat Karya
+                            </button>
+                          ) : (
+                            <span className="muted">Belum upload</span>
+                          )}
+                        </td>
 
                         {/* ===== STATUS ===== */}
-                        <td>
+                        <td data-label="Status">
                           <span className={badgeClass(p.status)}>
                             {p.status === "PENDING" && "Menunggu"}
                             {p.status === "VERIFIED" && "Diterima"}
@@ -210,7 +237,7 @@ export default function ParticipantsTab() {
 
                         {/* ===== ACTION ===== */}
                         {p.status === "PENDING" ? (
-                          <td className="actions">
+                          <td data-label="Aksi" className="actions">
                             <button
                               className="btn approve"
                               disabled={!paymentUploaded}
@@ -224,17 +251,15 @@ export default function ParticipantsTab() {
 
                             <button
                               className="btn reject"
-                              disabled={!paymentUploaded}
-                              title={
-                                !paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""
-                              }
                               onClick={() => changeStatus(p.id, "REJECTED")}
                             >
                               Tolak
                             </button>
                           </td>
                         ) : (
-                          <td></td>
+                          <td data-label="Aksi" className="muted">
+                            Selesai
+                          </td>
                         )}
                       </tr>
                     );

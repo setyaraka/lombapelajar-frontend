@@ -1,3 +1,4 @@
+import imageCompression from "browser-image-compression";
 import type { RegisterForm } from "../pages/RegisterCompetition";
 import LoadingButton from "./LoadingButton";
 export type CompetitionPaymentInfo = {
@@ -6,6 +7,7 @@ export type CompetitionPaymentInfo = {
   bankName?: string | null;
   bankNumber?: string | null;
   bankHolder?: string | null;
+  qris?: string | null;
 };
 
 export default function PaymentForm({
@@ -32,16 +34,35 @@ export default function PaymentForm({
       <div className="bank-box">
         {competition ? (
           <>
-            Transfer ke:
-            <br />
-            <b>
-              {competition.bankName ?? "-"} - {competition.bankNumber ?? "-"}
-            </b>
-            <br />
-            a.n {competition.bankHolder ?? "-"}
-            <br />
-            <br />
-            Biaya: <b>{formatRupiah(competition.price)}</b>
+            <p style={{ marginBottom: 10, fontWeight: 500 }}>Silakan pilih salah satu metode pembayaran berikut:</p>
+
+            <div className="grid">
+              {competition.bankName && (
+                <div className="method-box">
+                  <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Transfer Bank:</div>
+                  <b>
+                    {competition.bankName} - {competition.bankNumber}
+                  </b>
+                  <br />
+                  a.n {competition.bankHolder}
+                </div>
+              )}
+
+              {competition.qris && (
+                <div className="method-box">
+                  <div style={{ fontSize: 13, color: "#64748b", marginBottom: 8 }}>Scan QRIS:</div>
+                  <img
+                    src={`${import.meta.env.VITE_API_URL}/files/${competition.qris}`}
+                    alt="QRIS"
+                    style={{ maxWidth: "50%", borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                  />
+                </div>
+              )}
+            </div>
+
+            <div style={{ marginTop: 15, paddingTop: 15, borderTop: "1px dashed #ddd" }}>
+              Total Biaya: <b style={{ color: "var(--primary)", fontSize: 18 }}>{formatRupiah(competition.price)}</b>
+            </div>
           </>
         ) : (
           <>Memuat informasi pembayaran...</>
@@ -54,13 +75,27 @@ export default function PaymentForm({
         <input
           type="file"
           accept="image/*"
-          onChange={(e) => updateForm({ paymentProof: e.target.files?.[0] })}
+          onChange={async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+
+            try {
+              const compressed = await imageCompression(file, {
+                maxSizeMB: 1,
+                maxWidthOrHeight: 1280,
+                useWebWorker: true,
+              });
+              updateForm({ paymentProof: compressed });
+            } catch {
+              updateForm({ paymentProof: file });
+            }
+          }}
         />
 
         {form.paymentProof && <div className="file-selected">{form.paymentProof.name}</div>}
 
         <div style={{ fontSize: 13, color: "#777", marginTop: 8 }}>
-          Format JPG/PNG, maksimal 2MB
+          Format JPG/PNG, maksimal 1MB
         </div>
       </div>
 
