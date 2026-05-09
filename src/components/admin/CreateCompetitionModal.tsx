@@ -6,6 +6,9 @@ import {
 } from "../../services/competition.service";
 import imageCompression from "browser-image-compression";
 import LoadingButton from "../LoadingButton";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { id } from "date-fns/locale";
 
 type Props = {
   open: boolean;
@@ -241,7 +244,14 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               <option value="MAHASISWA">MAHASISWA</option>
             </select>
 
-            <input type="date" value={deadline} onChange={(e) => setDeadline(e.target.value)} />
+            <DatePicker
+              selected={deadline ? new Date(deadline) : null}
+              onChange={(date) => setDeadline(date ? date.toISOString().split("T")[0] : "")}
+              locale={id}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Deadline Lomba"
+              className="datepicker-input"
+            />
             <input
               placeholder="Harga (Rp)"
               value={formatRupiah(price)}
@@ -326,24 +336,21 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
                 }}
               />
 
-              <input
-                type="date"
-                value={t.startDate}
-                onChange={(e) => {
+              <DatePicker
+                selectsRange={true}
+                startDate={t.startDate ? new Date(t.startDate) : undefined}
+                endDate={t.endDate ? new Date(t.endDate) : undefined}
+                onChange={(update) => {
+                  const [start, end] = update;
                   const copy = [...timeline];
-                  copy[i].startDate = e.target.value;
+                  copy[i].startDate = start ? start.toISOString().split("T")[0] : "";
+                  copy[i].endDate = end ? end.toISOString().split("T")[0] : "";
                   setTimeline(copy);
                 }}
-              />
-
-              <input
-                type="date"
-                value={t.endDate}
-                onChange={(e) => {
-                  const copy = [...timeline];
-                  copy[i].endDate = e.target.value;
-                  setTimeline(copy);
-                }}
+                locale={id}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Pilih rentang tanggal"
+                className="datepicker-input"
               />
 
               <button onClick={() => removeTimeline(i)}>✕</button>
