@@ -76,7 +76,8 @@ body {
   align-items: center;
 }
 
-.logout-btn {
+.logout-btn,
+.login-btn {
   background: white;
   color: var(--primary);
   border: none;
@@ -84,6 +85,19 @@ body {
   border-radius: 10px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.logout-btn:hover,
+.login-btn:hover {
+  background: #f0fdfa;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.logout-btn:active,
+.login-btn:active {
+  transform: translateY(0);
 }
 
 .logo {
@@ -159,7 +173,8 @@ body {
     justify-content: space-between;
   }
 
-  .logout-btn {
+  .logout-btn,
+  .login-btn {
     padding: 6px 10px;
     font-size: 13px;
   }
@@ -183,7 +198,8 @@ body {
     padding: 6px;
   }
 
-  .logout-btn {
+  .logout-btn,
+  .login-btn {
     font-size: 12px;
     padding: 5px 8px;
   }
