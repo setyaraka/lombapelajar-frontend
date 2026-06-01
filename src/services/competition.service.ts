@@ -31,6 +31,8 @@ export type CompetitionDetail = {
   deadline: string;
   price: number;
   whatsapp: string | null;
+  announcementPoster: string | null;
+  announcementLink: string | null;
 
   requirements: {
     id: string;
@@ -98,6 +100,24 @@ export const uploadJuknis = async (id: string, file: File) => {
   formData.append("competitionId", id);
 
   const res = await api.post("/competitions/upload-juknis", formData);
+
+  return res.data;
+};
+
+export const updateAnnouncement = async (id: string, file: File | null, link: string, clearPoster: boolean) => {
+  const formData = new FormData();
+  if (file) {
+    formData.append("file", file);
+  } else if (clearPoster) {
+    formData.append("announcementPoster", "null");
+  }
+  formData.append("announcementLink", link);
+
+  const res = await api.put(`/competitions/${id}/announcement`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+    },
+  });
 
   return res.data;
 };

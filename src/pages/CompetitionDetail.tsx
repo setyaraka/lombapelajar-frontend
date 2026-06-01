@@ -3,7 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
 import WhatsAppButton from "../components/WhatsAppButton";
-import { getCompetition, uploadJuknis } from "../services/competition.service";
+import { getCompetition, uploadJuknis, updateAnnouncement } from "../services/competition.service";
 import {
   toCompetitionDetailVM,
   type CompetitionDetailVM,
@@ -44,6 +44,75 @@ export default function CompetitionDetail() {
   const [showCreationModal, setShowCreationModal] = useState(false);
   const [juknisFile, setJuknisFile] = useState<File | null>(null);
   const [uploadingJuknis, setUploadingJuknis] = useState(false);
+
+  // Announcement States & Handlers
+  const [showViewAnnouncementModal, setShowViewAnnouncementModal] = useState(false);
+  const [showAnnouncementModal, setShowAnnouncementModal] = useState(false);
+
+  const [announcementLinkInput, setAnnouncementLinkInput] = useState("");
+  const [announcementFile, setAnnouncementFile] = useState<File | null>(null);
+  const [announcementFilePreview, setAnnouncementFilePreview] = useState<string | null>(null);
+  const [clearAnnouncementPoster, setClearAnnouncementPoster] = useState(false);
+  const [uploadingAnnouncement, setUploadingAnnouncement] = useState(false);
+
+  const handleOpenViewAnnouncementModal = () => {
+    setShowViewAnnouncementModal(true);
+  };
+
+  const handleOpenAnnouncementModal = () => {
+    if (competition) {
+      setAnnouncementLinkInput(competition.announcementLink || "");
+      setAnnouncementFile(null);
+      setAnnouncementFilePreview(competition.announcementPoster ? `${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}` : null);
+      setClearAnnouncementPoster(false);
+    }
+    setShowAnnouncementModal(true);
+  };
+
+  const handleAnnouncementFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selected = e.target.files?.[0];
+    if (!selected) return;
+    try {
+      const compressed = await imageCompression(selected, {
+        maxSizeMB: 1,
+        maxWidthOrHeight: 1280,
+        useWebWorker: true,
+      });
+      setAnnouncementFile(compressed);
+      setAnnouncementFilePreview(URL.createObjectURL(compressed));
+      setClearAnnouncementPoster(false);
+    } catch {
+      setAnnouncementFile(selected);
+      setAnnouncementFilePreview(URL.createObjectURL(selected));
+      setClearAnnouncementPoster(false);
+    }
+  };
+
+  const handleSaveAnnouncement = async () => {
+    if (!id) return;
+    try {
+      setUploadingAnnouncement(true);
+      const res = await updateAnnouncement(
+        id,
+        announcementFile,
+        announcementLinkInput,
+        clearAnnouncementPoster
+      );
+      
+      setCompetition(prev => prev ? {
+        ...prev,
+        announcementPoster: res.data.announcementPoster,
+        announcementLink: res.data.announcementLink,
+      } : prev);
+      
+      toast.success("Pengumuman berhasil disimpan!");
+      setShowAnnouncementModal(false);
+    } catch {
+      toast.error("Gagal menyimpan pengumuman");
+    } finally {
+      setUploadingAnnouncement(false);
+    }
+  };
 
   const defaultPoster = "/default-poster.png";
   const safePoster =
@@ -352,6 +421,152 @@ export default function CompetitionDetail() {
           </div>
         </div>
       )}
+      {/* MODAL ATUR PENGUMUMAN (ADMIN) */}
+      {showAnnouncementModal && user?.role === "ADMIN" && (
+        <div className="modal-overlay" onClick={() => setShowAnnouncementModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              Atur Pengumuman
+              <button className="btn-icon" onClick={() => setShowAnnouncementModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Link URL Pengumuman</label>
+                <input
+                  type="text"
+                  placeholder="https://example.com/pengumuman"
+                  value={announcementLinkInput}
+                  onChange={(e) => setAnnouncementLinkInput(e.target.value)}
+                  style={{
+                    padding: '10px',
+                    borderRadius: '10px',
+                    border: '1px solid #cbd5e1',
+                    fontSize: '14px',
+                    width: '100%'
+                  }}
+                />
+              </div>
+
+              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                <label style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Foto/Poster Pengumuman</label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleAnnouncementFileChange}
+                  style={{ fontSize: '13px' }}
+                />
+                
+                {announcementFilePreview && (
+                  <div style={{ position: 'relative', marginTop: '10px', maxWidth: '200px' }}>
+                    <img
+                      src={announcementFilePreview}
+                      alt="Preview Pengumuman"
+                      style={{ width: '100%', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setAnnouncementFile(null);
+                        setAnnouncementFilePreview(null);
+                        setClearAnnouncementPoster(true);
+                      }}
+                      style={{
+                        position: 'absolute',
+                        top: '4px',
+                        right: '4px',
+                        background: '#ef4444',
+                        color: 'white',
+                        border: 'none',
+                        borderRadius: '50%',
+                        width: '24px',
+                        height: '24px',
+                        cursor: 'pointer',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: '12px',
+                        fontWeight: 'bold'
+                      }}
+                      title="Hapus foto"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '20px' }}>
+              <button className="btn secondary" onClick={() => setShowAnnouncementModal(false)}>
+                Batal
+              </button>
+
+              <LoadingButton
+                className="btn approve"
+                loading={uploadingAnnouncement}
+                onClick={handleSaveAnnouncement}
+              >
+                Simpan
+              </LoadingButton>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* MODAL LIHAT PENGUMUMAN (PESERTA & ADMIN) */}
+      {showViewAnnouncementModal && (
+        <div className="modal-overlay" onClick={() => setShowViewAnnouncementModal(false)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <div className="modal-header">
+              Pengumuman Lomba
+              <button className="btn-icon" onClick={() => setShowViewAnnouncementModal(false)}>
+                ✕
+              </button>
+            </div>
+
+            <div className="modal-body text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '20px' }}>
+              {!competition.announcementPoster && !competition.announcementLink ? (
+                <div style={{ color: '#64748b', fontSize: '15px', padding: '20px 0' }}>
+                  📢 Belum ada pengumuman untuk lomba ini.
+                </div>
+              ) : (
+                <>
+                  {competition.announcementPoster && (
+                    <div style={{ maxWidth: '100%', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' }}>
+                      <img
+                        src={`${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}`}
+                        alt="Pengumuman Lomba"
+                        style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }}
+                      />
+                    </div>
+                  )}
+
+                  {competition.announcementLink && (
+                    <a
+                      href={competition.announcementLink.startsWith("http") ? competition.announcementLink : `https://${competition.announcementLink}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn primary"
+                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px 24px', textDecoration: 'none', width: 'auto', borderRadius: '10px' }}
+                    >
+                      🔗 Buka Link Pengumuman
+                    </a>
+                  )}
+                </>
+              )}
+            </div>
+
+            <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+              <button className="btn secondary" onClick={() => setShowViewAnnouncementModal(false)}>
+                Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
       {/* IMAGE PREVIEW */}
       {preview && (
         <div className="image-viewer" onClick={() => setPreview(false)}>
@@ -385,7 +600,14 @@ export default function CompetitionDetail() {
                   </button>
                 )}
 
-                <button className="btn width">Pengumuman</button>
+                <button className="btn width" onClick={handleOpenViewAnnouncementModal}>
+                  Lihat Pengumuman
+                </button>
+                {user?.role === "ADMIN" && (
+                  <button className="btn width" onClick={handleOpenAnnouncementModal}>
+                    Atur Pengumuman
+                  </button>
+                )}
                 {/* <button className="btn width">Juknis</button> */}
                 {/* <button className="btn width">Upload</button> */}
                 {user?.role === "ADMIN" && (
