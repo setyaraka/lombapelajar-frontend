@@ -30,6 +30,7 @@ export type CompetitionDetail = {
   category: string;
   deadline: string;
   price: number;
+  whatsapp: string | null;
 
   requirements: {
     id: string;

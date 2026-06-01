@@ -13,6 +13,7 @@ export type CompetitionDetailVM = {
   registrationStatus: string | null;
   creationFile: string | null;
   qris: string | null;
+  whatsapp?: string | null;
 };
 
 export type CompetitionRequirementDTO = {
@@ -43,6 +44,7 @@ export type CompetitionDetailDTO = {
   registrationStatus: string | null;
   creationFile: string | null;
   qris: string | null;
+  whatsapp?: string | null;
 };
 
 export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDetailVM {
@@ -56,6 +58,7 @@ export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDet
     poster: api.poster,
     description: api.description || "",
     juknis: api.juknis || "",
+    whatsapp: api.whatsapp,
 
     requirements: api.requirements.map((r) => r.text),
 

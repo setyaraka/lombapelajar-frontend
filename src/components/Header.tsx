@@ -51,13 +51,17 @@ export default function Header() {
 
         {/* USER AREA */}
         <div className="right">
-          {user && (
+          {user ? (
             <div className="user-menu">
               <span className="user">Hi, {user.name}</span>
               <button className="logout-btn" onClick={handleLogout}>
                 Logout
               </button>
             </div>
+          ) : (
+            <button className="login-btn" onClick={() => go("/login")}>
+              Masuk
+            </button>
           )}
         </div>
       </div>
