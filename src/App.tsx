@@ -8,7 +8,6 @@ import Competitions from "./pages/Competitions";
 import CompetitionDetail from "./pages/CompetitionDetail";
 import RegisterCompetition from "./pages/RegisterCompetition";
 import AdminParticipants from "./pages/AdminParticipants";
-import WhatsAppButton from "./components/WhatsAppButton";
 
 export default function App() {
   return (
@@ -31,7 +30,6 @@ export default function App() {
           {/* NOT FOUND -> LOGIN */}
           <Route path="*" element={<Navigate to="/login" replace />} />
         </Routes>
-        <WhatsAppButton />
       </AuthProvider>
     </BrowserRouter>
   );

@@ -26,6 +26,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   const [deadline, setDeadline] = useState("");
   const [price, setPrice] = useState("");
   const [description, setDescription] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
 
   const [requirements, setRequirements] = useState<string[]>([""]);
   const [timeline, setTimeline] = useState([{ title: "", startDate: "", endDate: "" }]);
@@ -73,6 +74,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     setPrice("");
     setPoster(null);
     setDescription("");
+    setWhatsapp("");
 
     setBankName("");
     setBankNumber("");
@@ -155,6 +157,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     formData.append("deadline", deadline);
     formData.append("price", price);
     formData.append("description", description);
+    formData.append("whatsapp", whatsapp);
 
     if (paymentMethods.includes("BANK")) {
       formData.append("bankName", bankName);
@@ -225,6 +228,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
       setPrice(String(data.price));
       setPoster(null);
       setDescription(data.description || "");
+      setWhatsapp(data.whatsapp || "");
 
       setRequirements(data.requirements?.map((r) => r.text) || [""]);
 
@@ -341,6 +345,11 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               placeholder="Harga (Rp)"
               value={formatRupiah(price)}
               onChange={handlePriceChange}
+            />
+            <input
+              placeholder="Nomor WhatsApp Panitia (Contoh: 628123456789)"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
             />
             <div className="upload-field">
               <input type="file" accept="image/*" onChange={handleUpload} />

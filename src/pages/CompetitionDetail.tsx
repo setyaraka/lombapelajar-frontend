@@ -2,6 +2,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { useEffect, useState } from "react";
+import WhatsAppButton from "../components/WhatsAppButton";
 import { getCompetition, uploadJuknis } from "../services/competition.service";
 import {
   toCompetitionDetailVM,
@@ -477,6 +478,7 @@ export default function CompetitionDetail() {
         </div>
 
         <Footer />
+        <WhatsAppButton phone={competition.whatsapp} />
       </div>
     </>
   );
