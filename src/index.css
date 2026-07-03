@@ -77,9 +77,14 @@ body {
   color: #4b5563;
 }
 
-.exam-page,
+.exam-page {
+  min-height: 100vh;
+}
+
 .announcement-page {
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 .exam-network-banner,
@@ -115,10 +120,15 @@ body {
   cursor: pointer;
 }
 
-.exam-shell,
+.exam-shell {
+  margin: 24px auto 50px;
+  padding: 0 20px;
+}
+
 .announcement-shell {
   margin: 24px auto 50px;
   padding: 0 20px;
+  flex: 1;
 }
 
 .exam-topbar {
