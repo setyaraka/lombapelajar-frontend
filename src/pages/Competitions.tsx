@@ -72,7 +72,10 @@ export default function Competitions() {
     <div className="competitions-page">
       <Helmet>
         <title>Daftar Lomba Pelajar Terbaru 2024 - LombaPelajar</title>
-        <meta name="description" content="Temukan daftar lomba pelajar terbaru untuk tingkat SD, SMP, SMA, dan Mahasiswa. Mulai dari olimpiade sains, lomba seni, hingga kompetisi teknologi." />
+        <meta
+          name="description"
+          content="Temukan daftar lomba pelajar terbaru untuk tingkat SD, SMP, SMA, dan Mahasiswa. Mulai dari olimpiade sains, lomba seni, hingga kompetisi teknologi."
+        />
       </Helmet>
       <CreateCompetitionModal
         open={modalOpen}
@@ -123,6 +126,7 @@ export default function Competitions() {
                   poster={c.poster}
                   submitted={c.submitted}
                   creationFile={c.creationFile}
+                  examStatus={c.examStatus}
                   onEdit={() => {
                     setSelectedCompetitionId(c.id);
                     setModalOpen(true);

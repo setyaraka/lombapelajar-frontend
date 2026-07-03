@@ -15,6 +15,8 @@ import { uploadCreation } from "../services/registration.service";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
 import { useAuth } from "../auth/useAuth";
+import { ExamAPI } from "../services/exam.service";
+import { ExamResume } from "../components/exam/ExamResume";
 
 type ApiError = {
   response?: {
@@ -35,6 +37,7 @@ export default function CompetitionDetail() {
 
   const [loading, setLoading] = useState(true);
   const [downloadJuknisLoading, setDownloadJuknisLoading] = useState(false);
+  const [startExamLoading, setStartExamLoading] = useState(false);
 
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -59,11 +62,41 @@ export default function CompetitionDetail() {
     setShowViewAnnouncementModal(true);
   };
 
+  const handleStartExam = async () => {
+    if (!competition?.examStatus) return;
+
+    if (!user) {
+      navigate("/login");
+      return;
+    }
+
+    if (competition.examStatus.status === "FINISHED") {
+      navigate(`/competition/${competition.id}/announcement`);
+      return;
+    }
+
+    try {
+      setStartExamLoading(true);
+      const data = await ExamAPI.startAttempt(competition.id);
+      ExamResume.remember({ attemptId: data.attempt.id, competitionId: competition.id });
+      navigate(`/exam/${data.attempt.id}`);
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Gagal memulai ujian";
+      toast.error(message);
+    } finally {
+      setStartExamLoading(false);
+    }
+  };
+
   const handleOpenAnnouncementModal = () => {
     if (competition) {
       setAnnouncementLinkInput(competition.announcementLink || "");
       setAnnouncementFile(null);
-      setAnnouncementFilePreview(competition.announcementPoster ? `${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}` : null);
+      setAnnouncementFilePreview(
+        competition.announcementPoster
+          ? `${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}`
+          : null
+      );
       setClearAnnouncementPoster(false);
     }
     setShowAnnouncementModal(true);
@@ -98,13 +131,17 @@ export default function CompetitionDetail() {
         announcementLinkInput,
         clearAnnouncementPoster
       );
-      
-      setCompetition(prev => prev ? {
-        ...prev,
-        announcementPoster: res.data.announcementPoster,
-        announcementLink: res.data.announcementLink,
-      } : prev);
-      
+
+      setCompetition((prev) =>
+        prev
+          ? {
+              ...prev,
+              announcementPoster: res.data.announcementPoster,
+              announcementLink: res.data.announcementLink,
+            }
+          : prev
+      );
+
       toast.success("Pengumuman berhasil disimpan!");
       setShowAnnouncementModal(false);
     } catch {
@@ -158,9 +195,9 @@ export default function CompetitionDetail() {
       setCompetition((prev) =>
         prev
           ? {
-            ...prev,
-            juknis: res.data.juknis,
-          }
+              ...prev,
+              juknis: res.data.juknis,
+            }
           : prev
       );
 
@@ -228,9 +265,9 @@ export default function CompetitionDetail() {
       setCompetition((prev) =>
         prev
           ? {
-            ...prev,
-            creationFile: res.data.creationFile,
-          }
+              ...prev,
+              creationFile: res.data.creationFile,
+            }
           : prev
       );
     } catch (err: unknown) {
@@ -267,10 +304,27 @@ export default function CompetitionDetail() {
     <>
       <Helmet>
         <title>{competition.title} - LombaPelajar</title>
-        <meta name="description" content={competition.description?.slice(0, 150) || `Informasi lengkap mengenai ${competition.title}. Daftar sekarang dan raih prestasimu di LombaPelajar.`} />
+        <meta
+          name="description"
+          content={
+            competition.description?.slice(0, 150) ||
+            `Informasi lengkap mengenai ${competition.title}. Daftar sekarang dan raih prestasimu di LombaPelajar.`
+          }
+        />
         <meta property="og:title" content={`${competition.title} - LombaPelajar`} />
-        <meta property="og:description" content={competition.description?.slice(0, 150) || `Informasi lengkap mengenai ${competition.title}.`} />
-        {competition.poster && <meta property="og:image" content={`${import.meta.env.VITE_API_URL}/files/${competition.poster}`} />}
+        <meta
+          property="og:description"
+          content={
+            competition.description?.slice(0, 150) ||
+            `Informasi lengkap mengenai ${competition.title}.`
+          }
+        />
+        {competition.poster && (
+          <meta
+            property="og:image"
+            content={`${import.meta.env.VITE_API_URL}/files/${competition.poster}`}
+          />
+        )}
       </Helmet>
       {showUploadModal && (
         <div className="modal-overlay" onClick={() => setShowUploadModal(false)}>
@@ -359,7 +413,12 @@ export default function CompetitionDetail() {
               {competition.creationFile.toLowerCase().endsWith(".pdf") ? (
                 <div className="file-preview-placeholder">
                   <div style={{ marginBottom: "15px" }}>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="120" height="120" viewBox="0 0 64 64">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="120"
+                      height="120"
+                      viewBox="0 0 64 64"
+                    >
                       <path
                         style={{ opacity: 0.2 }}
                         d="M 14.5,8 C 13.115,8 12,9.115 12,10.5 v 45 c 0,1.385 1.115,2.5 2.5,2.5 h 35 C 50.885,58 52,56.885 52,55.5 V 23 L 38.25,21.75 37,8 Z"
@@ -368,8 +427,14 @@ export default function CompetitionDetail() {
                         fill="#c03630"
                         d="m14.5 7c-1.385 0-2.5 1.115-2.5 2.5v45c0 1.385 1.115 2.5 2.5 2.5h35c1.385 0 2.5-1.115 2.5-2.5v-32.5l-13.75-1.25-1.25-13.75z"
                       />
-                      <path style={{ opacity: 0.2 }} d="m 37,8 v 12.5 c 0,1.3808 1.1193,2.5 2.5,2.5 H 52 Z" />
-                      <path fill="#f36961" d="m37 7v12.5c0 1.3808 1.1193 2.5 2.5 2.5h12.5l-15-15z" />
+                      <path
+                        style={{ opacity: 0.2 }}
+                        d="m 37,8 v 12.5 c 0,1.3808 1.1193,2.5 2.5,2.5 H 52 Z"
+                      />
+                      <path
+                        fill="#f36961"
+                        d="m37 7v12.5c0 1.3808 1.1193 2.5 2.5 2.5h12.5l-15-15z"
+                      />
                       <path
                         style={{ opacity: 0.2 }}
                         d="m 29.976,25.562 c -0.57658,0 -1.1158,0.28221 -1.2462,0.74801 -0.4844,1.7858 0.05775,4.5474 0.96195,7.9883 l -0.27276,0.66618 c -0.69234,1.6876 -1.5578,3.3684 -2.3188,4.8599 -3.1419,6.1475 -5.5861,9.4644 -7.2159,9.6968 l -0.0063,-0.0675 c -0.03537,-0.76682 1.3798,-2.7439 3.2978,-4.3158 0.20006,-0.1618 1.0538,-0.98776 1.0538,-0.98776 0,0 -1.1524,0.60834 -1.4112,0.76522 -2.4035,1.4346 -3.5995,2.872 -3.7945,3.8261 -0.05788,0.2834 -0.02075,0.63212 0.22969,0.7753 l 0.6145,0.30868 c 1.673,0.83744 3.7301,-1.3645 6.465,-6.1578 2.783,-0.91295 6.2554,-1.7725 9.4169,-2.2382 2.83,1.617 6.0762,2.3869 7.3235,2.0545 0.23734,-0.06275 0.487,-0.24905 0.6145,-0.42065 0.1,-0.15789 0.23979,-0.78965 0.23979,-0.78965 0,0 -0.23466,0.31934 -0.42788,0.41348 -0.7894,0.37264 -3.2816,-0.24905 -5.839,-1.5002 2.2112,-0.23535 4.0534,-0.24442 5.0379,0.07025 1.2504,0.39912 1.2514,0.80824 1.2347,0.89158 0.01687,-0.06862 0.07287,-0.34272 0.066,-0.45941 -0.02837,-0.30008 -0.12088,-0.56804 -0.34744,-0.78965 -0.46284,-0.45599 -1.6056,-0.68578 -3.1629,-0.70636 -1.1738,-0.01275 -2.5812,0.09 -4.109,0.30868 -0.70015,-0.40205 -1.439,-0.84402 -2.0244,-1.3912 -1.4846,-1.3866 -2.729,-3.3118 -3.5018,-5.47 0.05275,-0.20691 0.10325,-0.40909 0.1493,-0.61306 0.21479,-0.96589 0.36896,-4.1592 0.36896,-4.1592 0,0 -0.61168,2.399 -0.70778,2.7609 -0.06175,0.22946 -0.13858,0.47438 -0.22684,0.72934 -0.46875,-1.6474 -0.70636,-3.244 -0.70636,-4.455 0,-0.34224 0.02938,-1.0082 0.12631,-1.5348 0.04725,-0.37556 0.18325,-0.57059 0.3245,-0.66474 0.27946,0.06775 0.59229,0.49635 0.91886,1.2132 0.28044,0.61975 0.26271,1.3375 0.26271,1.7818 0,0 0.30076,-1.1 0.23115,-1.7501 -0.04237,-0.39029 -0.4137,-1.3944 -1.2031,-1.3826 h -0.06463 l -0.35174,-0.0038 z m 0.26848,9.9739 c 0.81689,1.6425 1.9435,3.2024 3.4214,4.4536 0.32946,0.27849 0.68,0.54344 1.0409,0.7925 -2.6839,0.49914 -5.5026,1.2013 -8.1219,2.2986 0.47364,-0.84136 0.98576,-1.758 1.5104,-2.7465 1.0159,-1.921 1.6315,-3.4028 2.1492,-4.7981 z"
@@ -432,39 +497,52 @@ export default function CompetitionDetail() {
               </button>
             </div>
 
-            <div className="modal-body" style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Link URL Pengumuman</label>
+            <div
+              className="modal-body"
+              style={{ display: "flex", flexDirection: "column", gap: "16px" }}
+            >
+              <div
+                className="form-group"
+                style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+              >
+                <label style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>
+                  Link URL Pengumuman
+                </label>
                 <input
                   type="text"
                   placeholder="https://example.com/pengumuman"
                   value={announcementLinkInput}
                   onChange={(e) => setAnnouncementLinkInput(e.target.value)}
                   style={{
-                    padding: '10px',
-                    borderRadius: '10px',
-                    border: '1px solid #cbd5e1',
-                    fontSize: '14px',
-                    width: '100%'
+                    padding: "10px",
+                    borderRadius: "10px",
+                    border: "1px solid #cbd5e1",
+                    fontSize: "14px",
+                    width: "100%",
                   }}
                 />
               </div>
 
-              <div className="form-group" style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                <label style={{ fontSize: 13, color: '#64748b', fontWeight: 600 }}>Foto/Poster Pengumuman</label>
+              <div
+                className="form-group"
+                style={{ display: "flex", flexDirection: "column", gap: "6px" }}
+              >
+                <label style={{ fontSize: 13, color: "#64748b", fontWeight: 600 }}>
+                  Foto/Poster Pengumuman
+                </label>
                 <input
                   type="file"
                   accept="image/*"
                   onChange={handleAnnouncementFileChange}
-                  style={{ fontSize: '13px' }}
+                  style={{ fontSize: "13px" }}
                 />
-                
+
                 {announcementFilePreview && (
-                  <div style={{ position: 'relative', marginTop: '10px', maxWidth: '200px' }}>
+                  <div style={{ position: "relative", marginTop: "10px", maxWidth: "200px" }}>
                     <img
                       src={announcementFilePreview}
                       alt="Preview Pengumuman"
-                      style={{ width: '100%', borderRadius: '8px', border: '1px solid #e2e8f0' }}
+                      style={{ width: "100%", borderRadius: "8px", border: "1px solid #e2e8f0" }}
                     />
                     <button
                       type="button"
@@ -474,21 +552,21 @@ export default function CompetitionDetail() {
                         setClearAnnouncementPoster(true);
                       }}
                       style={{
-                        position: 'absolute',
-                        top: '4px',
-                        right: '4px',
-                        background: '#ef4444',
-                        color: 'white',
-                        border: 'none',
-                        borderRadius: '50%',
-                        width: '24px',
-                        height: '24px',
-                        cursor: 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        fontSize: '12px',
-                        fontWeight: 'bold'
+                        position: "absolute",
+                        top: "4px",
+                        right: "4px",
+                        background: "#ef4444",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "50%",
+                        width: "24px",
+                        height: "24px",
+                        cursor: "pointer",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "12px",
+                        fontWeight: "bold",
                       }}
                       title="Hapus foto"
                     >
@@ -499,7 +577,10 @@ export default function CompetitionDetail() {
               </div>
             </div>
 
-            <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '20px' }}>
+            <div
+              className="modal-actions"
+              style={{ display: "flex", justifyContent: "flex-end", gap: "8px", marginTop: "20px" }}
+            >
               <button className="btn secondary" onClick={() => setShowAnnouncementModal(false)}>
                 Batal
               </button>
@@ -527,30 +608,60 @@ export default function CompetitionDetail() {
               </button>
             </div>
 
-            <div className="modal-body text-center" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '16px', padding: '20px' }}>
+            <div
+              className="modal-body text-center"
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                gap: "16px",
+                padding: "20px",
+              }}
+            >
               {!competition.announcementPoster && !competition.announcementLink ? (
-                <div style={{ color: '#64748b', fontSize: '15px', padding: '20px 0' }}>
+                <div style={{ color: "#64748b", fontSize: "15px", padding: "20px 0" }}>
                   📢 Belum ada pengumuman untuk lomba ini.
                 </div>
               ) : (
                 <>
                   {competition.announcementPoster && (
-                    <div style={{ maxWidth: '100%', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 4px 15px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0' }}>
+                    <div
+                      style={{
+                        maxWidth: "100%",
+                        borderRadius: "12px",
+                        overflow: "hidden",
+                        boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                        border: "1px solid #e2e8f0",
+                      }}
+                    >
                       <img
                         src={`${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}`}
                         alt="Pengumuman Lomba"
-                        style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }}
+                        style={{ width: "100%", maxHeight: "400px", objectFit: "contain" }}
                       />
                     </div>
                   )}
 
                   {competition.announcementLink && (
                     <a
-                      href={competition.announcementLink.startsWith("http") ? competition.announcementLink : `https://${competition.announcementLink}`}
+                      href={
+                        competition.announcementLink.startsWith("http")
+                          ? competition.announcementLink
+                          : `https://${competition.announcementLink}`
+                      }
                       target="_blank"
                       rel="noopener noreferrer"
                       className="btn primary"
-                      style={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: '8px', padding: '12px 24px', textDecoration: 'none', width: 'auto', borderRadius: '10px' }}
+                      style={{
+                        display: "inline-flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        gap: "8px",
+                        padding: "12px 24px",
+                        textDecoration: "none",
+                        width: "auto",
+                        borderRadius: "10px",
+                      }}
                     >
                       🔗 Buka Link Pengumuman
                     </a>
@@ -559,7 +670,10 @@ export default function CompetitionDetail() {
               )}
             </div>
 
-            <div className="modal-actions" style={{ display: 'flex', justifyContent: 'flex-end', marginTop: '20px' }}>
+            <div
+              className="modal-actions"
+              style={{ display: "flex", justifyContent: "flex-end", marginTop: "20px" }}
+            >
               <button className="btn secondary" onClick={() => setShowViewAnnouncementModal(false)}>
                 Tutup
               </button>
@@ -591,7 +705,8 @@ export default function CompetitionDetail() {
               </div>
 
               <div className="grid grid-cols-2">
-                {(!competition.registrationStatus || competition.registrationStatus === "REJECTED") && (
+                {(!competition.registrationStatus ||
+                  competition.registrationStatus === "REJECTED") && (
                   <button
                     className="btn width"
                     onClick={() => navigate(`/competition/${competition.id}/register`)}
@@ -603,6 +718,26 @@ export default function CompetitionDetail() {
                 <button className="btn width" onClick={handleOpenViewAnnouncementModal}>
                   Lihat Pengumuman
                 </button>
+                {competition.examStatus && (
+                  <LoadingButton
+                    className="btn width"
+                    loading={startExamLoading}
+                    disabled={
+                      startExamLoading ||
+                      competition.examStatus.status === "NOT_STARTED" ||
+                      competition.examStatus.status === "SCHEDULE_ENDED"
+                    }
+                    onClick={handleStartExam}
+                  >
+                    {competition.examStatus.status === "IN_PROGRESS" ? "Lanjutkan Ujian" : ""}
+                    {competition.examStatus.status === "AVAILABLE" ? "Mulai Ujian" : ""}
+                    {competition.examStatus.status === "FINISHED" ? "Lihat Hasil Ujian" : ""}
+                    {competition.examStatus.status === "NOT_STARTED" ? "Belum Memenuhi Jadwal" : ""}
+                    {competition.examStatus.status === "SCHEDULE_ENDED"
+                      ? "Jadwal Ujian Berakhir"
+                      : ""}
+                  </LoadingButton>
+                )}
                 {user?.role === "ADMIN" && (
                   <button className="btn width" onClick={handleOpenAnnouncementModal}>
                     Atur Pengumuman
@@ -615,23 +750,16 @@ export default function CompetitionDetail() {
                     Upload Juknis
                   </button>
                 )}
-                {competition.registrationStatus === "verified" && (
-                  competition.creationFile ? (
-                    <button
-                      className="btn width"
-                      onClick={() => setShowCreationModal(true)}
-                    >
+                {competition.registrationStatus === "verified" &&
+                  (competition.creationFile ? (
+                    <button className="btn width" onClick={() => setShowCreationModal(true)}>
                       Lihat File yang Diunggah
                     </button>
                   ) : (
-                    <button
-                      className="btn width"
-                      onClick={() => setShowUploadModal(true)}
-                    >
+                    <button className="btn width" onClick={() => setShowUploadModal(true)}>
                       Upload Karya
                     </button>
-                  )
-                )}
+                  ))}
               </div>
               <div className="mt-1">
                 {competition.registrationStatus === "verified" && (

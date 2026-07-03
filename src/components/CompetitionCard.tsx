@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../auth/useAuth";
+import type { ExamStatus } from "../services/exam.service";
 
 type Props = {
   id: string;
@@ -9,6 +10,7 @@ type Props = {
   poster?: string | null;
   submitted?: boolean;
   creationFile?: string | null;
+  examStatus?: ExamStatus | null;
   onEdit?: () => void;
 };
 
@@ -20,6 +22,7 @@ export default function CompetitionCard({
   poster,
   submitted,
   creationFile,
+  examStatus,
   onEdit,
 }: Props) {
   const navigate = useNavigate();
@@ -60,6 +63,11 @@ export default function CompetitionCard({
                 <div className="badge pending">Belum Upload Karya</div>
               )}
             </>
+          )}
+          {user && examStatus && (
+            <div className={`badge exam-status ${examStatus.status.toLowerCase()}`}>
+              {examStatus.label}
+            </div>
           )}
         </div>
 

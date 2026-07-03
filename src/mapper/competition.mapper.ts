@@ -1,3 +1,5 @@
+import type { ExamStatus } from "../services/exam.service";
+
 export type CompetitionCardVM = {
   id: string;
   title: string;
@@ -7,6 +9,7 @@ export type CompetitionCardVM = {
   closed: boolean;
   submitted: boolean;
   creationFile: string | null;
+  examStatus: ExamStatus | null;
 };
 
 export type CompetitionListItemDTO = {
@@ -20,6 +23,7 @@ export type CompetitionListItemDTO = {
   status: "open" | "closed";
   submitted: boolean;
   creationFile: string | null;
+  examStatus: ExamStatus | null;
 };
 
 export function toCompetitionCardVM(api: CompetitionListItemDTO): CompetitionCardVM {
@@ -36,5 +40,6 @@ export function toCompetitionCardVM(api: CompetitionListItemDTO): CompetitionCar
     closed: api.status === "closed",
     submitted: api.submitted,
     creationFile: api.creationFile,
+    examStatus: api.examStatus,
   };
 }
