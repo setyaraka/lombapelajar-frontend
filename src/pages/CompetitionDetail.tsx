@@ -135,10 +135,10 @@ export default function CompetitionDetail() {
       setCompetition((prev) =>
         prev
           ? {
-              ...prev,
-              announcementPoster: res.data.announcementPoster,
-              announcementLink: res.data.announcementLink,
-            }
+            ...prev,
+            announcementPoster: res.data.announcementPoster,
+            announcementLink: res.data.announcementLink,
+          }
           : prev
       );
 
@@ -195,9 +195,9 @@ export default function CompetitionDetail() {
       setCompetition((prev) =>
         prev
           ? {
-              ...prev,
-              juknis: res.data.juknis,
-            }
+            ...prev,
+            juknis: res.data.juknis,
+          }
           : prev
       );
 
@@ -265,9 +265,9 @@ export default function CompetitionDetail() {
       setCompetition((prev) =>
         prev
           ? {
-              ...prev,
-              creationFile: res.data.creationFile,
-            }
+            ...prev,
+            creationFile: res.data.creationFile,
+          }
           : prev
       );
     } catch (err: unknown) {
@@ -707,13 +707,13 @@ export default function CompetitionDetail() {
               <div className="grid grid-cols-2">
                 {(!competition.registrationStatus ||
                   competition.registrationStatus === "REJECTED") && (
-                  <button
-                    className="btn width"
-                    onClick={() => navigate(`/competition/${competition.id}/register`)}
-                  >
-                    Daftar Sekarang
-                  </button>
-                )}
+                    <button
+                      className="btn width"
+                      onClick={() => navigate(`/competition/${competition.id}/register`)}
+                    >
+                      Daftar Sekarang
+                    </button>
+                  )}
 
                 <button className="btn width" onClick={handleOpenViewAnnouncementModal}>
                   Lihat Pengumuman
