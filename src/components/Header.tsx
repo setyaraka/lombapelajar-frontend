@@ -39,12 +39,20 @@ export default function Header() {
             </button> */}
 
             {user.role === "ADMIN" && (
-              <button
-                className={isActive("/admin/participants") ? "active" : ""}
-                onClick={() => go("/admin/participants")}
-              >
-                Admin
-              </button>
+              <>
+                <button
+                  className={isActive("/admin/participants") ? "active" : ""}
+                  onClick={() => go("/admin/participants")}
+                >
+                  Admin Lomba
+                </button>
+                <button
+                  className={isActive("/admin/cbt") ? "active" : ""}
+                  onClick={() => go("/admin/cbt")}
+                >
+                  Admin CBT
+                </button>
+              </>
             )}
           </nav>
         )}
