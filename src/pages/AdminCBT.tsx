@@ -889,17 +889,16 @@ function ExamsView() {
             Jadwal & Manajemen Ujian
           </h2>
         </div>
-        <div style={{ display: "flex", gap: "1rem" }}>
-          <div style={{ position: "relative" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+          <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
             <Search
               style={{
                 position: "absolute",
-                left: "10px",
-                top: "50%",
-                transform: "translateY(-50%)",
+                left: "12px",
                 color: "#94a3b8",
+                pointerEvents: "none",
               }}
-              size={16}
+              size={18}
             />
             <input
               type="text"
@@ -907,9 +906,13 @@ function ExamsView() {
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               style={{
-                padding: "0.5rem 1rem 0.5rem 2.2rem",
+                padding: "0.6rem 1rem 0.6rem 2.6rem",
                 borderRadius: "8px",
                 border: "1px solid #cbd5e1",
+                fontSize: "0.9rem",
+                width: "260px",
+                outline: "none",
+                transition: "all 0.2s ease",
               }}
             />
           </div>
@@ -942,10 +945,21 @@ function ExamsView() {
               backgroundColor: "#2EC4B6",
               color: "#fff",
               border: "none",
-              padding: "0.6rem 1.2rem",
+              padding: "0.6rem 1.4rem",
               borderRadius: "8px",
               cursor: "pointer",
               fontWeight: 600,
+              fontSize: "0.9rem",
+              transition: "all 0.2s ease",
+              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = "#27a79b";
+              e.currentTarget.style.transform = "translateY(-1px)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = "#2EC4B6";
+              e.currentTarget.style.transform = "translateY(0)";
             }}
           >
             <Plus size={16} /> Buat Ujian
