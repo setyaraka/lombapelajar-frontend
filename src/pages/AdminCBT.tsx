@@ -1491,10 +1491,14 @@ function ParticipantsView() {
     stageId: "",
     examId: "",
     mode: "individual" as "individual" | "stage",
+    assignType: "stage_competition" as "exam" | "stage_competition",
+    competitionId: "",
+    sourceStageId: "",
   });
 
   const [registeredUsers, setRegisteredUsers] = useState<any[]>([]);
   const [selectedRegUserId, setSelectedRegUserId] = useState("");
+  const [competitions, setCompetitions] = useState<any[]>([]);
 
   const fetchParticipants = async () => {
     try {
@@ -1511,14 +1515,16 @@ function ParticipantsView() {
 
   const loadFilterData = async () => {
     try {
-      const [stageList, examList, regUsers] = await Promise.all([
+      const [stageList, examList, regUsers, compList] = await Promise.all([
         AdminCBTAPI.listStages(),
         AdminCBTAPI.listExams({ perPage: 100 }),
         AdminCBTAPI.listRegisteredUsers(),
+        getCompetitions({ page: 1, perPage: 100 }),
       ]);
       setStages(stageList);
       setExams(examList.data);
       setRegisteredUsers(regUsers);
+      setCompetitions(compList.data || compList);
     } catch (err) {}
   };
 
@@ -1584,23 +1590,45 @@ function ParticipantsView() {
 
   const handleAssign = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!assignData.examId) return toast.error("Ujian harus dipilih");
 
     try {
-      const payload: any = { examId: assignData.examId };
+      const payload: any = {};
+
+      if (assignData.assignType === "exam") {
+        if (!assignData.examId) return toast.error("Ujian harus dipilih");
+        payload.examId = assignData.examId;
+      } else {
+        if (!assignData.competitionId) return toast.error("Kompetisi/Lomba harus dipilih");
+        if (!assignData.stageId) return toast.error("Babak target harus dipilih");
+        payload.competitionId = assignData.competitionId;
+        payload.stageId = assignData.stageId;
+      }
 
       if (assignData.mode === "individual") {
         if (assignData.participantIds.length === 0)
           return toast.error("Pilih minimal satu peserta");
         payload.participantIds = assignData.participantIds;
       } else {
-        if (!assignData.stageId) return toast.error("Tahap harus dipilih");
-        payload.stageId = assignData.stageId;
+        if (!assignData.sourceStageId) return toast.error("Tahap sumber harus dipilih");
+        payload.sourceStageId = assignData.sourceStageId;
       }
 
       const res = await AdminCBTAPI.assignParticipants(payload);
-      toast.success(`Berhasil meng-assign ${res.assigned} peserta ke ujian.`);
+      toast.success(`Berhasil meng-assign ${res.assigned} peserta.`);
       setShowAssignModal(false);
+      
+      // Reset assign state
+      setAssignData({
+        participantIds: [],
+        examIds: [],
+        stageId: "",
+        examId: "",
+        mode: "individual",
+        assignType: "stage_competition",
+        competitionId: "",
+        sourceStageId: "",
+      });
+
       fetchParticipants();
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Gagal melakukan assignment");
@@ -1663,6 +1691,9 @@ function ParticipantsView() {
                 stageId: "",
                 examId: "",
                 mode: "individual",
+                assignType: "stage_competition",
+                competitionId: "",
+                sourceStageId: "",
               });
               setShowAssignModal(true);
             }}
@@ -2056,27 +2087,104 @@ function ParticipantsView() {
             <form onSubmit={handleAssign}>
               <div style={{ marginBottom: "1rem" }}>
                 <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
-                  Pilih Ujian Target
+                  Tipe Target
                 </label>
-                <select
-                  value={assignData.examId}
-                  onChange={(e) => setAssignData({ ...assignData, examId: e.target.value })}
-                  style={{
-                    width: "100%",
-                    padding: "0.6rem",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
-                  }}
-                  required
-                >
-                  <option value="">-- Pilih Ujian --</option>
-                  {exams.map((exam) => (
-                    <option key={exam.id} value={exam.id}>
-                      {exam.title}
-                    </option>
-                  ))}
-                </select>
+                <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
+                  <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                    <input
+                      type="radio"
+                      name="assignType"
+                      checked={assignData.assignType === "stage_competition"}
+                      onChange={() => setAssignData({ ...assignData, assignType: "stage_competition" })}
+                    />
+                    Babak & Lomba (Rekomendasi)
+                  </label>
+                  <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                    <input
+                      type="radio"
+                      name="assignType"
+                      checked={assignData.assignType === "exam"}
+                      onChange={() => setAssignData({ ...assignData, assignType: "exam" })}
+                    />
+                    Ujian Spesifik
+                  </label>
+                </div>
               </div>
+
+              {assignData.assignType === "exam" ? (
+                <div style={{ marginBottom: "1rem" }}>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                    Pilih Ujian Target
+                  </label>
+                  <select
+                    value={assignData.examId}
+                    onChange={(e) => setAssignData({ ...assignData, examId: e.target.value })}
+                    style={{
+                      width: "100%",
+                      padding: "0.6rem",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                    }}
+                    required
+                  >
+                    <option value="">-- Pilih Ujian --</option>
+                    {exams.map((exam) => (
+                      <option key={exam.id} value={exam.id}>
+                        {exam.title}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : (
+                <>
+                  <div style={{ marginBottom: "1rem" }}>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                      Pilih Lomba (Kompetisi) Target
+                    </label>
+                    <select
+                      value={assignData.competitionId}
+                      onChange={(e) => setAssignData({ ...assignData, competitionId: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "0.6rem",
+                        borderRadius: "8px",
+                        border: "1px solid #cbd5e1",
+                      }}
+                      required
+                    >
+                      <option value="">-- Pilih Lomba --</option>
+                      {competitions.map((comp) => (
+                        <option key={comp.id} value={comp.id}>
+                          {comp.title}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <div style={{ marginBottom: "1rem" }}>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                      Pilih Babak (Stage) Target
+                    </label>
+                    <select
+                      value={assignData.stageId}
+                      onChange={(e) => setAssignData({ ...assignData, stageId: e.target.value })}
+                      style={{
+                        width: "100%",
+                        padding: "0.6rem",
+                        borderRadius: "8px",
+                        border: "1px solid #cbd5e1",
+                      }}
+                      required
+                    >
+                      <option value="">-- Pilih Babak --</option>
+                      {stages.map((stage) => (
+                        <option key={stage.id} value={stage.id}>
+                          {stage.name}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </>
+              )}
 
               <div style={{ marginBottom: "1rem" }}>
                 <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
@@ -2121,11 +2229,11 @@ function ParticipantsView() {
               {assignData.mode === "stage" && (
                 <div style={{ marginBottom: "1.5rem" }}>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
-                    Pilih Tahapan Ujian
+                    Pilih Tahapan Ujian Sumber
                   </label>
                   <select
-                    value={assignData.stageId}
-                    onChange={(e) => setAssignData({ ...assignData, stageId: e.target.value })}
+                    value={assignData.sourceStageId}
+                    onChange={(e) => setAssignData({ ...assignData, sourceStageId: e.target.value })}
                     style={{
                       width: "100%",
                       padding: "0.6rem",
@@ -2134,7 +2242,7 @@ function ParticipantsView() {
                     }}
                     required
                   >
-                    <option value="">-- Pilih Tahap --</option>
+                    <option value="">-- Pilih Tahap Sumber --</option>
                     {stages.map((stage) => (
                       <option key={stage.id} value={stage.id}>
                         {stage.name}
