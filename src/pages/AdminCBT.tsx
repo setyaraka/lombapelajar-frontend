@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { AdminCBTAPI } from "../services/admin-cbt.service";
+import { getCompetitions } from "../services/competition.service";
 import type {
   CBTDashboardData,
   CBTStage,
@@ -346,6 +347,7 @@ function StagesView() {
 function ExamsView() {
   const [exams, setExams] = useState<CBTExam[]>([]);
   const [stages, setStages] = useState<CBTStage[]>([]);
+  const [competitions, setCompetitions] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState("");
@@ -357,6 +359,7 @@ function ExamsView() {
     title: "",
     description: "",
     stageId: "",
+    competitionId: "",
     startAt: "",
     durationMinutes: 120,
     status: "DRAFT" as "DRAFT" | "ACTIVE" | "INACTIVE" | "ARCHIVED",
@@ -386,12 +389,20 @@ function ExamsView() {
     } catch (err) {}
   };
 
+  const fetchCompetitions = async () => {
+    try {
+      const res = await getCompetitions({ page: 1, perPage: 100 });
+      setCompetitions(res.data || []);
+    } catch (err) {}
+  };
+
   useEffect(() => {
     fetchExams();
   }, [page, search]);
 
   useEffect(() => {
     fetchStages();
+    fetchCompetitions();
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -403,6 +414,7 @@ function ExamsView() {
       const payload = {
         ...formData,
         stageId: formData.stageId || null,
+        competitionId: formData.competitionId || null,
         startAt: new Date(formData.startAt).toISOString(),
       };
 
@@ -428,6 +440,7 @@ function ExamsView() {
       title: exam.title,
       description: exam.description || "",
       stageId: exam.stageId || "",
+      competitionId: exam.competitionId || "",
       startAt: localStartAt,
       durationMinutes: exam.durationMinutes,
       status: exam.status,
@@ -484,6 +497,7 @@ function ExamsView() {
                 title: "",
                 description: "",
                 stageId: "",
+                competitionId: "",
                 startAt: "",
                 durationMinutes: 120,
                 status: "DRAFT",
@@ -524,6 +538,11 @@ function ExamsView() {
                     <td style={{ padding: "1rem" }}>
                       <div style={{ fontWeight: 600 }}>{exam.title}</div>
                       <div style={{ fontSize: "0.75rem", color: "#64748b" }}>{exam.description || "Tidak ada deskripsi"}</div>
+                      {exam.competition && (
+                        <div style={{ fontSize: "0.75rem", color: "#2EC4B6", marginTop: "0.25rem", fontWeight: 500 }}>
+                          Kompetisi: {exam.competition.title}
+                        </div>
+                      )}
                     </td>
                     <td style={{ padding: "1rem" }}>{exam.stage?.name || "-"}</td>
                     <td style={{ padding: "1rem" }}>{new Date(exam.startAt).toLocaleString("id-ID")}</td>
@@ -599,6 +618,19 @@ function ExamsView() {
                   <option value="">-- Pilih Tahapan --</option>
                   {stages.map((stage) => (
                     <option key={stage.id} value={stage.id}>{stage.name}</option>
+                  ))}
+                </select>
+              </div>
+              <div style={{ marginBottom: "1rem" }}>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Kompetisi (Lomba)</label>
+                <select
+                  value={formData.competitionId}
+                  onChange={(e) => setFormData({ ...formData, competitionId: e.target.value })}
+                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                >
+                  <option value="">-- Pilih Kompetisi (Opsional) --</option>
+                  {competitions.map((comp) => (
+                    <option key={comp.id} value={comp.id}>{comp.title}</option>
                   ))}
                 </select>
               </div>

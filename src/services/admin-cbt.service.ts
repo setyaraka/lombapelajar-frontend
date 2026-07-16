@@ -50,6 +50,7 @@ export interface CBTExam {
   createdAt: string;
   updatedAt: string;
   stage?: CBTStage | null;
+  competition?: { id: string; title: string } | null;
   _count?: {
     assignments: number;
     questions: number;
