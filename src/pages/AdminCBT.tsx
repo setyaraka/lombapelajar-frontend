@@ -734,7 +734,7 @@ function ExamsView() {
   const fetchExams = async () => {
     try {
       setLoading(true);
-      const res = await AdminCBTAPI.listExams({ page, search: debouncedSearch });
+      const res = await AdminCBTAPI.listExams({ page, perPage: 5, search: debouncedSearch });
       setExams(res.data);
       setMeta(res.meta);
     } catch (err: any) {
@@ -978,78 +978,139 @@ function ExamsView() {
                 </tr>
               </thead>
               <tbody>
-                {exams.map((exam) => (
-                  <tr key={exam.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                    <td style={{ padding: "1rem" }}>
-                      <div style={{ fontWeight: 600 }}>{exam.title}</div>
-                      <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
-                        {exam.description || "Tidak ada deskripsi"}
-                      </div>
-                      {exam.competition && (
-                        <div
+                {exams.map((exam) => {
+                  const start = new Date(exam.startAt);
+                  const formattedDate = start.toLocaleDateString("id-ID", {
+                    day: "numeric",
+                    month: "short",
+                    year: "numeric",
+                  });
+                  const formattedTime = start.toLocaleTimeString("id-ID", {
+                    hour: "2-digit",
+                    minute: "2-digit",
+                  });
+
+                  return (
+                    <tr 
+                      key={exam.id} 
+                      style={{ 
+                        borderBottom: "1px solid #f1f5f9",
+                        transition: "background-color 0.2s ease",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.backgroundColor = "#f8fafc";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.backgroundColor = "transparent";
+                      }}
+                    >
+                      <td style={{ padding: "1rem" }}>
+                        <div style={{ fontWeight: 700, color: "#0f172a" }}>{renderFormattedText(exam.title)}</div>
+                        <div style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.15rem", maxWidth: "400px", lineHeight: "1.3" }}>
+                          {exam.description || "Tidak ada deskripsi"}
+                        </div>
+                        {exam.competition && (
+                          <div
+                            style={{
+                              fontSize: "0.75rem",
+                              color: "#2EC4B6",
+                              marginTop: "0.35rem",
+                              fontWeight: 600,
+                            }}
+                          >
+                            Kompetisi: {exam.competition.title}
+                          </div>
+                        )}
+                      </td>
+                      <td style={{ padding: "1rem" }}>
+                        <span style={{ 
+                          fontSize: "0.85rem", 
+                          fontWeight: 500, 
+                          color: "#475569",
+                          backgroundColor: "#f1f5f9",
+                          padding: "0.25rem 0.6rem",
+                          borderRadius: "6px"
+                        }}>
+                          {exam.stage?.name || "-"}
+                        </span>
+                      </td>
+                      <td style={{ padding: "1rem" }}>
+                        <div style={{ fontWeight: 600, color: "#334155", fontSize: "0.9rem" }}>{formattedDate}</div>
+                        <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.05rem" }}>{formattedTime} WIB</div>
+                      </td>
+                      <td style={{ padding: "1rem" }}>
+                        <span style={{ fontWeight: 600, color: "#334155" }}>{exam.durationMinutes}</span>{" "}
+                        <span style={{ color: "#64748b", fontSize: "0.8rem" }}>menit</span>
+                      </td>
+                      <td style={{ padding: "1rem" }}>
+                        <span style={{ 
+                          display: "inline-block", 
+                          padding: "0.25rem 0.5rem", 
+                          borderRadius: "6px", 
+                          backgroundColor: "#ecfeff", 
+                          fontWeight: 700, 
+                          color: "#0891b2",
+                          fontSize: "0.85rem"
+                        }}>
+                          {exam._count?.questions || 0} soal
+                        </span>
+                      </td>
+                      <td style={{ padding: "1rem" }}>
+                        <button
+                          onClick={() => handleToggle(exam.id, exam.isActive)}
                           style={{
+                            padding: "0.3rem 0.75rem",
+                            borderRadius: "9999px",
                             fontSize: "0.75rem",
-                            color: "#2EC4B6",
-                            marginTop: "0.25rem",
-                            fontWeight: 500,
+                            fontWeight: 600,
+                            backgroundColor: exam.isActive ? "#dcfce7" : "#fee2e2",
+                            color: exam.isActive ? "#15803d" : "#b91c1c",
+                            border: "1px solid",
+                            borderColor: exam.isActive ? "#bbf7d0" : "#fecaca",
+                            cursor: "pointer",
+                            transition: "all 0.2s ease",
+                            boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+                          }}
+                          onMouseEnter={(e) => {
+                            e.currentTarget.style.transform = "translateY(-1px)";
+                            e.currentTarget.style.boxShadow = "0 2px 4px 0 rgba(0, 0, 0, 0.07)";
+                          }}
+                          onMouseLeave={(e) => {
+                            e.currentTarget.style.transform = "translateY(0)";
+                            e.currentTarget.style.boxShadow = "0 1px 2px 0 rgba(0, 0, 0, 0.05)";
                           }}
                         >
-                          Kompetisi: {exam.competition.title}
-                        </div>
-                      )}
-                    </td>
-                    <td style={{ padding: "1rem" }}>{exam.stage?.name || "-"}</td>
-                    <td style={{ padding: "1rem" }}>
-                      {new Date(exam.startAt).toLocaleString("id-ID")}
-                    </td>
-                    <td style={{ padding: "1rem" }}>{exam.durationMinutes} menit</td>
-                    <td style={{ padding: "1rem", fontWeight: 600 }}>
-                      {exam._count?.questions || 0}
-                    </td>
-                    <td style={{ padding: "1rem" }}>
-                      <button
-                        onClick={() => handleToggle(exam.id, exam.isActive)}
-                        style={{
-                          padding: "0.25rem 0.6rem",
-                          borderRadius: "9999px",
-                          fontSize: "0.75rem",
-                          fontWeight: 600,
-                          backgroundColor: exam.isActive ? "#dcfce7" : "#fee2e2",
-                          color: exam.isActive ? "#15803d" : "#b91c1c",
-                          border: "none",
-                          cursor: "pointer",
-                        }}
-                      >
-                        {exam.isActive ? "Aktif" : "Nonaktif"}
-                      </button>
-                    </td>
-                    <td style={{ padding: "1rem", textAlign: "right" }}>
-                      <button
-                        onClick={() => handleEdit(exam)}
-                        style={{
-                          marginRight: "0.5rem",
-                          border: "none",
-                          backgroundColor: "transparent",
-                          color: "#3b82f6",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <Edit2 size={16} />
-                      </button>
-                      <button
-                        onClick={() => handleDelete(exam.id)}
-                        style={{
-                          border: "none",
-                          backgroundColor: "transparent",
-                          color: "#ef4444",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <Trash2 size={16} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
+                          {exam.isActive ? "Aktif" : "Nonaktif"}
+                        </button>
+                      </td>
+                      <td style={{ padding: "1rem", textAlign: "right" }}>
+                        <button
+                          onClick={() => handleEdit(exam)}
+                          style={{
+                            marginRight: "0.5rem",
+                            border: "none",
+                            backgroundColor: "transparent",
+                            color: "#3b82f6",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <Edit2 size={16} />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(exam.id)}
+                          style={{
+                            border: "none",
+                            backgroundColor: "transparent",
+                            color: "#ef4444",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
+                      </td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>
