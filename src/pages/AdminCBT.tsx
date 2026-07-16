@@ -2236,7 +2236,7 @@ function QuestionsView() {
       >
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>Bank Soal</h2>
-          <div style={{ position: "relative", zIndex: 900 }}>
+          <div style={{ position: "relative", zIndex: showExamDropdown ? 40 : 1 }}>
             <div
               onClick={() => setShowExamDropdown(!showExamDropdown)}
               style={{
