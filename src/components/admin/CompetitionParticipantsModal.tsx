@@ -76,9 +76,13 @@ export default function CompetitionParticipantsModal({
                     <td>{p.school}</td>
                     <td>
                       <span className={`badge ${p.status}`}>
-                        {p.status === "verified" ? "Diterima" : 
-                         p.status === "pending" ? "Menunggu" : 
-                         p.status === "rejected" ? "Ditolak" : p.status}
+                        {p.status === "verified"
+                          ? "Diterima"
+                          : p.status === "pending"
+                            ? "Menunggu"
+                            : p.status === "rejected"
+                              ? "Ditolak"
+                              : p.status}
                       </span>
                     </td>
                   </tr>

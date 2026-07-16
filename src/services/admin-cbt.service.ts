@@ -160,7 +160,9 @@ export const AdminCBTAPI = {
 
   // Exams
   listExams: async (params?: Record<string, any>) => {
-    const res = await api.get<{ data: CBTExam[]; meta: PaginationMeta }>("/admin/cbt/exams", { params });
+    const res = await api.get<{ data: CBTExam[]; meta: PaginationMeta }>("/admin/cbt/exams", {
+      params,
+    });
     return res.data;
   },
   getExam: async (id: string) => {
@@ -186,7 +188,10 @@ export const AdminCBTAPI = {
 
   // Participants
   listParticipants: async (params?: Record<string, any>) => {
-    const res = await api.get<{ data: CBTParticipant[]; meta: PaginationMeta }>("/admin/cbt/participants", { params });
+    const res = await api.get<{ data: CBTParticipant[]; meta: PaginationMeta }>(
+      "/admin/cbt/participants",
+      { params }
+    );
     return res.data;
   },
   createParticipant: async (data: Partial<CBTParticipant>) => {
@@ -231,13 +236,20 @@ export const AdminCBTAPI = {
 
   // Monitoring
   getMonitoring: async (params?: Record<string, any>) => {
-    const res = await api.get<{ data: CBTMonitoringData[]; serverTime: string; meta: PaginationMeta }>("/admin/cbt/monitoring", { params });
+    const res = await api.get<{
+      data: CBTMonitoringData[];
+      serverTime: string;
+      meta: PaginationMeta;
+    }>("/admin/cbt/monitoring", { params });
     return res.data;
   },
 
   // Results & Export
   getResults: async (params?: Record<string, any>) => {
-    const res = await api.get<{ data: CBTResultData[]; meta: PaginationMeta }>("/admin/cbt/results", { params });
+    const res = await api.get<{ data: CBTResultData[]; meta: PaginationMeta }>(
+      "/admin/cbt/results",
+      { params }
+    );
     return res.data;
   },
   exportResultsUrl: (params?: Record<string, any>) => {

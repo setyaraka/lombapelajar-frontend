@@ -427,7 +427,9 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
             {paymentMethods.includes("QRIS") && (
               <div className="full">
                 <div className="upload-field">
-                  <label style={{ fontSize: 13, color: "#64748b", marginBottom: 8, display: "block" }}>
+                  <label
+                    style={{ fontSize: 13, color: "#64748b", marginBottom: 8, display: "block" }}
+                  >
                     Upload QRIS
                   </label>
                   <input type="file" accept="image/*" onChange={handleQrisUpload} />
@@ -435,9 +437,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
                 {(qrisPreview || qrisUrl) && (
                   <img
                     src={
-                      qrisPreview
-                        ? qrisPreview
-                        : `${import.meta.env.VITE_API_URL}/files/${qrisUrl}`
+                      qrisPreview ? qrisPreview : `${import.meta.env.VITE_API_URL}/files/${qrisUrl}`
                     }
                     alt="QRIS"
                     style={{ maxWidth: "200px", marginTop: 10, borderRadius: 8 }}

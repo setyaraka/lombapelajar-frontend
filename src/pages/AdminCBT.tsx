@@ -12,22 +12,68 @@ import type {
   CBTQuestionOption,
   CBTMonitoringData,
   CBTResultData,
-  PaginationMeta
+  PaginationMeta,
 } from "../services/admin-cbt.service";
 import toast from "react-hot-toast";
-import { Play, Trash2, Edit2, Plus, Users, Award, Calendar, BookOpen, AlertCircle, FileDown, Search, RefreshCw, CheckCircle2 } from "lucide-react";
+import {
+  Play,
+  Trash2,
+  Edit2,
+  Plus,
+  Users,
+  Award,
+  Calendar,
+  BookOpen,
+  AlertCircle,
+  FileDown,
+  Search,
+  RefreshCw,
+  CheckCircle2,
+} from "lucide-react";
 
-type SubTab = "dashboard" | "stages" | "exams" | "participants" | "questions" | "monitoring" | "results";
+type SubTab =
+  | "dashboard"
+  | "stages"
+  | "exams"
+  | "participants"
+  | "questions"
+  | "monitoring"
+  | "results";
 
 export default function AdminCBT() {
   const [activeTab, setActiveTab] = useState<SubTab>("dashboard");
 
   return (
-    <div className="admin-cbt-page" style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f8fafc" }}>
+    <div
+      className="admin-cbt-page"
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        flexDirection: "column",
+        background: "#f8fafc",
+      }}
+    >
       <Header />
-      <main style={{ flex: 1, padding: "2rem 1rem", maxWidth: "1280px", margin: "0 auto", width: "100%" }}>
+      <main
+        style={{
+          flex: 1,
+          padding: "2rem 1rem",
+          maxWidth: "1280px",
+          margin: "0 auto",
+          width: "100%",
+        }}
+      >
         {/* Navigation Tabs */}
-        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem", marginBottom: "2rem", borderBottom: "1px solid #e2e8f0", paddingBottom: "1rem" }}>
+        <div
+          style={{
+            display: "flex",
+            flexWrap: "wrap",
+            gap: "0.5rem",
+            marginBottom: "2rem",
+            borderBottom: "1px solid #e2e8f0",
+            paddingBottom: "1rem",
+          }}
+        >
           {[
             { id: "dashboard", label: "Dashboard", icon: <Award size={18} /> },
             { id: "stages", label: "Tahapan Ujian", icon: <Award size={18} /> },
@@ -62,7 +108,14 @@ export default function AdminCBT() {
         </div>
 
         {/* Content Area */}
-        <div style={{ backgroundColor: "#ffffff", borderRadius: "16px", padding: "2rem", boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)" }}>
+        <div
+          style={{
+            backgroundColor: "#ffffff",
+            borderRadius: "16px",
+            padding: "2rem",
+            boxShadow: "0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05)",
+          }}
+        >
           {activeTab === "dashboard" && <DashboardView />}
           {activeTab === "stages" && <StagesView />}
           {activeTab === "exams" && <ExamsView />}
@@ -117,35 +170,63 @@ function DashboardView() {
 
   return (
     <div>
-      <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1.5rem", color: "#0f172a" }}>Dashboard CBT</h2>
+      <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1.5rem", color: "#0f172a" }}>
+        Dashboard CBT
+      </h2>
       <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", marginBottom: "3rem" }}>
         <div style={{ ...cardStyle, borderLeftColor: "#3b82f6" }}>
-          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>Total Peserta</span>
-          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#1e3a8a", margin: "0.5rem 0" }}>{data.stats.totalParticipants}</span>
+          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>
+            Total Peserta
+          </span>
+          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#1e3a8a", margin: "0.5rem 0" }}>
+            {data.stats.totalParticipants}
+          </span>
         </div>
         <div style={{ ...cardStyle, borderLeftColor: "#10b981" }}>
-          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>Ujian Aktif Saat Ini</span>
-          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#065f46", margin: "0.5rem 0" }}>{data.stats.activeExams}</span>
+          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>
+            Ujian Aktif Saat Ini
+          </span>
+          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#065f46", margin: "0.5rem 0" }}>
+            {data.stats.activeExams}
+          </span>
         </div>
         <div style={{ ...cardStyle, borderLeftColor: "#f59e0b" }}>
-          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>Ujian Yang Akan Datang</span>
-          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#92400e", margin: "0.5rem 0" }}>{data.stats.upcomingExams}</span>
+          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>
+            Ujian Yang Akan Datang
+          </span>
+          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#92400e", margin: "0.5rem 0" }}>
+            {data.stats.upcomingExams}
+          </span>
         </div>
         <div style={{ ...cardStyle, borderLeftColor: "#8b5cf6" }}>
-          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>Sedang Mengerjakan</span>
-          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#5b21b6", margin: "0.5rem 0" }}>{data.stats.inProgress}</span>
+          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>
+            Sedang Mengerjakan
+          </span>
+          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#5b21b6", margin: "0.5rem 0" }}>
+            {data.stats.inProgress}
+          </span>
         </div>
         <div style={{ ...cardStyle, borderLeftColor: "#ec4899" }}>
-          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>Selesai / Auto Submitted</span>
-          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#9d174d", margin: "0.5rem 0" }}>{data.stats.finished}</span>
+          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>
+            Selesai / Auto Submitted
+          </span>
+          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#9d174d", margin: "0.5rem 0" }}>
+            {data.stats.finished}
+          </span>
         </div>
         <div style={{ ...cardStyle, borderLeftColor: "#ef4444" }}>
-          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>Jumlah Pelanggaran</span>
-          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#991b1b", margin: "0.5rem 0" }}>{data.stats.violations}</span>
+          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>
+            Jumlah Pelanggaran
+          </span>
+          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#991b1b", margin: "0.5rem 0" }}>
+            {data.stats.violations}
+          </span>
         </div>
       </div>
 
-      <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem", color: "#0f172a" }}>Statistik Jumlah Peserta Per Ujian</h3>
+      <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem", color: "#0f172a" }}>
+        Statistik Jumlah Peserta Per Ujian
+      </h3>
       <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
         <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
           <thead>
@@ -158,12 +239,18 @@ function DashboardView() {
             {data.participantsPerExam.map((item) => (
               <tr key={item.examId} style={{ borderBottom: "1px solid #f1f5f9" }}>
                 <td style={{ padding: "1rem", fontWeight: 500 }}>{item.title}</td>
-                <td style={{ padding: "1rem", textAlign: "right", fontWeight: 700, color: "#2EC4B6" }}>{item.participants}</td>
+                <td
+                  style={{ padding: "1rem", textAlign: "right", fontWeight: 700, color: "#2EC4B6" }}
+                >
+                  {item.participants}
+                </td>
               </tr>
             ))}
             {data.participantsPerExam.length === 0 && (
               <tr>
-                <td colSpan={2} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>Tidak ada data ujian aktif.</td>
+                <td colSpan={2} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
+                  Tidak ada data ujian aktif.
+                </td>
               </tr>
             )}
           </tbody>
@@ -180,7 +267,13 @@ function StagesView() {
   const [stages, setStages] = useState<CBTStage[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
-  const [formData, setFormData] = useState({ id: "", name: "", description: "", position: 0, isActive: true });
+  const [formData, setFormData] = useState({
+    id: "",
+    name: "",
+    description: "",
+    position: 0,
+    isActive: true,
+  });
 
   const fetchStages = async () => {
     try {
@@ -243,14 +336,34 @@ function StagesView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>Manajemen Tahapan Ujian</h2>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          marginBottom: "1.5rem",
+        }}
+      >
+        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
+          Manajemen Tahapan Ujian
+        </h2>
         <button
           onClick={() => {
             setFormData({ id: "", name: "", description: "", position: 0, isActive: true });
             setShowModal(true);
           }}
-          style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#2EC4B6", color: "#fff", border: "none", padding: "0.6rem 1.2rem", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            backgroundColor: "#2EC4B6",
+            color: "#fff",
+            border: "none",
+            padding: "0.6rem 1.2rem",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: 600,
+          }}
         >
           <Plus size={16} /> Tambah Tahapan
         </button>
@@ -274,13 +387,43 @@ function StagesView() {
                 <td style={{ padding: "1rem", fontWeight: 600 }}>{stage.name}</td>
                 <td style={{ padding: "1rem", color: "#64748b" }}>{stage.description || "-"}</td>
                 <td style={{ padding: "1rem" }}>
-                  <span style={{ padding: "0.25rem 0.6rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: stage.isActive ? "#dcfce7" : "#fee2e2", color: stage.isActive ? "#15803d" : "#b91c1c" }}>
+                  <span
+                    style={{
+                      padding: "0.25rem 0.6rem",
+                      borderRadius: "9999px",
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      backgroundColor: stage.isActive ? "#dcfce7" : "#fee2e2",
+                      color: stage.isActive ? "#15803d" : "#b91c1c",
+                    }}
+                  >
                     {stage.isActive ? "Aktif" : "Nonaktif"}
                   </span>
                 </td>
                 <td style={{ padding: "1rem", textAlign: "right" }}>
-                  <button onClick={() => handleEdit(stage)} style={{ marginRight: "0.5rem", border: "none", backgroundColor: "transparent", color: "#3b82f6", cursor: "pointer" }}><Edit2 size={16} /></button>
-                  <button onClick={() => handleDelete(stage.id)} style={{ border: "none", backgroundColor: "transparent", color: "#ef4444", cursor: "pointer" }}><Trash2 size={16} /></button>
+                  <button
+                    onClick={() => handleEdit(stage)}
+                    style={{
+                      marginRight: "0.5rem",
+                      border: "none",
+                      backgroundColor: "transparent",
+                      color: "#3b82f6",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Edit2 size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(stage.id)}
+                    style={{
+                      border: "none",
+                      backgroundColor: "transparent",
+                      color: "#ef4444",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </td>
               </tr>
             ))}
@@ -289,49 +432,130 @@ function StagesView() {
       </div>
 
       {showModal && (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
-          <div style={{ backgroundColor: "#fff", padding: "2rem", borderRadius: "16px", width: "100%", maxWidth: "480px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>{formData.id ? "Edit" : "Tambah"} Tahapan</h3>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "2rem",
+              borderRadius: "16px",
+              width: "100%",
+              maxWidth: "480px",
+            }}
+          >
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>
+              {formData.id ? "Edit" : "Tambah"} Tahapan
+            </h3>
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Nama Tahapan</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Nama Tahapan
+                </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
                   placeholder="Contoh: Penyisihan, Semifinal, Final"
                 />
               </div>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Deskripsi</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Deskripsi
+                </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1", minHeight: "80px" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    minHeight: "80px",
+                  }}
                 />
               </div>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Posisi Urutan</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Posisi Urutan
+                </label>
                 <input
                   type="number"
                   value={formData.position}
-                  onChange={(e) => setFormData({ ...formData, position: parseInt(e.target.value) || 0 })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  onChange={(e) =>
+                    setFormData({ ...formData, position: parseInt(e.target.value) || 0 })
+                  }
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
                 />
               </div>
-              <div style={{ marginBottom: "1.5rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <div
+                style={{
+                  marginBottom: "1.5rem",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "0.5rem",
+                }}
+              >
                 <input
                   type="checkbox"
                   id="isActive"
                   checked={formData.isActive}
                   onChange={(e) => setFormData({ ...formData, isActive: e.target.checked })}
                 />
-                <label htmlFor="isActive" style={{ fontWeight: 600 }}>Aktif</label>
+                <label htmlFor="isActive" style={{ fontWeight: 600 }}>
+                  Aktif
+                </label>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: "0.5rem 1rem", border: "1px solid #cbd5e1", borderRadius: "8px", backgroundColor: "#fff", cursor: "pointer" }}>Batal</button>
-                <button type="submit" style={{ padding: "0.5rem 1rem", border: "none", borderRadius: "8px", backgroundColor: "#2EC4B6", color: "#fff", cursor: "pointer", fontWeight: 600 }}>Simpan</button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "8px",
+                    backgroundColor: "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    backgroundColor: "#2EC4B6",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  Simpan
+                </button>
               </div>
             </form>
           </div>
@@ -354,6 +578,16 @@ function ExamsView() {
   const [page, setPage] = useState(1);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
 
+  // States for searchable paginated competition selector
+  const [compSearch, setCompSearch] = useState("");
+  const [compPage, setCompPage] = useState(1);
+  const [compMeta, setCompMeta] = useState<any>(null);
+  const [showCompDropdown, setShowCompDropdown] = useState(false);
+  const [selectedCompTitle, setSelectedCompTitle] = useState("");
+
+  const [debouncedCompSearch, setDebouncedCompSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
   const [formData, setFormData] = useState({
     id: "",
     title: "",
@@ -372,7 +606,7 @@ function ExamsView() {
   const fetchExams = async () => {
     try {
       setLoading(true);
-      const res = await AdminCBTAPI.listExams({ page, search });
+      const res = await AdminCBTAPI.listExams({ page, search: debouncedSearch });
       setExams(res.data);
       setMeta(res.meta);
     } catch (err: any) {
@@ -389,21 +623,54 @@ function ExamsView() {
     } catch (err) {}
   };
 
-  const fetchCompetitions = async () => {
+  const fetchCompetitions = async (pageNum: number, searchStr: string) => {
     try {
-      const res = await getCompetitions({ page: 1, perPage: 100 });
+      const res = await getCompetitions({ page: pageNum, perPage: 5, search: searchStr });
       setCompetitions(res.data || []);
+      setCompMeta({
+        page: res.page,
+        perPage: res.perPage,
+        total: res.total,
+        totalPages: res.totalPages,
+      });
     } catch (err) {}
   };
 
+  // Debounce for Exam Search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 400);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [search]);
+
+  // Debounce for Competition Search
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedCompSearch(compSearch);
+      setCompPage(1);
+    }, 400);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [compSearch]);
+
   useEffect(() => {
     fetchExams();
-  }, [page, search]);
+  }, [page, debouncedSearch]);
 
   useEffect(() => {
     fetchStages();
-    fetchCompetitions();
   }, []);
+
+  useEffect(() => {
+    fetchCompetitions(compPage, debouncedCompSearch);
+  }, [compPage, debouncedCompSearch]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -449,6 +716,10 @@ function ExamsView() {
       randomizeQuestions: exam.randomizeQuestions,
       randomizeOptions: exam.randomizeOptions,
     });
+    setSelectedCompTitle(exam.competition?.title || "");
+    setCompSearch("");
+    setCompPage(1);
+    setShowCompDropdown(false);
     setShowModal(true);
   };
 
@@ -463,7 +734,8 @@ function ExamsView() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm("Apakah Anda yakin ingin menghapus ujian ini beserta seluruh relasinya?")) return;
+    if (!window.confirm("Apakah Anda yakin ingin menghapus ujian ini beserta seluruh relasinya?"))
+      return;
     try {
       await AdminCBTAPI.deleteExam(id);
       toast.success("Ujian berhasil dihapus");
@@ -475,19 +747,42 @@ function ExamsView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem",
+          marginBottom: "1.5rem",
+        }}
+      >
         <div>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>Jadwal & Manajemen Ujian</h2>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
+            Jadwal & Manajemen Ujian
+          </h2>
         </div>
         <div style={{ display: "flex", gap: "1rem" }}>
           <div style={{ position: "relative" }}>
-            <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} size={16} />
+            <Search
+              style={{
+                position: "absolute",
+                left: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "#94a3b8",
+              }}
+              size={16}
+            />
             <input
               type="text"
               placeholder="Cari ujian..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ padding: "0.5rem 1rem 0.5rem 2.2rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+              style={{
+                padding: "0.5rem 1rem 0.5rem 2.2rem",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+              }}
             />
           </div>
           <button
@@ -506,9 +801,24 @@ function ExamsView() {
                 randomizeQuestions: true,
                 randomizeOptions: true,
               });
+              setSelectedCompTitle("");
+              setCompSearch("");
+              setCompPage(1);
+              setShowCompDropdown(false);
               setShowModal(true);
             }}
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#2EC4B6", color: "#fff", border: "none", padding: "0.6rem 1.2rem", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              backgroundColor: "#2EC4B6",
+              color: "#fff",
+              border: "none",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
           >
             <Plus size={16} /> Buat Ujian
           </button>
@@ -519,7 +829,14 @@ function ExamsView() {
         <div>Memuat data ujian...</div>
       ) : (
         <>
-          <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden", marginBottom: "1rem" }}>
+          <div
+            style={{
+              border: "1px solid #e2e8f0",
+              borderRadius: "12px",
+              overflow: "hidden",
+              marginBottom: "1rem",
+            }}
+          >
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
               <thead>
                 <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
@@ -537,17 +854,30 @@ function ExamsView() {
                   <tr key={exam.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
                     <td style={{ padding: "1rem" }}>
                       <div style={{ fontWeight: 600 }}>{exam.title}</div>
-                      <div style={{ fontSize: "0.75rem", color: "#64748b" }}>{exam.description || "Tidak ada deskripsi"}</div>
+                      <div style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                        {exam.description || "Tidak ada deskripsi"}
+                      </div>
                       {exam.competition && (
-                        <div style={{ fontSize: "0.75rem", color: "#2EC4B6", marginTop: "0.25rem", fontWeight: 500 }}>
+                        <div
+                          style={{
+                            fontSize: "0.75rem",
+                            color: "#2EC4B6",
+                            marginTop: "0.25rem",
+                            fontWeight: 500,
+                          }}
+                        >
                           Kompetisi: {exam.competition.title}
                         </div>
                       )}
                     </td>
                     <td style={{ padding: "1rem" }}>{exam.stage?.name || "-"}</td>
-                    <td style={{ padding: "1rem" }}>{new Date(exam.startAt).toLocaleString("id-ID")}</td>
+                    <td style={{ padding: "1rem" }}>
+                      {new Date(exam.startAt).toLocaleString("id-ID")}
+                    </td>
                     <td style={{ padding: "1rem" }}>{exam.durationMinutes} menit</td>
-                    <td style={{ padding: "1rem", fontWeight: 600 }}>{exam._count?.questions || 0}</td>
+                    <td style={{ padding: "1rem", fontWeight: 600 }}>
+                      {exam._count?.questions || 0}
+                    </td>
                     <td style={{ padding: "1rem" }}>
                       <button
                         onClick={() => handleToggle(exam.id, exam.isActive)}
@@ -566,8 +896,29 @@ function ExamsView() {
                       </button>
                     </td>
                     <td style={{ padding: "1rem", textAlign: "right" }}>
-                      <button onClick={() => handleEdit(exam)} style={{ marginRight: "0.5rem", border: "none", backgroundColor: "transparent", color: "#3b82f6", cursor: "pointer" }}><Edit2 size={16} /></button>
-                      <button onClick={() => handleDelete(exam.id)} style={{ border: "none", backgroundColor: "transparent", color: "#ef4444", cursor: "pointer" }}><Trash2 size={16} /></button>
+                      <button
+                        onClick={() => handleEdit(exam)}
+                        style={{
+                          marginRight: "0.5rem",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          color: "#3b82f6",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(exam.id)}
+                        style={{
+                          border: "none",
+                          backgroundColor: "transparent",
+                          color: "#ef4444",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -577,106 +928,403 @@ function ExamsView() {
 
           {meta && meta.totalPages > 1 && (
             <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
-              <button disabled={page <= 1} onClick={() => setPage(page - 1)} style={{ padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid #cbd5e1", background: "#fff", cursor: "pointer" }}>Sebelumnya</button>
-              <span style={{ alignSelf: "center" }}>Halaman {page} dari {meta.totalPages}</span>
-              <button disabled={page >= meta.totalPages} onClick={() => setPage(page + 1)} style={{ padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid #cbd5e1", background: "#fff", cursor: "pointer" }}>Berikutnya</button>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage(page - 1)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Sebelumnya
+              </button>
+              <span style={{ alignSelf: "center" }}>
+                Halaman {page} dari {meta.totalPages}
+              </span>
+              <button
+                disabled={page >= meta.totalPages}
+                onClick={() => setPage(page + 1)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Berikutnya
+              </button>
             </div>
           )}
         </>
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
-          <div style={{ backgroundColor: "#fff", padding: "2rem", borderRadius: "16px", width: "100%", maxWidth: "560px", maxHeight: "90vh", overflowY: "auto" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>{formData.id ? "Edit" : "Buat"} Ujian</h3>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "2rem",
+              borderRadius: "16px",
+              width: "100%",
+              maxWidth: "560px",
+              maxHeight: "90vh",
+              overflowY: "auto",
+            }}
+          >
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>
+              {formData.id ? "Edit" : "Buat"} Ujian
+            </h3>
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Nama Ujian</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Nama Ujian
+                </label>
                 <input
                   type="text"
                   value={formData.title}
                   onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
                   required
                 />
               </div>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Deskripsi</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Deskripsi
+                </label>
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1", minHeight: "60px" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    minHeight: "60px",
+                  }}
                 />
               </div>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Tahap Ujian</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Tahap Ujian
+                </label>
                 <select
                   value={formData.stageId}
                   onChange={(e) => setFormData({ ...formData, stageId: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
                 >
                   <option value="">-- Pilih Tahapan --</option>
                   {stages.map((stage) => (
-                    <option key={stage.id} value={stage.id}>{stage.name}</option>
+                    <option key={stage.id} value={stage.id}>
+                      {stage.name}
+                    </option>
                   ))}
                 </select>
               </div>
-              <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Kompetisi (Lomba)</label>
-                <select
-                  value={formData.competitionId}
-                  onChange={(e) => setFormData({ ...formData, competitionId: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+              <div style={{ marginBottom: "1rem", position: "relative" }}>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Kompetisi (Lomba)
+                </label>
+                <div
+                  onClick={() => setShowCompDropdown(!showCompDropdown)}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    backgroundColor: "#fff",
+                    cursor: "pointer",
+                    display: "flex",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
                 >
-                  <option value="">-- Pilih Kompetisi (Opsional) --</option>
-                  {competitions.map((comp) => (
-                    <option key={comp.id} value={comp.id}>{comp.title}</option>
-                  ))}
-                </select>
+                  <span style={{ color: selectedCompTitle ? "#0f172a" : "#94a3b8" }}>
+                    {selectedCompTitle || "-- Pilih Kompetisi (Opsional) --"}
+                  </span>
+                  <span style={{ fontSize: "0.75rem", color: "#64748b" }}>▼</span>
+                </div>
+
+                {showCompDropdown && (
+                  <div
+                    style={{
+                      position: "absolute",
+                      top: "100%",
+                      left: 0,
+                      width: "100%",
+                      backgroundColor: "#fff",
+                      border: "1px solid #cbd5e1",
+                      borderRadius: "8px",
+                      marginTop: "4px",
+                      zIndex: 1100,
+                      boxShadow:
+                        "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                      padding: "0.75rem",
+                    }}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Cari kompetisi..."
+                      value={compSearch}
+                      onChange={(e) => {
+                        setCompSearch(e.target.value);
+                        setCompPage(1);
+                      }}
+                      onClick={(e) => e.stopPropagation()}
+                      style={{
+                        width: "100%",
+                        padding: "0.5rem 0.75rem",
+                        borderRadius: "6px",
+                        border: "1px solid #cbd5e1",
+                        marginBottom: "0.5rem",
+                        fontSize: "0.875rem",
+                      }}
+                    />
+
+                    <div
+                      style={{
+                        display: "flex",
+                        flexDirection: "column",
+                        gap: "2px",
+                        maxHeight: "200px",
+                        overflowY: "auto",
+                      }}
+                    >
+                      <div
+                        onClick={() => {
+                          setFormData({ ...formData, competitionId: "" });
+                          setSelectedCompTitle("");
+                          setShowCompDropdown(false);
+                        }}
+                        style={{
+                          padding: "0.5rem 0.75rem",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          fontSize: "0.875rem",
+                          color: "#ef4444",
+                          fontWeight: 500,
+                          backgroundColor:
+                            formData.competitionId === "" ? "#fef2f2" : "transparent",
+                        }}
+                      >
+                        -- Kosongkan / Tanpa Kompetisi --
+                      </div>
+                      {competitions.map((comp) => (
+                        <div
+                          key={comp.id}
+                          onClick={() => {
+                            setFormData({ ...formData, competitionId: comp.id });
+                            setSelectedCompTitle(comp.title);
+                            setShowCompDropdown(false);
+                          }}
+                          style={{
+                            padding: "0.5rem 0.75rem",
+                            borderRadius: "4px",
+                            cursor: "pointer",
+                            fontSize: "0.875rem",
+                            backgroundColor:
+                              formData.competitionId === comp.id ? "#f1f5f9" : "transparent",
+                          }}
+                        >
+                          {comp.title}
+                        </div>
+                      ))}
+                      {competitions.length === 0 && (
+                        <div
+                          style={{
+                            padding: "0.5rem 0.75rem",
+                            fontSize: "0.875rem",
+                            color: "#64748b",
+                            textAlign: "center",
+                          }}
+                        >
+                          Tidak ditemukan kompetisi
+                        </div>
+                      )}
+                    </div>
+
+                    {compMeta && compMeta.totalPages > 1 && (
+                      <div
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          marginTop: "0.75rem",
+                          borderTop: "1px solid #f1f5f9",
+                          paddingTop: "0.5rem",
+                          fontSize: "0.75rem",
+                        }}
+                      >
+                        <button
+                          type="button"
+                          disabled={compPage <= 1}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCompPage(compPage - 1);
+                          }}
+                          style={{
+                            padding: "0.25rem 0.5rem",
+                            borderRadius: "4px",
+                            border: "1px solid #cbd5e1",
+                            background: "#fff",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Prev
+                        </button>
+                        <span>
+                          Hal {compPage} dari {compMeta.totalPages}
+                        </span>
+                        <button
+                          type="button"
+                          disabled={compPage >= compMeta.totalPages}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCompPage(compPage + 1);
+                          }}
+                          style={{
+                            padding: "0.25rem 0.5rem",
+                            borderRadius: "4px",
+                            border: "1px solid #cbd5e1",
+                            background: "#fff",
+                            cursor: "pointer",
+                          }}
+                        >
+                          Next
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
                 <div style={{ flex: 1 }}>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Tanggal & Jam Mulai</label>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                    Tanggal & Jam Mulai
+                  </label>
                   <input
                     type="datetime-local"
                     value={formData.startAt}
                     onChange={(e) => setFormData({ ...formData, startAt: e.target.value })}
-                    style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                    style={{
+                      width: "100%",
+                      padding: "0.6rem",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                    }}
                     required
                   />
                 </div>
                 <div style={{ width: "150px" }}>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Durasi (menit)</label>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                    Durasi (menit)
+                  </label>
                   <input
                     type="number"
                     value={formData.durationMinutes}
-                    onChange={(e) => setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })}
-                    style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                    onChange={(e) =>
+                      setFormData({ ...formData, durationMinutes: parseInt(e.target.value) || 0 })
+                    }
+                    style={{
+                      width: "100%",
+                      padding: "0.6rem",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                    }}
                     required
                   />
                 </div>
               </div>
               <div style={{ display: "flex", gap: "1rem", marginBottom: "1.5rem" }}>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={formData.randomizeQuestions}
-                    onChange={(e) => setFormData({ ...formData, randomizeQuestions: e.target.checked })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, randomizeQuestions: e.target.checked })
+                    }
                   />
                   Acak Soal
                 </label>
-                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", cursor: "pointer" }}>
+                <label
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "0.5rem",
+                    cursor: "pointer",
+                  }}
+                >
                   <input
                     type="checkbox"
                     checked={formData.randomizeOptions}
-                    onChange={(e) => setFormData({ ...formData, randomizeOptions: e.target.checked })}
+                    onChange={(e) =>
+                      setFormData({ ...formData, randomizeOptions: e.target.checked })
+                    }
                   />
                   Acak Opsi Jawaban
                 </label>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: "0.5rem 1rem", border: "1px solid #cbd5e1", borderRadius: "8px", backgroundColor: "#fff", cursor: "pointer" }}>Batal</button>
-                <button type="submit" style={{ padding: "0.5rem 1rem", border: "none", borderRadius: "8px", backgroundColor: "#2EC4B6", color: "#fff", cursor: "pointer", fontWeight: 600 }}>Simpan</button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "8px",
+                    backgroundColor: "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    backgroundColor: "#2EC4B6",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  Simpan
+                </button>
               </div>
             </form>
           </div>
@@ -814,7 +1462,8 @@ function ParticipantsView() {
       const payload: any = { examId: assignData.examId };
 
       if (assignData.mode === "individual") {
-        if (assignData.participantIds.length === 0) return toast.error("Pilih minimal satu peserta");
+        if (assignData.participantIds.length === 0)
+          return toast.error("Pilih minimal satu peserta");
         payload.participantIds = assignData.participantIds;
       } else {
         if (!assignData.stageId) return toast.error("Tahap harus dipilih");
@@ -844,34 +1493,87 @@ function ParticipantsView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          flexWrap: "wrap",
+          gap: "1rem",
+          marginBottom: "1.5rem",
+        }}
+      >
         <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>Manajemen Peserta</h2>
         <div style={{ display: "flex", gap: "1rem" }}>
           <div style={{ position: "relative" }}>
-            <Search style={{ position: "absolute", left: "10px", top: "50%", transform: "translateY(-50%)", color: "#94a3b8" }} size={16} />
+            <Search
+              style={{
+                position: "absolute",
+                left: "10px",
+                top: "50%",
+                transform: "translateY(-50%)",
+                color: "#94a3b8",
+              }}
+              size={16}
+            />
             <input
               type="text"
               placeholder="Cari peserta..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              style={{ padding: "0.5rem 1rem 0.5rem 2.2rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+              style={{
+                padding: "0.5rem 1rem 0.5rem 2.2rem",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+              }}
             />
           </div>
           <button
             onClick={() => {
-              setAssignData({ participantIds: [], examIds: [], stageId: "", examId: "", mode: "individual" });
+              setAssignData({
+                participantIds: [],
+                examIds: [],
+                stageId: "",
+                examId: "",
+                mode: "individual",
+              });
               setShowAssignModal(true);
             }}
-            style={{ backgroundColor: "#3b82f6", color: "#fff", border: "none", padding: "0.6rem 1.2rem", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}
+            style={{
+              backgroundColor: "#3b82f6",
+              color: "#fff",
+              border: "none",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
           >
             Assign Ujian
           </button>
           <button
             onClick={() => {
-              setFormData({ id: "", name: "", email: "", participantNumber: "", stageId: "", isActive: true });
+              setFormData({
+                id: "",
+                name: "",
+                email: "",
+                participantNumber: "",
+                stageId: "",
+                isActive: true,
+              });
               setShowModal(true);
             }}
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#2EC4B6", color: "#fff", border: "none", padding: "0.6rem 1.2rem", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              backgroundColor: "#2EC4B6",
+              color: "#fff",
+              border: "none",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
           >
             <Plus size={16} /> Tambah Peserta
           </button>
@@ -882,7 +1584,14 @@ function ParticipantsView() {
         <div>Memuat data peserta...</div>
       ) : (
         <>
-          <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden", marginBottom: "1rem" }}>
+          <div
+            style={{
+              border: "1px solid #e2e8f0",
+              borderRadius: "12px",
+              overflow: "hidden",
+              marginBottom: "1rem",
+            }}
+          >
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
               <thead>
                 <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
@@ -912,16 +1621,49 @@ function ParticipantsView() {
                     <td style={{ padding: "1rem" }}>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
                         {p.assignments?.map((a) => (
-                          <span key={a.id} style={{ backgroundColor: "#f1f5f9", padding: "0.2rem 0.5rem", borderRadius: "4px", fontSize: "0.75rem" }}>
+                          <span
+                            key={a.id}
+                            style={{
+                              backgroundColor: "#f1f5f9",
+                              padding: "0.2rem 0.5rem",
+                              borderRadius: "4px",
+                              fontSize: "0.75rem",
+                            }}
+                          >
                             {a.exam.title}
                           </span>
                         ))}
-                        {!p.assignments?.length && <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>Belum ada ujian</span>}
+                        {!p.assignments?.length && (
+                          <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>
+                            Belum ada ujian
+                          </span>
+                        )}
                       </div>
                     </td>
                     <td style={{ padding: "1rem", textAlign: "right" }}>
-                      <button onClick={() => handleEdit(p)} style={{ marginRight: "0.5rem", border: "none", backgroundColor: "transparent", color: "#3b82f6", cursor: "pointer" }}><Edit2 size={16} /></button>
-                      <button onClick={() => handleDelete(p.id)} style={{ border: "none", backgroundColor: "transparent", color: "#ef4444", cursor: "pointer" }}><Trash2 size={16} /></button>
+                      <button
+                        onClick={() => handleEdit(p)}
+                        style={{
+                          marginRight: "0.5rem",
+                          border: "none",
+                          backgroundColor: "transparent",
+                          color: "#3b82f6",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Edit2 size={16} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(p.id)}
+                        style={{
+                          border: "none",
+                          backgroundColor: "transparent",
+                          color: "#ef4444",
+                          cursor: "pointer",
+                        }}
+                      >
+                        <Trash2 size={16} />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -931,9 +1673,35 @@ function ParticipantsView() {
 
           {meta && meta.totalPages > 1 && (
             <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
-              <button disabled={page <= 1} onClick={() => setPage(page - 1)} style={{ padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid #cbd5e1", background: "#fff", cursor: "pointer" }}>Sebelumnya</button>
-              <span style={{ alignSelf: "center" }}>Halaman {page} dari {meta.totalPages}</span>
-              <button disabled={page >= meta.totalPages} onClick={() => setPage(page + 1)} style={{ padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid #cbd5e1", background: "#fff", cursor: "pointer" }}>Berikutnya</button>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage(page - 1)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Sebelumnya
+              </button>
+              <span style={{ alignSelf: "center" }}>
+                Halaman {page} dari {meta.totalPages}
+              </span>
+              <button
+                disabled={page >= meta.totalPages}
+                onClick={() => setPage(page + 1)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Berikutnya
+              </button>
             </div>
           )}
         </>
@@ -941,13 +1709,38 @@ function ParticipantsView() {
 
       {/* Participant Add/Edit Modal */}
       {showModal && (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
-          <div style={{ backgroundColor: "#fff", padding: "2rem", borderRadius: "16px", width: "100%", maxWidth: "480px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>{formData.id ? "Edit" : "Tambah"} Peserta</h3>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "2rem",
+              borderRadius: "16px",
+              width: "100%",
+              maxWidth: "480px",
+            }}
+          >
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>
+              {formData.id ? "Edit" : "Tambah"} Peserta
+            </h3>
             <form onSubmit={handleSubmit}>
               {!formData.id && (
                 <div style={{ marginBottom: "1rem" }}>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Pilih Pendaftar Lomba</label>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                    Pilih Pendaftar Lomba
+                  </label>
                   <select
                     value={selectedRegUserId}
                     onChange={(e) => {
@@ -972,7 +1765,12 @@ function ParticipantsView() {
                         });
                       }
                     }}
-                    style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                    style={{
+                      width: "100%",
+                      padding: "0.6rem",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                    }}
                     required
                   >
                     <option value="">-- Pilih Pendaftar (Approved) --</option>
@@ -985,54 +1783,114 @@ function ParticipantsView() {
                 </div>
               )}
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Nama Lengkap</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Nama Lengkap
+                </label>
                 <input
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1", backgroundColor: !formData.id ? "#f1f5f9" : "#fff" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    backgroundColor: !formData.id ? "#f1f5f9" : "#fff",
+                  }}
                   required
                   readOnly={!formData.id}
                 />
               </div>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Email</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Email
+                </label>
                 <input
                   type="email"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1", backgroundColor: !formData.id ? "#f1f5f9" : "#fff" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    backgroundColor: !formData.id ? "#f1f5f9" : "#fff",
+                  }}
                   required
                   readOnly={!formData.id}
                 />
               </div>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Nomor Peserta</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Nomor Peserta
+                </label>
                 <input
                   type="text"
                   value={formData.participantNumber}
                   onChange={(e) => setFormData({ ...formData, participantNumber: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
                   placeholder="Contoh: MTS-2026-001"
                   required
                 />
               </div>
               <div style={{ marginBottom: "1.5rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Tahapan</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Tahapan
+                </label>
                 <select
                   value={formData.stageId}
                   onChange={(e) => setFormData({ ...formData, stageId: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
                 >
                   <option value="">-- Pilih Tahapan --</option>
                   {stages.map((stage) => (
-                    <option key={stage.id} value={stage.id}>{stage.name}</option>
+                    <option key={stage.id} value={stage.id}>
+                      {stage.name}
+                    </option>
                   ))}
                 </select>
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
-                <button type="button" onClick={() => { setShowModal(false); setSelectedRegUserId(""); }} style={{ padding: "0.5rem 1rem", border: "1px solid #cbd5e1", borderRadius: "8px", backgroundColor: "#fff", cursor: "pointer" }}>Batal</button>
-                <button type="submit" style={{ padding: "0.5rem 1rem", border: "none", borderRadius: "8px", backgroundColor: "#2EC4B6", color: "#fff", cursor: "pointer", fontWeight: 600 }}>Simpan</button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowModal(false);
+                    setSelectedRegUserId("");
+                  }}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "8px",
+                    backgroundColor: "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    backgroundColor: "#2EC4B6",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  Simpan
+                </button>
               </div>
             </form>
           </div>
@@ -1041,29 +1899,70 @@ function ParticipantsView() {
 
       {/* Assign Exam Modal */}
       {showAssignModal && (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
-          <div style={{ backgroundColor: "#fff", padding: "2rem", borderRadius: "16px", width: "100%", maxWidth: "480px" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>Assign Peserta ke Ujian</h3>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "2rem",
+              borderRadius: "16px",
+              width: "100%",
+              maxWidth: "480px",
+            }}
+          >
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>
+              Assign Peserta ke Ujian
+            </h3>
             <form onSubmit={handleAssign}>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Pilih Ujian Target</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Pilih Ujian Target
+                </label>
                 <select
                   value={assignData.examId}
                   onChange={(e) => setAssignData({ ...assignData, examId: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
                   required
                 >
                   <option value="">-- Pilih Ujian --</option>
                   {exams.map((exam) => (
-                    <option key={exam.id} value={exam.id}>{exam.title}</option>
+                    <option key={exam.id} value={exam.id}>
+                      {exam.title}
+                    </option>
                   ))}
                 </select>
               </div>
 
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Metode Assignment</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Metode Assignment
+                </label>
                 <div style={{ display: "flex", gap: "1rem" }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                      cursor: "pointer",
+                    }}
+                  >
                     <input
                       type="radio"
                       name="assignMode"
@@ -1072,7 +1971,14 @@ function ParticipantsView() {
                     />
                     Peserta Terpilih ({assignData.participantIds.length})
                   </label>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                      cursor: "pointer",
+                    }}
+                  >
                     <input
                       type="radio"
                       name="assignMode"
@@ -1086,24 +1992,65 @@ function ParticipantsView() {
 
               {assignData.mode === "stage" && (
                 <div style={{ marginBottom: "1.5rem" }}>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Pilih Tahapan Ujian</label>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                    Pilih Tahapan Ujian
+                  </label>
                   <select
                     value={assignData.stageId}
                     onChange={(e) => setAssignData({ ...assignData, stageId: e.target.value })}
-                    style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                    style={{
+                      width: "100%",
+                      padding: "0.6rem",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                    }}
                     required
                   >
                     <option value="">-- Pilih Tahap --</option>
                     {stages.map((stage) => (
-                      <option key={stage.id} value={stage.id}>{stage.name}</option>
+                      <option key={stage.id} value={stage.id}>
+                        {stage.name}
+                      </option>
                     ))}
                   </select>
                 </div>
               )}
 
-              <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem", marginTop: "2rem" }}>
-                <button type="button" onClick={() => setShowAssignModal(false)} style={{ padding: "0.5rem 1rem", border: "1px solid #cbd5e1", borderRadius: "8px", backgroundColor: "#fff", cursor: "pointer" }}>Batal</button>
-                <button type="submit" style={{ padding: "0.5rem 1rem", border: "none", borderRadius: "8px", backgroundColor: "#2EC4B6", color: "#fff", cursor: "pointer", fontWeight: 600 }}>Assign Sekarang</button>
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "flex-end",
+                  gap: "0.75rem",
+                  marginTop: "2rem",
+                }}
+              >
+                <button
+                  type="button"
+                  onClick={() => setShowAssignModal(false)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "8px",
+                    backgroundColor: "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    backgroundColor: "#2EC4B6",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  Assign Sekarang
+                </button>
               </div>
             </form>
           </div>
@@ -1123,6 +2070,14 @@ function QuestionsView() {
   const [loading, setLoading] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
+  // States for searchable paginated exam selector in Bank Soal
+  const [examSearch, setExamSearch] = useState("");
+  const [debouncedExamSearch, setDebouncedExamSearch] = useState("");
+  const [examPage, setExamPage] = useState(1);
+  const [examMeta, setExamMeta] = useState<any>(null);
+  const [showExamDropdown, setShowExamDropdown] = useState(false);
+  const [selectedExamTitle, setSelectedExamTitle] = useState("");
+
   const [formData, setFormData] = useState({
     id: "",
     text: "",
@@ -1137,12 +2092,21 @@ function QuestionsView() {
     ] as CBTQuestionOption[],
   });
 
-  const fetchExams = async () => {
+  const fetchExams = async (pageNum: number, searchStr: string) => {
     try {
-      const res = await AdminCBTAPI.listExams({ perPage: 100 });
+      const res = await AdminCBTAPI.listExams({ page: pageNum, perPage: 5, search: searchStr });
       setExams(res.data);
+      setExamMeta(res.meta);
       if (res.data.length > 0) {
-        setSelectedExamId(res.data[0].id);
+        if (!selectedExamId) {
+          setSelectedExamId(res.data[0].id);
+          setSelectedExamTitle(`${res.data[0].title}${res.data[0].competition ? ` - ${res.data[0].competition.title}` : ""}`);
+        } else {
+          const current = res.data.find((e) => e.id === selectedExamId);
+          if (current) {
+            setSelectedExamTitle(`${current.title}${current.competition ? ` - ${current.competition.title}` : ""}`);
+          }
+        }
       }
     } catch (err) {}
   };
@@ -1160,9 +2124,19 @@ function QuestionsView() {
     }
   };
 
+  // Debounce for Exam Selection Search in Bank Soal
   useEffect(() => {
-    fetchExams();
-  }, []);
+    const handler = setTimeout(() => {
+      setDebouncedExamSearch(examSearch);
+      setExamPage(1);
+    }, 400);
+
+    return () => clearTimeout(handler);
+  }, [examSearch]);
+
+  useEffect(() => {
+    fetchExams(examPage, debouncedExamSearch);
+  }, [examPage, debouncedExamSearch]);
 
   useEffect(() => {
     if (selectedExamId) {
@@ -1250,18 +2224,147 @@ function QuestionsView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "1rem",
+          marginBottom: "2rem",
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
           <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>Bank Soal</h2>
-          <select
-            value={selectedExamId}
-            onChange={(e) => setSelectedExamId(e.target.value)}
-            style={{ padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "0.95rem", fontWeight: 600 }}
-          >
-            {exams.map((exam) => (
-              <option key={exam.id} value={exam.id}>{exam.title}</option>
-            ))}
-          </select>
+          <div style={{ position: "relative", zIndex: 900 }}>
+            <div
+              onClick={() => setShowExamDropdown(!showExamDropdown)}
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+                fontSize: "0.95rem",
+                fontWeight: 600,
+                backgroundColor: "#fff",
+                cursor: "pointer",
+                display: "flex",
+                gap: "0.5rem",
+                alignItems: "center",
+                minWidth: "250px",
+                justifyContent: "space-between",
+              }}
+            >
+              <span>{selectedExamTitle || "-- Pilih Ujian --"}</span>
+              <span style={{ fontSize: "0.75rem", color: "#64748b" }}>▼</span>
+            </div>
+
+            {showExamDropdown && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "100%",
+                  left: 0,
+                  width: "100%",
+                  minWidth: "300px",
+                  backgroundColor: "#fff",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "8px",
+                  marginTop: "4px",
+                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  padding: "0.75rem",
+                }}
+              >
+                <input
+                  type="text"
+                  placeholder="Cari ujian..."
+                  value={examSearch}
+                  onChange={(e) => {
+                    setExamSearch(e.target.value);
+                    setExamPage(1);
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    width: "100%",
+                    padding: "0.5rem 0.75rem",
+                    borderRadius: "6px",
+                    border: "1px solid #cbd5e1",
+                    marginBottom: "0.5rem",
+                    fontSize: "0.875rem",
+                  }}
+                />
+
+                <div style={{ display: "flex", flexDirection: "column", gap: "2px", maxHeight: "200px", overflowY: "auto" }}>
+                  {exams.map((exam) => {
+                    const titleWithComp = `${exam.title}${exam.competition ? ` - ${exam.competition.title}` : ""}`;
+                    return (
+                      <div
+                        key={exam.id}
+                        onClick={() => {
+                          setSelectedExamId(exam.id);
+                          setSelectedExamTitle(titleWithComp);
+                          setShowExamDropdown(false);
+                        }}
+                        style={{
+                          padding: "0.5rem 0.75rem",
+                          borderRadius: "4px",
+                          cursor: "pointer",
+                          fontSize: "0.875rem",
+                          backgroundColor: selectedExamId === exam.id ? "#f1f5f9" : "transparent",
+                        }}
+                      >
+                        {titleWithComp}
+                      </div>
+                    );
+                  })}
+                  {exams.length === 0 && (
+                    <div style={{ padding: "0.5rem 0.75rem", fontSize: "0.875rem", color: "#64748b", textAlign: "center" }}>
+                      Tidak ditemukan ujian
+                    </div>
+                  )}
+                </div>
+
+                {examMeta && examMeta.totalPages > 1 && (
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.75rem", borderTop: "1px solid #f1f5f9", paddingTop: "0.5rem", fontSize: "0.75rem" }}>
+                    <button
+                      type="button"
+                      disabled={examPage <= 1}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExamPage(examPage - 1);
+                      }}
+                      style={{
+                        padding: "0.25rem 0.5rem",
+                        borderRadius: "4px",
+                        border: "1px solid #cbd5e1",
+                        background: "#fff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Prev
+                    </button>
+                    <span>Hal {examPage} dari {examMeta.totalPages}</span>
+                    <button
+                      type="button"
+                      disabled={examPage >= examMeta.totalPages}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setExamPage(examPage + 1);
+                      }}
+                      style={{
+                        padding: "0.25rem 0.5rem",
+                        borderRadius: "4px",
+                        border: "1px solid #cbd5e1",
+                        background: "#fff",
+                        cursor: "pointer",
+                      }}
+                    >
+                      Next
+                    </button>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
         {selectedExamId && (
           <button
@@ -1281,7 +2384,18 @@ function QuestionsView() {
               });
               setShowModal(true);
             }}
-            style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#2EC4B6", color: "#fff", border: "none", padding: "0.6rem 1.2rem", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              backgroundColor: "#2EC4B6",
+              color: "#fff",
+              border: "none",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
           >
             <Plus size={16} /> Tambah Soal
           </button>
@@ -1293,27 +2407,100 @@ function QuestionsView() {
       ) : (
         <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem" }}>
           {questions.map((q, idx) => (
-            <div key={q.id} style={{ border: "1px solid #e2e8f0", borderRadius: "12px", padding: "1.5rem", backgroundColor: "#ffffff" }}>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "1rem" }}>
+            <div
+              key={q.id}
+              style={{
+                border: "1px solid #e2e8f0",
+                borderRadius: "12px",
+                padding: "1.5rem",
+                backgroundColor: "#ffffff",
+              }}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  justifyContent: "space-between",
+                  alignItems: "flex-start",
+                  marginBottom: "1rem",
+                }}
+              >
                 <div>
-                  <span style={{ fontSize: "0.75rem", fontWeight: 600, padding: "0.25rem 0.5rem", borderRadius: "4px", backgroundColor: "#f1f5f9", marginRight: "0.5rem" }}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      padding: "0.25rem 0.5rem",
+                      borderRadius: "4px",
+                      backgroundColor: "#f1f5f9",
+                      marginRight: "0.5rem",
+                    }}
+                  >
                     Soal #{idx + 1}
                   </span>
-                  <span style={{ fontSize: "0.75rem", fontWeight: 600, padding: "0.25rem 0.5rem", borderRadius: "4px", backgroundColor: q.type === "ESSAY" ? "#fef3c7" : "#e0f2fe", color: q.type === "ESSAY" ? "#b45309" : "#0369a1", marginRight: "0.5rem" }}>
+                  <span
+                    style={{
+                      fontSize: "0.75rem",
+                      fontWeight: 600,
+                      padding: "0.25rem 0.5rem",
+                      borderRadius: "4px",
+                      backgroundColor: q.type === "ESSAY" ? "#fef3c7" : "#e0f2fe",
+                      color: q.type === "ESSAY" ? "#b45309" : "#0369a1",
+                      marginRight: "0.5rem",
+                    }}
+                  >
                     {q.type === "ESSAY" ? "Esai" : "Pilihan Ganda"}
                   </span>
-                  <span style={{ fontSize: "0.75rem", color: "#64748b" }}>Bobot: <strong>{q.points}</strong> poin</span>
+                  <span style={{ fontSize: "0.75rem", color: "#64748b" }}>
+                    Bobot: <strong>{q.points}</strong> poin
+                  </span>
                 </div>
                 <div>
-                  <button onClick={() => handleEdit(q)} style={{ marginRight: "0.5rem", border: "none", backgroundColor: "transparent", color: "#3b82f6", cursor: "pointer" }}><Edit2 size={16} /></button>
-                  <button onClick={() => handleDelete(q.id)} style={{ border: "none", backgroundColor: "transparent", color: "#ef4444", cursor: "pointer" }}><Trash2 size={16} /></button>
+                  <button
+                    onClick={() => handleEdit(q)}
+                    style={{
+                      marginRight: "0.5rem",
+                      border: "none",
+                      backgroundColor: "transparent",
+                      color: "#3b82f6",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Edit2 size={16} />
+                  </button>
+                  <button
+                    onClick={() => handleDelete(q.id)}
+                    style={{
+                      border: "none",
+                      backgroundColor: "transparent",
+                      color: "#ef4444",
+                      cursor: "pointer",
+                    }}
+                  >
+                    <Trash2 size={16} />
+                  </button>
                 </div>
               </div>
 
-              <div style={{ fontSize: "1.05rem", fontWeight: 600, marginBottom: "1rem", whiteSpace: "pre-line" }}>{q.text}</div>
+              <div
+                style={{
+                  fontSize: "1.05rem",
+                  fontWeight: 600,
+                  marginBottom: "1rem",
+                  whiteSpace: "pre-line",
+                }}
+              >
+                {q.text}
+              </div>
 
               {q.type === "SINGLE_CHOICE" && (
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "0.75rem", paddingLeft: "1rem" }}>
+                <div
+                  style={{
+                    display: "grid",
+                    gridTemplateColumns: "1fr 1fr",
+                    gap: "0.75rem",
+                    paddingLeft: "1rem",
+                  }}
+                >
                   {q.options.map((opt, i) => (
                     <div
                       key={opt.id || i}
@@ -1328,9 +2515,15 @@ function QuestionsView() {
                         gap: "0.5rem",
                       }}
                     >
-                      <span style={{ fontWeight: 700, color: opt.isCorrect ? "#15803d" : "#64748b" }}>{String.fromCharCode(65 + i)}.</span>
+                      <span
+                        style={{ fontWeight: 700, color: opt.isCorrect ? "#15803d" : "#64748b" }}
+                      >
+                        {String.fromCharCode(65 + i)}.
+                      </span>
                       <span>{opt.text}</span>
-                      {opt.isCorrect && <CheckCircle2 size={16} style={{ marginLeft: "auto", color: "#10b981" }} />}
+                      {opt.isCorrect && (
+                        <CheckCircle2 size={16} style={{ marginLeft: "auto", color: "#10b981" }} />
+                      )}
                     </div>
                   ))}
                 </div>
@@ -1339,7 +2532,15 @@ function QuestionsView() {
           ))}
 
           {questions.length === 0 && (
-            <div style={{ padding: "3rem", textAlign: "center", color: "#94a3b8", border: "2px dashed #e2e8f0", borderRadius: "12px" }}>
+            <div
+              style={{
+                padding: "3rem",
+                textAlign: "center",
+                color: "#94a3b8",
+                border: "2px dashed #e2e8f0",
+                borderRadius: "12px",
+              }}
+            >
               Belum ada soal pada ujian ini. Silakan tambah soal baru.
             </div>
           )}
@@ -1347,23 +2548,66 @@ function QuestionsView() {
       )}
 
       {showModal && (
-        <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 1000 }}>
-          <div style={{ backgroundColor: "#fff", padding: "2rem", borderRadius: "16px", width: "100%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto" }}>
-            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>{formData.id ? "Edit" : "Tambah"} Soal Ujian</h3>
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "2rem",
+              borderRadius: "16px",
+              width: "100%",
+              maxWidth: "600px",
+              maxHeight: "90vh",
+              overflowY: "auto",
+            }}
+          >
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>
+              {formData.id ? "Edit" : "Tambah"} Soal Ujian
+            </h3>
             <form onSubmit={handleSubmit}>
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Jenis Soal</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Jenis Soal
+                </label>
                 <div style={{ display: "flex", gap: "1rem" }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                      cursor: "pointer",
+                    }}
+                  >
                     <input
                       type="radio"
                       name="qType"
                       checked={formData.type === "SINGLE_CHOICE"}
-                      onChange={() => setFormData({ ...formData, type: "SINGLE_CHOICE", points: 3 })}
+                      onChange={() =>
+                        setFormData({ ...formData, type: "SINGLE_CHOICE", points: 3 })
+                      }
                     />
                     Pilihan Ganda
                   </label>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                      cursor: "pointer",
+                    }}
+                  >
                     <input
                       type="radio"
                       name="qType"
@@ -1376,42 +2620,77 @@ function QuestionsView() {
               </div>
 
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Pertanyaan</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Pertanyaan
+                </label>
                 <textarea
                   value={formData.text}
                   onChange={(e) => setFormData({ ...formData, text: e.target.value })}
-                  style={{ width: "100%", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1", minHeight: "80px" }}
+                  style={{
+                    width: "100%",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                    minHeight: "80px",
+                  }}
                   required
                 />
               </div>
 
               <div style={{ marginBottom: "1rem" }}>
-                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>Bobot Nilai</label>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                  Bobot Nilai
+                </label>
                 <input
                   type="number"
                   value={formData.points}
-                  onChange={(e) => setFormData({ ...formData, points: parseInt(e.target.value) || 0 })}
-                  style={{ width: "120px", padding: "0.6rem", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                  onChange={(e) =>
+                    setFormData({ ...formData, points: parseInt(e.target.value) || 0 })
+                  }
+                  style={{
+                    width: "120px",
+                    padding: "0.6rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
                   required
                 />
               </div>
 
               {formData.type === "SINGLE_CHOICE" && (
                 <div style={{ marginBottom: "1.5rem" }}>
-                  <label style={{ display: "block", marginBottom: "0.75rem", fontWeight: 600 }}>Opsi Jawaban & Kunci Jawaban</label>
+                  <label style={{ display: "block", marginBottom: "0.75rem", fontWeight: 600 }}>
+                    Opsi Jawaban & Kunci Jawaban
+                  </label>
                   <div style={{ display: "flex", flexDirection: "column", gap: "0.75rem" }}>
                     {formData.options.map((opt, i) => (
-                      <div key={i} style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
+                      <div
+                        key={i}
+                        style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}
+                      >
                         <span style={{ fontWeight: 700 }}>{String.fromCharCode(65 + i)}</span>
                         <input
                           type="text"
                           value={opt.text}
                           onChange={(e) => updateOptionText(i, e.target.value)}
                           placeholder={`Opsi ${String.fromCharCode(65 + i)}`}
-                          style={{ flex: 1, padding: "0.5rem", borderRadius: "6px", border: "1px solid #cbd5e1" }}
+                          style={{
+                            flex: 1,
+                            padding: "0.5rem",
+                            borderRadius: "6px",
+                            border: "1px solid #cbd5e1",
+                          }}
                           required={i < 2}
                         />
-                        <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer", fontSize: "0.85rem" }}>
+                        <label
+                          style={{
+                            display: "flex",
+                            alignItems: "center",
+                            gap: "0.25rem",
+                            cursor: "pointer",
+                            fontSize: "0.85rem",
+                          }}
+                        >
                           <input
                             type="radio"
                             name="correctOpt"
@@ -1427,8 +2706,33 @@ function QuestionsView() {
               )}
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
-                <button type="button" onClick={() => setShowModal(false)} style={{ padding: "0.5rem 1rem", border: "1px solid #cbd5e1", borderRadius: "8px", backgroundColor: "#fff", cursor: "pointer" }}>Batal</button>
-                <button type="submit" style={{ padding: "0.5rem 1rem", border: "none", borderRadius: "8px", backgroundColor: "#2EC4B6", color: "#fff", cursor: "pointer", fontWeight: 600 }}>Simpan</button>
+                <button
+                  type="button"
+                  onClick={() => setShowModal(false)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "1px solid #cbd5e1",
+                    borderRadius: "8px",
+                    backgroundColor: "#fff",
+                    cursor: "pointer",
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: "0.5rem 1rem",
+                    border: "none",
+                    borderRadius: "8px",
+                    backgroundColor: "#2EC4B6",
+                    color: "#fff",
+                    cursor: "pointer",
+                    fontWeight: 600,
+                  }}
+                >
+                  Simpan
+                </button>
               </div>
             </form>
           </div>
@@ -1499,21 +2803,48 @@ function MonitoringView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "1rem",
+          marginBottom: "2rem",
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>Monitoring Ujian Realtime</h2>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
+            Monitoring Ujian Realtime
+          </h2>
           <select
             value={selectedExamId}
             onChange={(e) => setSelectedExamId(e.target.value)}
-            style={{ padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "0.95rem", fontWeight: 600 }}
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: "8px",
+              border: "1px solid #cbd5e1",
+              fontSize: "0.95rem",
+              fontWeight: 600,
+            }}
           >
             <option value="">Semua Ujian</option>
             {exams.map((exam) => (
-              <option key={exam.id} value={exam.id}>{exam.title}</option>
+              <option key={exam.id} value={exam.id}>
+                {exam.title}
+              </option>
             ))}
           </select>
         </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", color: "#64748b", fontSize: "0.9rem" }}>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            color: "#64748b",
+            fontSize: "0.9rem",
+          }}
+        >
           <RefreshCw size={14} className="animate-spin" />
           <span>Update otomatis setiap 5 detik</span>
         </div>
@@ -1537,23 +2868,44 @@ function MonitoringView() {
               const statusStyle = getStatusColor(row.status);
               return (
                 <tr key={row.assignmentId} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                  <td style={{ padding: "1rem", fontWeight: 600 }}>{row.participant.participantNumber}</td>
+                  <td style={{ padding: "1rem", fontWeight: 600 }}>
+                    {row.participant.participantNumber}
+                  </td>
                   <td style={{ padding: "1rem" }}>{row.participant.name}</td>
                   <td style={{ padding: "1rem" }}>{row.exam.title}</td>
                   <td style={{ padding: "1rem" }}>
-                    <span style={{ padding: "0.25rem 0.6rem", borderRadius: "9999px", fontSize: "0.75rem", fontWeight: 600, backgroundColor: statusStyle.bg, color: statusStyle.text }}>
+                    <span
+                      style={{
+                        padding: "0.25rem 0.6rem",
+                        borderRadius: "9999px",
+                        fontSize: "0.75rem",
+                        fontWeight: 600,
+                        backgroundColor: statusStyle.bg,
+                        color: statusStyle.text,
+                      }}
+                    >
                       {row.status}
                     </span>
                   </td>
                   <td style={{ padding: "1rem", fontFamily: "monospace", fontWeight: 700 }}>
-                    {row.status === "In Progress" || row.status === "Disconnected" ? formatRemainingTime(row.remainingMs) : "-"}
+                    {row.status === "In Progress" || row.status === "Disconnected"
+                      ? formatRemainingTime(row.remainingMs)
+                      : "-"}
                   </td>
                   <td style={{ padding: "1rem", fontWeight: 600 }}>
                     {row.status !== "Waiting" ? `${row.answeredCount} Terjawab` : "-"}
                   </td>
                   <td style={{ padding: "1rem" }}>
                     {row.violationCount > 0 ? (
-                      <span style={{ color: "#ef4444", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+                      <span
+                        style={{
+                          color: "#ef4444",
+                          fontWeight: 700,
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "0.25rem",
+                        }}
+                      >
                         <AlertCircle size={14} /> {row.violationCount}x Pelanggaran
                       </span>
                     ) : (
@@ -1565,7 +2917,9 @@ function MonitoringView() {
             })}
             {monitoringData.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>Tidak ada peserta yang di-assign untuk dipantau.</td>
+                <td colSpan={7} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
+                  Tidak ada peserta yang di-assign untuk dipantau.
+                </td>
               </tr>
             )}
           </tbody>
@@ -1618,23 +2972,53 @@ function ResultsView() {
 
   return (
     <div>
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "2rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "1rem",
+          marginBottom: "2rem",
+        }}
+      >
         <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>Hasil Ujian & Export</h2>
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
+            Hasil Ujian & Export
+          </h2>
           <select
             value={selectedExamId}
             onChange={(e) => setSelectedExamId(e.target.value)}
-            style={{ padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "0.95rem", fontWeight: 600 }}
+            style={{
+              padding: "0.5rem 1rem",
+              borderRadius: "8px",
+              border: "1px solid #cbd5e1",
+              fontSize: "0.95rem",
+              fontWeight: 600,
+            }}
           >
             <option value="">Semua Ujian</option>
             {exams.map((exam) => (
-              <option key={exam.id} value={exam.id}>{exam.title}</option>
+              <option key={exam.id} value={exam.id}>
+                {exam.title}
+              </option>
             ))}
           </select>
         </div>
         <button
           onClick={handleExport}
-          style={{ display: "flex", alignItems: "center", gap: "0.5rem", backgroundColor: "#10b981", color: "#fff", border: "none", padding: "0.6rem 1.2rem", borderRadius: "8px", cursor: "pointer", fontWeight: 600 }}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "0.5rem",
+            backgroundColor: "#10b981",
+            color: "#fff",
+            border: "none",
+            padding: "0.6rem 1.2rem",
+            borderRadius: "8px",
+            cursor: "pointer",
+            fontWeight: 600,
+          }}
         >
           <FileDown size={16} /> Export ke CSV
         </button>
@@ -1665,20 +3049,37 @@ function ResultsView() {
                   <td style={{ padding: "1rem" }}>{row.answerCount} Terjawab</td>
                   <td style={{ padding: "1rem" }}>
                     {row.violationCount > 0 ? (
-                      <span style={{ color: "#ef4444", fontWeight: 700 }}>{row.violationCount}x Pelanggaran</span>
+                      <span style={{ color: "#ef4444", fontWeight: 700 }}>
+                        {row.violationCount}x Pelanggaran
+                      </span>
                     ) : (
                       <span style={{ color: "#10b981" }}>Aman</span>
                     )}
                   </td>
-                  <td style={{ padding: "1rem" }}>{row.finishedAt ? new Date(row.finishedAt).toLocaleString("id-ID") : "-"}</td>
-                  <td style={{ padding: "1rem", textAlign: "right", fontWeight: 700, fontSize: "1.1rem", color: "#2EC4B6" }}>
+                  <td style={{ padding: "1rem" }}>
+                    {row.finishedAt ? new Date(row.finishedAt).toLocaleString("id-ID") : "-"}
+                  </td>
+                  <td
+                    style={{
+                      padding: "1rem",
+                      textAlign: "right",
+                      fontWeight: 700,
+                      fontSize: "1.1rem",
+                      color: "#2EC4B6",
+                    }}
+                  >
                     {row.score !== null ? row.score : "-"}
                   </td>
                 </tr>
               ))}
               {results.length === 0 && (
                 <tr>
-                  <td colSpan={7} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>Belum ada hasil ujian yang tersedia.</td>
+                  <td
+                    colSpan={7}
+                    style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}
+                  >
+                    Belum ada hasil ujian yang tersedia.
+                  </td>
                 </tr>
               )}
             </tbody>
