@@ -9,6 +9,7 @@ import { useAnswerAutosave } from "../components/exam/AnswerAutosave";
 import { useExamGuard } from "../components/exam/ExamGuard";
 import { ExamResume } from "../components/exam/ExamResume";
 import { ExamAPI, type ExamAttemptPayload, type ExamQuestion } from "../services/exam.service";
+import { renderFormattedText } from "../helper/format";
 
 type AnswerValue = string | string[];
 
@@ -162,7 +163,7 @@ export default function ExamPage() {
               </span>
             </div>
 
-            <p className="exam-question-text">{activeQuestion.text}</p>
+            <p className="exam-question-text">{renderFormattedText(activeQuestion.text)}</p>
 
             {activeQuestion.type === "ESSAY" ? (
               <textarea
@@ -197,7 +198,7 @@ export default function ExamPage() {
                           }
                         }}
                       />
-                      <span>{option.text}</span>
+                      <span>{renderFormattedText(option.text)}</span>
                     </label>
                   );
                 })}

@@ -3,6 +3,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { AdminCBTAPI } from "../services/admin-cbt.service";
 import { getCompetitions } from "../services/competition.service";
+import { renderFormattedText } from "../helper/format";
 import type {
   CBTDashboardData,
   CBTStage,
@@ -2489,7 +2490,7 @@ function QuestionsView() {
                   whiteSpace: "pre-line",
                 }}
               >
-                {q.text}
+                {renderFormattedText(q.text)}
               </div>
 
               {q.type === "SINGLE_CHOICE" && (
@@ -2520,7 +2521,7 @@ function QuestionsView() {
                       >
                         {String.fromCharCode(65 + i)}.
                       </span>
-                      <span>{opt.text}</span>
+                      <span>{renderFormattedText(opt.text)}</span>
                       {opt.isCorrect && (
                         <CheckCircle2 size={16} style={{ marginLeft: "auto", color: "#10b981" }} />
                       )}
