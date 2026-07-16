@@ -11,10 +11,16 @@ export interface CBTDashboardData {
     violations: number;
   };
   participantsPerExam: {
-    examId: string;
-    title: string;
-    participants: number;
-  }[];
+    data: {
+      examId: string;
+      title: string;
+      competitionTitle: string;
+      startAt: string;
+      endAt: string;
+      participants: number;
+    }[];
+    meta: PaginationMeta;
+  };
 }
 
 export interface CBTStage {
@@ -135,8 +141,8 @@ export interface PaginationMeta {
 
 export const AdminCBTAPI = {
   // Dashboard
-  getDashboard: async () => {
-    const res = await api.get<CBTDashboardData>("/admin/cbt/dashboard");
+  getDashboard: async (params?: Record<string, any>) => {
+    const res = await api.get<CBTDashboardData>("/admin/cbt/dashboard", { params });
     return res.data;
   },
 

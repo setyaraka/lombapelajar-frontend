@@ -138,10 +138,20 @@ function DashboardView() {
   const [data, setData] = useState<CBTDashboardData | null>(null);
   const [loading, setLoading] = useState(true);
 
+  // States for search, date filter, and pagination
+  const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [dateFilter, setDateFilter] = useState("");
+  const [page, setPage] = useState(1);
+
   const fetchDashboard = async () => {
     try {
       setLoading(true);
-      const res = await AdminCBTAPI.getDashboard();
+      const res = await AdminCBTAPI.getDashboard({
+        page,
+        search: debouncedSearch,
+        date: dateFilter,
+      });
       setData(res);
     } catch (err: any) {
       toast.error(err.response?.data?.message || "Gagal memuat dashboard");
@@ -150,11 +160,20 @@ function DashboardView() {
     }
   };
 
+  // Debounce search input
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 400);
+    return () => clearTimeout(handler);
+  }, [search]);
+
   useEffect(() => {
     fetchDashboard();
-  }, []);
+  }, [page, debouncedSearch, dateFilter]);
 
-  if (loading) return <div>Memuat data statistik...</div>;
+  if (loading && !data) return <div>Memuat data statistik...</div>;
   if (!data) return <div>Data tidak tersedia.</div>;
 
   const cardStyle = {
@@ -168,6 +187,9 @@ function DashboardView() {
     flexDirection: "column" as const,
     justifyContent: "space-between",
   };
+
+  const listMeta = data.participantsPerExam.meta;
+  const listData = data.participantsPerExam.data;
 
   return (
     <div>
@@ -225,38 +247,143 @@ function DashboardView() {
         </div>
       </div>
 
-      <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1rem", color: "#0f172a" }}>
-        Statistik Jumlah Peserta Per Ujian
-      </h3>
-      <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
-        <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-          <thead>
-            <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-              <th style={{ padding: "1rem" }}>Judul Ujian</th>
-              <th style={{ padding: "1rem", textAlign: "right" }}>Jumlah Peserta Di-assign</th>
-            </tr>
-          </thead>
-          <tbody>
-            {data.participantsPerExam.map((item) => (
-              <tr key={item.examId} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                <td style={{ padding: "1rem", fontWeight: 500 }}>{item.title}</td>
-                <td
-                  style={{ padding: "1rem", textAlign: "right", fontWeight: 700, color: "#2EC4B6" }}
-                >
-                  {item.participants}
-                </td>
-              </tr>
-            ))}
-            {data.participantsPerExam.length === 0 && (
-              <tr>
-                <td colSpan={2} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
-                  Tidak ada data ujian aktif.
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+        <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", margin: 0 }}>
+          Statistik Jumlah Peserta Per Ujian
+        </h3>
+        
+        {/* Filters */}
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <input
+            type="text"
+            placeholder="Cari ujian / lomba..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              padding: "0.5rem 0.75rem",
+              borderRadius: "8px",
+              border: "1px solid #cbd5e1",
+              fontSize: "0.875rem",
+              minWidth: "220px",
+            }}
+          />
+          <input
+            type="date"
+            value={dateFilter}
+            onChange={(e) => {
+              setDateFilter(e.target.value);
+              setPage(1);
+            }}
+            style={{
+              padding: "0.5rem 0.75rem",
+              borderRadius: "8px",
+              border: "1px solid #cbd5e1",
+              fontSize: "0.875rem",
+            }}
+          />
+          {(search || dateFilter) && (
+            <button
+              onClick={() => {
+                setSearch("");
+                setDateFilter("");
+                setPage(1);
+              }}
+              style={{
+                padding: "0.5rem 1rem",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+                background: "#f1f5f9",
+                cursor: "pointer",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+              }}
+            >
+              Reset
+            </button>
+          )}
+        </div>
       </div>
+
+      {loading ? (
+        <div style={{ padding: "2rem 0", color: "#64748b" }}>Memperbarui daftar...</div>
+      ) : (
+        <>
+          <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden", marginBottom: "1rem" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+              <thead>
+                <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                  <th style={{ padding: "1rem" }}>Nama Lomba (Olimpiade)</th>
+                  <th style={{ padding: "1rem" }}>Nama Ujian</th>
+                  <th style={{ padding: "1rem" }}>Jadwal Ujian</th>
+                  <th style={{ padding: "1rem", textAlign: "right" }}>Jumlah Peserta Di-assign</th>
+                </tr>
+              </thead>
+              <tbody>
+                {listData.map((item) => (
+                  <tr key={item.examId} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "1rem", fontWeight: 600, color: "#475569" }}>
+                      {item.competitionTitle}
+                    </td>
+                    <td style={{ padding: "1rem", fontWeight: 500 }}>
+                      {renderFormattedText(item.title)}
+                    </td>
+                    <td style={{ padding: "1rem", color: "#64748b", fontSize: "0.875rem" }}>
+                      {new Date(item.startAt).toLocaleString("id-ID")} s/d {new Date(item.endAt).toLocaleString("id-ID")}
+                    </td>
+                    <td
+                      style={{ padding: "1rem", textAlign: "right", fontWeight: 700, color: "#2EC4B6" }}
+                    >
+                      {item.participants}
+                    </td>
+                  </tr>
+                ))}
+                {listData.length === 0 && (
+                  <tr>
+                    <td colSpan={4} style={{ padding: "3rem", textAlign: "center", color: "#64748b" }}>
+                      Tidak ada data ujian aktif atau yang memenuhi kriteria pencarian.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Pagination Controls */}
+          {listMeta && listMeta.totalPages > 1 && (
+            <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "1rem" }}>
+              <button
+                disabled={page <= 1}
+                onClick={() => setPage(page - 1)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Sebelumnya
+              </button>
+              <span style={{ alignSelf: "center", fontSize: "0.9rem", color: "#475569" }}>
+                Halaman {page} dari {listMeta.totalPages}
+              </span>
+              <button
+                disabled={page >= listMeta.totalPages}
+                onClick={() => setPage(page + 1)}
+                style={{
+                  padding: "0.5rem 1rem",
+                  borderRadius: "8px",
+                  border: "1px solid #cbd5e1",
+                  background: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Berikutnya
+              </button>
+            </div>
+          )}
+        </>
+      )}
     </div>
   );
 }
