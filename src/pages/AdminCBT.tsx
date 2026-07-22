@@ -251,7 +251,7 @@ function DashboardView() {
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", margin: 0 }}>
           Statistik Jumlah Peserta Per Ujian
         </h3>
-        
+
         {/* Filters */}
         <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
           <input
@@ -748,7 +748,7 @@ function ExamsView() {
     try {
       const data = await AdminCBTAPI.listStages();
       setStages(data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const fetchCompetitions = async (pageNum: number, searchStr: string) => {
@@ -761,7 +761,7 @@ function ExamsView() {
         total: res.total,
         totalPages: res.totalPages,
       });
-    } catch (err) {}
+    } catch (err) { }
   };
 
   // Debounce for Exam Search
@@ -1005,9 +1005,9 @@ function ExamsView() {
                   });
 
                   return (
-                    <tr 
-                      key={exam.id} 
-                      style={{ 
+                    <tr
+                      key={exam.id}
+                      style={{
                         borderBottom: "1px solid #f1f5f9",
                         transition: "background-color 0.2s ease",
                       }}
@@ -1037,9 +1037,9 @@ function ExamsView() {
                         )}
                       </td>
                       <td style={{ padding: "1rem" }}>
-                        <span style={{ 
-                          fontSize: "0.85rem", 
-                          fontWeight: 500, 
+                        <span style={{
+                          fontSize: "0.85rem",
+                          fontWeight: 500,
                           color: "#475569",
                           backgroundColor: "#f1f5f9",
                           padding: "0.25rem 0.6rem",
@@ -1057,12 +1057,12 @@ function ExamsView() {
                         <span style={{ color: "#64748b", fontSize: "0.8rem" }}>menit</span>
                       </td>
                       <td style={{ padding: "1rem" }}>
-                        <span style={{ 
-                          display: "inline-block", 
-                          padding: "0.25rem 0.5rem", 
-                          borderRadius: "6px", 
-                          backgroundColor: "#ecfeff", 
-                          fontWeight: 700, 
+                        <span style={{
+                          display: "inline-block",
+                          padding: "0.25rem 0.5rem",
+                          borderRadius: "6px",
+                          backgroundColor: "#ecfeff",
+                          fontWeight: 700,
                           color: "#0891b2",
                           fontSize: "0.85rem"
                         }}>
@@ -1600,7 +1600,7 @@ function ParticipantsView() {
       setExams(examList.data);
       setRegisteredUsers(regUsers);
       setCompetitions(compList.data || compList);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -1691,7 +1691,7 @@ function ParticipantsView() {
       const res = await AdminCBTAPI.assignParticipants(payload);
       toast.success(`Berhasil meng-assign ${res.assigned} peserta.`);
       setShowAssignModal(false);
-      
+
       // Reset assign state
       setAssignData({
         participantIds: [],
@@ -2444,7 +2444,7 @@ function QuestionsView() {
           }
         }
       }
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const fetchQuestions = async (examId: string) => {
@@ -3090,14 +3090,14 @@ function MonitoringView() {
     try {
       const res = await AdminCBTAPI.listExams({ perPage: 100 });
       setExams(res.data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const fetchMonitoring = async () => {
     try {
       const res = await AdminCBTAPI.getMonitoring({ examId: selectedExamId || undefined });
       setMonitoringData(res.data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   useEffect(() => {
@@ -3278,7 +3278,7 @@ function ResultsView() {
     try {
       const res = await AdminCBTAPI.listExams({ perPage: 100 });
       setExams(res.data);
-    } catch (err) {}
+    } catch (err) { }
   };
 
   const fetchResults = async () => {
@@ -3301,9 +3301,19 @@ function ResultsView() {
     fetchResults();
   }, [selectedExamId]);
 
-  const handleExport = () => {
-    const url = AdminCBTAPI.exportResultsUrl({ examId: selectedExamId || undefined });
-    window.open(url, "_blank");
+  const handleExport = async () => {
+    try {
+      const blob = await AdminCBTAPI.exportResults({ examId: selectedExamId || undefined });
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `hasil-ujian-${selectedExamId || "all"}.csv`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (err) {
+      toast.error("Gagal mengekspor hasil");
+    }
   };
 
   return (

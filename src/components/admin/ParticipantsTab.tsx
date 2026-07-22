@@ -184,7 +184,7 @@ export default function ParticipantsTab() {
 
                         {/* ===== BUKTI ===== */}
                         <td data-label="Pembayaran">
-                          {imageUrl ? (
+                          {p.proofUrl ? (
                             <button
                               className="btn view"
                               onClick={() => {

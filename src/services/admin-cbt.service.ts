@@ -263,6 +263,13 @@ export const AdminCBTAPI = {
     const query = new URLSearchParams({ ...params, token: token || "" }).toString();
     return `${import.meta.env.VITE_API_URL}/admin/cbt/results/export?${query}`;
   },
+  exportResults: async (params?: Record<string, any>) => {
+    const res = await api.get("/admin/cbt/results/export", {
+      params,
+      responseType: "blob",
+    });
+    return res.data;
+  },
   listRegisteredUsers: async () => {
     const res = await api.get<any[]>("/admin/cbt/registered-users");
     return res.data;
