@@ -3307,7 +3307,7 @@ function ResultsView() {
       const url = window.URL.createObjectURL(new Blob([blob]));
       const link = document.createElement("a");
       link.href = url;
-      link.setAttribute("download", `hasil-ujian-${selectedExamId || "all"}.csv`);
+      link.setAttribute("download", `hasil-ujian-${selectedExamId || "all"}.xlsx`);
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
