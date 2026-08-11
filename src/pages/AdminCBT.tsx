@@ -3337,6 +3337,14 @@ function ResultsView() {
   const [essayLoading, setEssayLoading] = useState(false);
   const [essayDrafts, setEssayDrafts] = useState<Record<string, string>>({});
   const [savingAnswerId, setSavingAnswerId] = useState<string | null>(null);
+  const [rankingLoading, setRankingLoading] = useState(false);
+
+  // Ranking dihitung per Stage (bisa gabungan >1 exam dalam satu tahap),
+  // bukan otomatis tiap submit — lihat komentar recomputeStageRanking di
+  // admin-cbt.service.js. Stage-nya diturunkan dari exam yang lagi dipilih
+  // di dropdown.
+  const selectedExam = exams.find((exam) => exam.id === selectedExamId);
+  const selectedStageId = selectedExam?.stage?.id || "";
 
   const fetchExams = async () => {
     try {
@@ -3377,6 +3385,20 @@ function ResultsView() {
       link.parentNode?.removeChild(link);
     } catch (err) {
       toast.error("Gagal mengekspor hasil");
+    }
+  };
+
+  const handleRecomputeRanking = async () => {
+    if (!selectedStageId) return;
+    setRankingLoading(true);
+    try {
+      const res = await AdminCBTAPI.recomputeStageRanking(selectedStageId);
+      toast.success(`Ranking dihitung untuk ${res.participantsRanked} peserta`);
+      fetchResults();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Gagal menghitung ranking");
+    } finally {
+      setRankingLoading(false);
     }
   };
 
@@ -3465,23 +3487,48 @@ function ResultsView() {
             ))}
           </select>
         </div>
-        <button
-          onClick={handleExport}
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "0.5rem",
-            backgroundColor: "#10b981",
-            color: "#fff",
-            border: "none",
-            padding: "0.6rem 1.2rem",
-            borderRadius: "8px",
-            cursor: "pointer",
-            fontWeight: 600,
-          }}
-        >
-          <FileDown size={16} /> Export ke CSV
-        </button>
+        <div style={{ display: "flex", gap: "0.75rem" }}>
+          <button
+            onClick={handleRecomputeRanking}
+            disabled={!selectedStageId || rankingLoading}
+            title={
+              !selectedStageId
+                ? "Pilih ujian yang tergabung ke sebuah tahapan (stage) dulu"
+                : "Hitung ulang ranking untuk semua ujian pada tahapan ini"
+            }
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              backgroundColor: !selectedStageId ? "#e2e8f0" : "#f59e0b",
+              color: !selectedStageId ? "#94a3b8" : "#fff",
+              border: "none",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              cursor: !selectedStageId || rankingLoading ? "not-allowed" : "pointer",
+              fontWeight: 600,
+            }}
+          >
+            <Award size={16} /> {rankingLoading ? "Menghitung..." : "Hitung Ranking"}
+          </button>
+          <button
+            onClick={handleExport}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              backgroundColor: "#10b981",
+              color: "#fff",
+              border: "none",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            <FileDown size={16} /> Export ke CSV
+          </button>
+        </div>
       </div>
 
       {loading ? (
@@ -3498,6 +3545,7 @@ function ResultsView() {
                 <th style={{ padding: "1rem" }}>Pelanggaran (Cheating)</th>
                 <th style={{ padding: "1rem" }}>Selesai Pada</th>
                 <th style={{ padding: "1rem", textAlign: "right" }}>Nilai Akhir</th>
+                <th style={{ padding: "1rem", textAlign: "center" }}>Ranking</th>
                 <th style={{ padding: "1rem" }}></th>
               </tr>
             </thead>
@@ -3531,6 +3579,9 @@ function ResultsView() {
                   >
                     {row.score !== null ? row.score : "-"}
                   </td>
+                  <td style={{ padding: "1rem", textAlign: "center", fontWeight: 700 }}>
+                    {row.rank !== null ? `#${row.rank}` : "-"}
+                  </td>
                   <td style={{ padding: "1rem" }}>
                     <button
                       onClick={() => openEssayGrading(row.id)}
@@ -3555,7 +3606,7 @@ function ResultsView() {
               {results.length === 0 && (
                 <tr>
                   <td
-                    colSpan={8}
+                    colSpan={9}
                     style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}
                   >
                     Belum ada hasil ujian yang tersedia.

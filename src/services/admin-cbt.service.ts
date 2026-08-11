@@ -127,6 +127,9 @@ export interface CBTResultData {
   participantNumber: string;
   examTitle: string;
   score: number | null;
+  // Ranking per Stage, diisi lewat tombol "Hitung Ranking" (admin-triggered,
+  // bukan otomatis) — null berarti belum pernah dihitung untuk stage exam ini.
+  rank: number | null;
   finishedAt: string | null;
   violationCount: number;
   answerCount: number;
@@ -180,6 +183,14 @@ export const AdminCBTAPI = {
   },
   deleteStage: async (id: string) => {
     const res = await api.delete<{ message: string }>(`/admin/cbt/stages/${id}`);
+    return res.data;
+  },
+  recomputeStageRanking: async (stageId: string) => {
+    const res = await api.post<{
+      stageId: string;
+      participantsRanked: number;
+      attemptsUpdated: number;
+    }>(`/admin/cbt/stages/${stageId}/recompute-ranking`);
     return res.data;
   },
 
