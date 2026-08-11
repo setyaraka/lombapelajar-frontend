@@ -13,6 +13,7 @@ import type {
   CBTQuestionOption,
   CBTMonitoringData,
   CBTResultData,
+  CBTEssayAnswer,
   PaginationMeta,
 } from "../services/admin-cbt.service";
 import toast from "react-hot-toast";
@@ -2491,14 +2492,27 @@ function QuestionsView() {
       if (!hasCorrect) return toast.error("Tentukan salah satu opsi sebagai jawaban benar");
     }
 
+    if (formData.type === "ESSAY" && !formData.options[0]?.text.trim()) {
+      return toast.error("Isi kunci jawaban untuk soal esai (dipakai sistem untuk menilai otomatis)");
+    }
+
     try {
+      // Untuk ESSAY, "options" bukan pilihan jawaban — cuma dipakai untuk
+      // menyimpan satu kunci jawaban (isCorrect selalu true) yang dibandingkan
+      // exact-match ke jawaban peserta saat submit. Lihat exam.service.js
+      // calculateScore/gradeAnswer di backend.
+      const options =
+        formData.type === "ESSAY"
+          ? [{ text: formData.options[0].text.trim(), isCorrect: true, position: 0 }]
+          : formData.options.filter((o) => o.text.trim());
+
       const payload = {
         examId: selectedExamId,
         text: formData.text,
         type: formData.type,
         points: formData.points,
         position: formData.position,
-        options: formData.type === "ESSAY" ? [] : formData.options.filter((o) => o.text.trim()),
+        options,
       };
 
       if (formData.id) {
@@ -2864,6 +2878,21 @@ function QuestionsView() {
                   ))}
                 </div>
               )}
+
+              {q.type === "ESSAY" && (
+                <div
+                  style={{
+                    paddingLeft: "1rem",
+                    fontSize: "0.9rem",
+                    color: "#64748b",
+                  }}
+                >
+                  Kunci Jawaban:{" "}
+                  <strong style={{ color: "#0f172a" }}>
+                    {q.options[0]?.text || "(belum diisi)"}
+                  </strong>
+                </div>
+              )}
             </div>
           ))}
 
@@ -3038,6 +3067,32 @@ function QuestionsView() {
                       </div>
                     ))}
                   </div>
+                </div>
+              )}
+
+              {formData.type === "ESSAY" && (
+                <div style={{ marginBottom: "1.5rem" }}>
+                  <label style={{ display: "block", marginBottom: "0.75rem", fontWeight: 600 }}>
+                    Kunci Jawaban
+                  </label>
+                  <input
+                    type="text"
+                    value={formData.options[0]?.text || ""}
+                    onChange={(e) => updateOptionText(0, e.target.value)}
+                    placeholder="Jawaban yang dianggap benar"
+                    style={{
+                      width: "100%",
+                      padding: "0.6rem",
+                      borderRadius: "8px",
+                      border: "1px solid #cbd5e1",
+                    }}
+                    required
+                  />
+                  <p style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.4rem" }}>
+                    Sistem menilai otomatis dengan mencocokkan persis (termasuk huruf besar/kecil
+                    dan spasi) jawaban peserta dengan kunci ini. Kalau tidak cocok tapi menurut
+                    kamu sebenarnya benar, nilainya bisa dikoreksi manual di halaman Hasil Ujian.
+                  </p>
                 </div>
               )}
 
@@ -3274,6 +3329,15 @@ function ResultsView() {
   const [selectedExamId, setSelectedExamId] = useState("");
   const [loading, setLoading] = useState(false);
 
+  // Koreksi manual esai — auto-grading exact-match sudah jalan saat peserta
+  // submit, modal ini untuk admin meninjau/override kalau exact-match-nya
+  // keliru (mis. peserta benar tapi beda kapitalisasi/spasi).
+  const [gradingAttemptId, setGradingAttemptId] = useState<string | null>(null);
+  const [essayAnswers, setEssayAnswers] = useState<CBTEssayAnswer[]>([]);
+  const [essayLoading, setEssayLoading] = useState(false);
+  const [essayDrafts, setEssayDrafts] = useState<Record<string, string>>({});
+  const [savingAnswerId, setSavingAnswerId] = useState<string | null>(null);
+
   const fetchExams = async () => {
     try {
       const res = await AdminCBTAPI.listExams({ perPage: 100 });
@@ -3313,6 +3377,56 @@ function ResultsView() {
       link.parentNode?.removeChild(link);
     } catch (err) {
       toast.error("Gagal mengekspor hasil");
+    }
+  };
+
+  const openEssayGrading = async (attemptId: string) => {
+    setGradingAttemptId(attemptId);
+    setEssayLoading(true);
+    try {
+      const data = await AdminCBTAPI.getEssayAnswers(attemptId);
+      setEssayAnswers(data.questions);
+      const drafts: Record<string, string> = {};
+      data.questions.forEach((q) => {
+        if (q.answerId) drafts[q.answerId] = String(q.pointsEarned ?? 0);
+      });
+      setEssayDrafts(drafts);
+    } catch (err) {
+      toast.error("Gagal memuat jawaban esai");
+      setGradingAttemptId(null);
+    } finally {
+      setEssayLoading(false);
+    }
+  };
+
+  const closeEssayGrading = () => {
+    setGradingAttemptId(null);
+    setEssayAnswers([]);
+    setEssayDrafts({});
+  };
+
+  const saveEssayGrade = async (answerId: string, maxPoints: number) => {
+    const raw = Number(essayDrafts[answerId]);
+    const pointsEarned = Number.isFinite(raw) ? Math.max(0, Math.min(maxPoints, raw)) : 0;
+    setSavingAnswerId(answerId);
+    try {
+      await AdminCBTAPI.gradeEssayAnswer(answerId, {
+        pointsEarned,
+        isCorrect: pointsEarned > 0,
+      });
+      toast.success("Nilai esai tersimpan");
+      setEssayAnswers((prev) =>
+        prev.map((q) =>
+          q.answerId === answerId
+            ? { ...q, pointsEarned, isCorrect: pointsEarned > 0, gradedManually: true }
+            : q
+        )
+      );
+      fetchResults();
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || "Gagal menyimpan nilai");
+    } finally {
+      setSavingAnswerId(null);
     }
   };
 
@@ -3384,6 +3498,7 @@ function ResultsView() {
                 <th style={{ padding: "1rem" }}>Pelanggaran (Cheating)</th>
                 <th style={{ padding: "1rem" }}>Selesai Pada</th>
                 <th style={{ padding: "1rem", textAlign: "right" }}>Nilai Akhir</th>
+                <th style={{ padding: "1rem" }}></th>
               </tr>
             </thead>
             <tbody>
@@ -3416,12 +3531,31 @@ function ResultsView() {
                   >
                     {row.score !== null ? row.score : "-"}
                   </td>
+                  <td style={{ padding: "1rem" }}>
+                    <button
+                      onClick={() => openEssayGrading(row.id)}
+                      style={{
+                        display: "flex",
+                        alignItems: "center",
+                        gap: "0.35rem",
+                        border: "1px solid #cbd5e1",
+                        backgroundColor: "#fff",
+                        borderRadius: "6px",
+                        padding: "0.4rem 0.7rem",
+                        cursor: "pointer",
+                        fontSize: "0.8rem",
+                        whiteSpace: "nowrap",
+                      }}
+                    >
+                      <Edit2 size={14} /> Koreksi Esai
+                    </button>
+                  </td>
                 </tr>
               ))}
               {results.length === 0 && (
                 <tr>
                   <td
-                    colSpan={7}
+                    colSpan={8}
                     style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}
                   >
                     Belum ada hasil ujian yang tersedia.
@@ -3430,6 +3564,152 @@ function ResultsView() {
               )}
             </tbody>
           </table>
+        </div>
+      )}
+
+      {gradingAttemptId && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              padding: "2rem",
+              borderRadius: "16px",
+              width: "100%",
+              maxWidth: "640px",
+              maxHeight: "85vh",
+              overflowY: "auto",
+            }}
+          >
+            <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.25rem" }}>
+              Koreksi Jawaban Esai
+            </h3>
+            <p style={{ fontSize: "0.85rem", color: "#64748b", marginBottom: "1.5rem" }}>
+              Nilai sudah dihitung otomatis (exact-match). Ubah poin di sini kalau menurutmu
+              penilaian otomatisnya keliru — nilai akhir peserta akan dihitung ulang begitu
+              disimpan.
+            </p>
+
+            {essayLoading ? (
+              <div>Memuat jawaban esai...</div>
+            ) : essayAnswers.length === 0 ? (
+              <div style={{ color: "#64748b" }}>Ujian ini tidak punya soal esai.</div>
+            ) : (
+              <div style={{ display: "flex", flexDirection: "column", gap: "1.25rem" }}>
+                {essayAnswers.map((q) => (
+                  <div
+                    key={q.questionId}
+                    style={{
+                      border: "1px solid #e2e8f0",
+                      borderRadius: "10px",
+                      padding: "1rem",
+                    }}
+                  >
+                    <div style={{ fontWeight: 600, marginBottom: "0.5rem" }}>
+                      {renderFormattedText(q.text)}
+                    </div>
+                    <div style={{ fontSize: "0.85rem", color: "#64748b", marginBottom: "0.25rem" }}>
+                      Kunci jawaban: <strong>{q.answerKey ?? "(belum diisi)"}</strong>
+                    </div>
+                    <div style={{ fontSize: "0.85rem", marginBottom: "0.75rem" }}>
+                      Jawaban peserta:{" "}
+                      <strong>{q.submittedAnswer || "(tidak dijawab)"}</strong>
+                      {q.isCorrect !== null && (
+                        <span
+                          style={{
+                            marginLeft: "0.5rem",
+                            color: q.isCorrect ? "#10b981" : "#ef4444",
+                            fontWeight: 600,
+                          }}
+                        >
+                          {q.isCorrect ? "Cocok otomatis" : "Tidak cocok otomatis"}
+                        </span>
+                      )}
+                      {q.gradedManually && (
+                        <span style={{ marginLeft: "0.5rem", color: "#f59e0b", fontWeight: 600 }}>
+                          (dikoreksi manual)
+                        </span>
+                      )}
+                    </div>
+
+                    {q.answerId ? (
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+                        <input
+                          type="number"
+                          min={0}
+                          max={q.points}
+                          value={essayDrafts[q.answerId] ?? ""}
+                          onChange={(e) =>
+                            setEssayDrafts((prev) => ({
+                              ...prev,
+                              [q.answerId as string]: e.target.value,
+                            }))
+                          }
+                          style={{
+                            width: "80px",
+                            padding: "0.4rem",
+                            borderRadius: "6px",
+                            border: "1px solid #cbd5e1",
+                          }}
+                        />
+                        <span style={{ fontSize: "0.85rem", color: "#64748b" }}>
+                          / {q.points} poin
+                        </span>
+                        <button
+                          onClick={() => saveEssayGrade(q.answerId as string, q.points)}
+                          disabled={savingAnswerId === q.answerId}
+                          style={{
+                            marginLeft: "auto",
+                            backgroundColor: "#2EC4B6",
+                            color: "#fff",
+                            border: "none",
+                            borderRadius: "6px",
+                            padding: "0.4rem 0.9rem",
+                            cursor: "pointer",
+                            fontWeight: 600,
+                            fontSize: "0.85rem",
+                          }}
+                        >
+                          {savingAnswerId === q.answerId ? "Menyimpan..." : "Simpan"}
+                        </button>
+                      </div>
+                    ) : (
+                      <span style={{ fontSize: "0.85rem", color: "#94a3b8" }}>
+                        Peserta belum menjawab soal ini.
+                      </span>
+                    )}
+                  </div>
+                ))}
+              </div>
+            )}
+
+            <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "1.5rem" }}>
+              <button
+                onClick={closeEssayGrading}
+                style={{
+                  padding: "0.5rem 1.2rem",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "8px",
+                  backgroundColor: "#fff",
+                  cursor: "pointer",
+                }}
+              >
+                Tutup
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>

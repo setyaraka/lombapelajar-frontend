@@ -132,6 +132,25 @@ export interface CBTResultData {
   answerCount: number;
 }
 
+export interface CBTEssayAnswer {
+  answerId: string | null;
+  questionId: string;
+  text: string;
+  points: number;
+  answerKey: string | null;
+  submittedAnswer: string;
+  isCorrect: boolean | null;
+  pointsEarned: number | null;
+  gradedManually: boolean;
+}
+
+export interface CBTEssayAnswers {
+  attemptId: string;
+  participantName: string;
+  examTitle: string;
+  questions: CBTEssayAnswer[];
+}
+
 export interface PaginationMeta {
   page: number;
   perPage: number;
@@ -272,6 +291,19 @@ export const AdminCBTAPI = {
   },
   listRegisteredUsers: async () => {
     const res = await api.get<any[]>("/admin/cbt/registered-users");
+    return res.data;
+  },
+
+  // Koreksi manual esai
+  getEssayAnswers: async (attemptId: string) => {
+    const res = await api.get<CBTEssayAnswers>(`/admin/cbt/results/${attemptId}/essay-answers`);
+    return res.data;
+  },
+  gradeEssayAnswer: async (
+    answerId: string,
+    data: { pointsEarned: number; isCorrect?: boolean }
+  ) => {
+    const res = await api.patch(`/admin/cbt/answers/${answerId}/grade`, data);
     return res.data;
   },
 };
