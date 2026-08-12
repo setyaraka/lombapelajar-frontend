@@ -29,7 +29,7 @@ export default function ExamPage() {
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [savedAtMap, setSavedAtMap] = useState<Record<string, string>>({});
 
-  const guard = useExamGuard(attemptId || "");
+  const guard = useExamGuard();
   const autosave = useAnswerAutosave(attemptId || "", (questionId, savedAt) => {
     setSavedAtMap((prev) => ({ ...prev, [questionId]: savedAt }));
   });
@@ -119,15 +119,6 @@ export default function ExamPage() {
       {!guard.online && (
         <div className="exam-network-banner">
           Koneksi terputus. Jawaban akan dikirim kembali saat koneksi tersedia.
-        </div>
-      )}
-
-      {guard.warning && (
-        <div className="exam-warning" role="alert">
-          <span>{guard.warning}</span>
-          <button type="button" onClick={guard.clearWarning}>
-            Tutup
-          </button>
         </div>
       )}
 

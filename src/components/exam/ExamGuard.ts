@@ -1,55 +1,32 @@
 import { useEffect, useState } from "react";
-import { ExamAPI } from "../../services/exam.service";
 
-export function useExamGuard(attemptId: string) {
-  const [warning, setWarning] = useState("");
+// Anti-cheating (deteksi tab-switch/window-blur + peringatan ke peserta +
+// catat pelanggaran ke server) sengaja DILEPAS di sini sesuai kesepakatan
+// client (chat 2-3 Juli: "gak perlu anti cheating dulu ... biar gak terlalu
+// mahal"). Backend (ViolationLog, ExamActivityEvent.TAB_SWITCH/WINDOW_BLUR/
+// WINDOW_FOCUS, kolom "Pelanggaran" di monitoring & export) sengaja TIDAK
+// disentuh — begitu tidak ada lagi event yang dikirim dari sini, semua itu
+// otomatis selalu kosong/0. Kalau nanti fitur ini mau diaktifkan lagi, lihat
+// git history file ini (sebelum komit ini) untuk logika lengkapnya.
+//
+// Yang dipertahankan: deteksi online/offline murni untuk UX koneksi terputus
+// ("Koneksi terputus. Jawaban akan dikirim kembali saat koneksi tersedia." —
+// lihat ExamPage.tsx) — ini bukan bagian dari anti-cheating, jadi tetap ada.
+export function useExamGuard() {
   const [online, setOnline] = useState(navigator.onLine);
 
   useEffect(() => {
-    const log = (
-      event: "TAB_SWITCH" | "WINDOW_BLUR" | "WINDOW_FOCUS",
-      metadata?: Record<string, unknown>
-    ) => {
-      void ExamAPI.logActivity(attemptId, event, metadata).catch(() => undefined);
-    };
-
-    const onVisibilityChange = () => {
-      if (document.hidden) {
-        setWarning("Anda terdeteksi keluar dari tab ujian. Aktivitas ini dicatat oleh sistem.");
-        log("TAB_SWITCH", { visibilityState: document.visibilityState });
-      }
-    };
-
-    const onBlur = () => {
-      setWarning("Jendela ujian tidak aktif. Silakan kembali fokus mengerjakan ujian.");
-      log("WINDOW_BLUR");
-    };
-
-    const onFocus = () => {
-      log("WINDOW_FOCUS");
-    };
-
     const onOnline = () => setOnline(true);
     const onOffline = () => setOnline(false);
 
-    document.addEventListener("visibilitychange", onVisibilityChange);
-    window.addEventListener("blur", onBlur);
-    window.addEventListener("focus", onFocus);
     window.addEventListener("online", onOnline);
     window.addEventListener("offline", onOffline);
 
     return () => {
-      document.removeEventListener("visibilitychange", onVisibilityChange);
-      window.removeEventListener("blur", onBlur);
-      window.removeEventListener("focus", onFocus);
       window.removeEventListener("online", onOnline);
       window.removeEventListener("offline", onOffline);
     };
-  }, [attemptId]);
+  }, []);
 
-  return {
-    warning,
-    online,
-    clearWarning: () => setWarning(""),
-  };
+  return { online };
 }
