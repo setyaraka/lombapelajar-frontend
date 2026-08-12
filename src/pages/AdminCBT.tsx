@@ -3388,6 +3388,21 @@ function ResultsView() {
     }
   };
 
+  const handleExportPdf = async () => {
+    try {
+      const blob = await AdminCBTAPI.exportResultsPdf({ examId: selectedExamId || undefined });
+      const url = window.URL.createObjectURL(new Blob([blob]));
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `hasil-ujian-${selectedExamId || "all"}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.parentNode?.removeChild(link);
+    } catch (err) {
+      toast.error("Gagal mengekspor PDF");
+    }
+  };
+
   const handleRecomputeRanking = async () => {
     if (!selectedStageId) return;
     setRankingLoading(true);
@@ -3526,7 +3541,27 @@ function ResultsView() {
               fontWeight: 600,
             }}
           >
+            {/* Catatan: tombol ini memanggil endpoint Excel (.xlsx), bukan
+                CSV — labelnya sudah begini dari sebelum perubahan ini,
+                belum diganti supaya diff tetap fokus ke penambahan PDF. */}
             <FileDown size={16} /> Export ke CSV
+          </button>
+          <button
+            onClick={handleExportPdf}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              backgroundColor: "#ef4444",
+              color: "#fff",
+              border: "none",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              cursor: "pointer",
+              fontWeight: 600,
+            }}
+          >
+            <FileDown size={16} /> Export PDF
           </button>
         </div>
       </div>

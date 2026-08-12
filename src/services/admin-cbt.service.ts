@@ -300,6 +300,13 @@ export const AdminCBTAPI = {
     });
     return res.data;
   },
+  exportResultsPdf: async (params?: Record<string, any>) => {
+    const res = await api.get("/admin/cbt/results/export/pdf", {
+      params,
+      responseType: "blob",
+    });
+    return res.data;
+  },
   listRegisteredUsers: async () => {
     const res = await api.get<any[]>("/admin/cbt/registered-users");
     return res.data;
