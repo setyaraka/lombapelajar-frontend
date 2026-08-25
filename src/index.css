@@ -2610,6 +2610,74 @@ input[type="file"] {
 .react-datepicker__navigation:hover {
   opacity: 0.7;
 }
+
+/* Dropdown bulan/tahun (showMonthDropdown/showYearDropdown, dipakai di
+   field Tanggal Lahir - Register.tsx) - default-nya <select> polos browser
+   yang tidak ikut tema gradient header, jadi direstyle senada. Judul
+   "Agustus 2026" disembunyikan khusus saat dropdown ini ada karena jadi
+   duplikat info dengan kedua dropdown di bawahnya; :has() supaya cuma
+   ngaruh ke datepicker yang pakai dropdown (Deadline Lomba & Timeline yang
+   tidak pakai dropdown tetap tampilkan judul bulan seperti biasa). */
+.react-datepicker__header:has(.react-datepicker__month-select) .react-datepicker__current-month {
+  display: none;
+}
+
+/* Tombol panah prev/next ("<" ">") tidak dibutuhkan lagi begitu ada
+   dropdown bulan & tahun (dipakai di Tanggal Lahir - Register.tsx) -
+   navigasinya sudah tercakup lewat kedua dropdown itu. Datepicker lain yang
+   tidak pakai dropdown (Deadline Lomba, Timeline) tetap tampilkan panahnya
+   seperti biasa. */
+.react-datepicker:has(.react-datepicker__month-select) .react-datepicker__navigation {
+  display: none;
+}
+
+.react-datepicker__header .react-datepicker__month-select,
+.react-datepicker__header .react-datepicker__year-select {
+  /* appearance: none wajib di sini - tanpa ini, browser (terutama Safari/
+     macOS) tetap pakai skin native <select> bergradasi biru bawaan OS dan
+     mengabaikan background-color kita. Panah stepper native juga ikut
+     hilang, jadi diganti chevron custom lewat background-image di bawah. */
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-color: #ffffff;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%230f172a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3e%3cpolyline points='6 9 12 15 18 9'%3e%3c/polyline%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 8px center;
+  background-size: 14px;
+  border: 1px solid rgba(15, 23, 42, 0.15);
+  border-radius: 8px;
+  color: #0f172a;
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 5px 26px 5px 10px;
+  margin: 4px;
+  cursor: pointer;
+}
+
+/* Geser dropdown bulan 5px lebih ke kanan (mendekat ke dropdown tahun) -
+   posisi defaultnya nutupin sebagian panah navigasi "prev" di sebelah
+   kirinya. */
+.react-datepicker__header .react-datepicker__month-select {
+  margin-left: 0px;
+}
+
+.react-datepicker__header .react-datepicker__month-select option,
+.react-datepicker__header .react-datepicker__year-select option {
+  color: #0f172a;
+}
+
+.react-datepicker__header .react-datepicker__month-select:hover,
+.react-datepicker__header .react-datepicker__year-select:hover {
+  background-color: #f1f5f9;
+}
+
+.react-datepicker__header .react-datepicker__month-select:focus-visible,
+.react-datepicker__header .react-datepicker__year-select:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
+}
+
 .react-datepicker--with-range .react-datepicker__month-container {
   float: left;
 }

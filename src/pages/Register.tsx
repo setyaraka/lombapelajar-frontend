@@ -3,6 +3,9 @@ import { useNavigate } from "react-router-dom";
 import { register } from "../services/auth.service";
 import LoadingButton from "../components/LoadingButton";
 import { Eye, EyeOff } from "lucide-react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { id as localeId } from "date-fns/locale";
 
 type FormData = {
   nama: string;
@@ -92,11 +95,24 @@ export default function Register() {
 
           <div className="form-group">
             <label>Tanggal Lahir</label>
-            <input
-              type="date"
-              name="birthDate"
-              value={form.birthDate}
-              onChange={handleChange}
+            <DatePicker
+              selected={form.birthDate ? new Date(form.birthDate) : null}
+              onChange={(date: Date | null) =>
+                setForm((prev) => ({
+                  ...prev,
+                  birthDate: date ? date.toISOString().split("T")[0] : "",
+                }))
+              }
+              locale={localeId}
+              dateFormat="dd/MM/yyyy"
+              placeholderText="Pilih tanggal lahir"
+              className="datepicker-input"
+              showYearDropdown
+              showMonthDropdown
+              dropdownMode="select"
+              scrollableYearDropdown
+              yearDropdownItemNumber={100}
+              maxDate={new Date()}
               required
             />
           </div>
