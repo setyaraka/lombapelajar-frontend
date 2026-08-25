@@ -26,7 +26,6 @@ import {
   Award,
   Calendar,
   BookOpen,
-  AlertCircle,
   FileDown,
   Search,
   RefreshCw,
@@ -3251,7 +3250,6 @@ function MonitoringView() {
               <th style={{ padding: "1rem" }}>Status</th>
               <th style={{ padding: "1rem" }}>Sisa Waktu</th>
               <th style={{ padding: "1rem" }}>Progres Jawaban</th>
-              <th style={{ padding: "1rem" }}>Pelanggaran (Cheating)</th>
             </tr>
           </thead>
           <tbody>
@@ -3286,29 +3284,12 @@ function MonitoringView() {
                   <td style={{ padding: "1rem", fontWeight: 600 }}>
                     {row.status !== "Waiting" ? `${row.answeredCount} Terjawab` : "-"}
                   </td>
-                  <td style={{ padding: "1rem" }}>
-                    {row.violationCount > 0 ? (
-                      <span
-                        style={{
-                          color: "#ef4444",
-                          fontWeight: 700,
-                          display: "inline-flex",
-                          alignItems: "center",
-                          gap: "0.25rem",
-                        }}
-                      >
-                        <AlertCircle size={14} /> {row.violationCount}x Pelanggaran
-                      </span>
-                    ) : (
-                      <span style={{ color: "#10b981", fontWeight: 600 }}>Aman</span>
-                    )}
-                  </td>
                 </tr>
               );
             })}
             {monitoringData.length === 0 && (
               <tr>
-                <td colSpan={7} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
+                <td colSpan={6} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
                   Tidak ada peserta yang di-assign untuk dipantau.
                 </td>
               </tr>
