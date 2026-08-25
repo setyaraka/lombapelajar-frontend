@@ -2549,7 +2549,10 @@ input[type="file"] {
   background: rgba(255, 255, 255, 0.5);
   backdrop-filter: blur(6px);
   transition: 0.2s;
-  font-size: 14px;
+  /* font-size sengaja tidak di-set di sini (dulu ada font-size: 14px) -
+     biar samain dengan <input> lain yang juga tidak set font-size sendiri
+     (ikut default browser), supaya tinggi barisnya identik. Beda font-size
+     kecil sekalipun bikin line-height & tinggi kotak input jadi beda. */
 }
 
 .datepicker-input:focus {
