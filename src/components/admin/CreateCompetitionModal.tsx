@@ -73,6 +73,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
     setDeadline("");
     setPrice("");
     setPoster(null);
+    setPreview(null);
     setDescription("");
     setWhatsapp("");
 
@@ -340,6 +341,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               dateFormat="dd/MM/yyyy"
               placeholderText="Deadline Lomba"
               className="datepicker-input"
+              portalId="datepicker-portal"
             />
             <input
               placeholder="Harga (Rp)"

@@ -2566,6 +2566,15 @@ input[type="file"] {
   overflow: hidden;
 }
 
+/* Dirender lewat portalId (lihat CreateCompetitionModal) supaya popper
+   kalender tidak ikut jadi grid item di dalam .form-grid (yang sebelumnya
+   menggeser layout, mis. gambar poster, saat kalender dibuka). Karena
+   dipindah ke document.body, perlu z-index eksplisit di atas .modal-overlay
+   (999) supaya tetap tampil di depan modal. */
+.react-datepicker-popper {
+  z-index: 1000;
+}
+
 .react-datepicker__header {
   background: var(--gradient-main) !important;
   border-bottom: none !important;
