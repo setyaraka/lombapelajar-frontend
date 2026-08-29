@@ -3694,7 +3694,6 @@ function ResultsView() {
                 <th style={{ padding: "1rem" }}>Nama Peserta</th>
                 <th style={{ padding: "1rem" }}>Ujian</th>
                 <th style={{ padding: "1rem" }}>Jumlah Jawaban</th>
-                <th style={{ padding: "1rem" }}>Pelanggaran (Cheating)</th>
                 <th style={{ padding: "1rem" }}>Selesai Pada</th>
                 <th style={{ padding: "1rem", textAlign: "right" }}>Nilai Akhir</th>
                 <th style={{ padding: "1rem", textAlign: "center" }}>Ranking</th>
@@ -3708,15 +3707,6 @@ function ResultsView() {
                   <td style={{ padding: "1rem" }}>{row.participantName}</td>
                   <td style={{ padding: "1rem" }}>{row.examTitle}</td>
                   <td style={{ padding: "1rem" }}>{row.answerCount} Terjawab</td>
-                  <td style={{ padding: "1rem" }}>
-                    {row.violationCount > 0 ? (
-                      <span style={{ color: "#ef4444", fontWeight: 700 }}>
-                        {row.violationCount}x Pelanggaran
-                      </span>
-                    ) : (
-                      <span style={{ color: "#10b981" }}>Aman</span>
-                    )}
-                  </td>
                   <td style={{ padding: "1rem" }}>
                     {row.finishedAt ? new Date(row.finishedAt).toLocaleString("id-ID") : "-"}
                   </td>

@@ -26,14 +26,31 @@ type ApiError = {
   };
 };
 
-function formatDateTime(date: string) {
-  return new Date(date).toLocaleString("id-ID", {
+function formatExamDate(date: string) {
+  return new Date(date).toLocaleDateString("id-ID", {
     day: "numeric",
     month: "long",
     year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
   });
+}
+
+function formatExamTime(date: string) {
+  return new Date(date).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" });
+}
+
+// Ujian biasanya mulai & selesai di hari yang sama, jadi tanggalnya cukup
+// ditulis sekali: "29 Agustus 2026 (pukul 16.00 - pukul 18.00)". Kalau
+// beda hari (jadwal lintas hari), tetap tampilkan tanggal masing-masing.
+function formatExamSchedule(startAt: string, endAt: string) {
+  const startDate = formatExamDate(startAt);
+  const endDate = formatExamDate(endAt);
+  const startTime = formatExamTime(startAt);
+  const endTime = formatExamTime(endAt);
+
+  if (startDate === endDate) {
+    return `${startDate} (${startTime} WIB - ${endTime} WIB)`;
+  }
+  return `${startDate} ${startTime} WIB - ${endDate} ${endTime} WIB`;
 }
 
 export default function CompetitionDetail() {
@@ -818,7 +835,7 @@ export default function CompetitionDetail() {
                       <b>{exam.examTitle}</b>
                       {exam.stageName && <span> ({exam.stageName})</span>}
                       <div style={{ fontSize: "0.85rem", color: "#64748b" }}>
-                        {formatDateTime(exam.startAt)} - {formatDateTime(exam.endAt)}
+                        {formatExamSchedule(exam.startAt, exam.endAt)}
                       </div>
                     </div>
 

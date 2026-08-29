@@ -33,6 +33,18 @@ export function useAnswerAutosave(
   const [status, setStatus] = useState<SaveState>("idle");
   const timers = useRef<Record<string, number>>({});
 
+  // onSaved disimpan lewat ref (bukan lewat dependency array useCallback di
+  // bawah) supaya saveNow/flushQueue/scheduleSave tetap stabil identitasnya
+  // walau caller (ExamPage) mengirim function baru tiap render (arrow
+  // function inline). Kalau tidak, useEffect di bawah yang clearTimeout
+  // semua timer akan ikut re-run tiap render dan MEMBATALKAN timer autosave
+  // 500ms sebelum sempat menyala - jawaban jadi tidak pernah benar-benar
+  // terkirim ke server meskipun terlihat tersimpan di layar.
+  const onSavedRef = useRef(onSaved);
+  useEffect(() => {
+    onSavedRef.current = onSaved;
+  }, [onSaved]);
+
   const flushQueue = useCallback(async () => {
     if (!navigator.onLine) return;
 
@@ -50,7 +62,7 @@ export function useAnswerAutosave(
           saved_at: item.savedAt,
           lastQuestionId: item.lastQuestionId,
         });
-        onSaved?.(item.questionId, item.savedAt);
+        onSavedRef.current?.(item.questionId, item.savedAt);
       } catch {
         remaining.push(item);
       }
@@ -58,7 +70,7 @@ export function useAnswerAutosave(
 
     writeQueue(attemptId, remaining);
     setStatus(remaining.length ? "queued" : "saved");
-  }, [attemptId, onSaved]);
+  }, [attemptId]);
 
   const saveNow = useCallback(
     async (questionId: string, answer: AnswerValue, lastQuestionId?: string) => {
@@ -84,7 +96,7 @@ export function useAnswerAutosave(
           saved_at: savedAt,
           lastQuestionId,
         });
-        onSaved?.(questionId, savedAt);
+        onSavedRef.current?.(questionId, savedAt);
         setStatus("saved");
       } catch {
         writeQueue(attemptId, [
@@ -94,7 +106,7 @@ export function useAnswerAutosave(
         setStatus("queued");
       }
     },
-    [attemptId, onSaved]
+    [attemptId]
   );
 
   const scheduleSave = useCallback(
