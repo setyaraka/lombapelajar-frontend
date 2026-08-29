@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { AdminCBTAPI } from "../services/admin-cbt.service";
@@ -40,6 +40,14 @@ type SubTab =
   | "questions"
   | "monitoring"
   | "results";
+
+function getErrorMessage(err: unknown, fallback: string): string {
+  if (err && typeof err === "object" && "response" in err) {
+    const response = (err as { response?: { data?: { message?: string } } }).response;
+    if (response?.data?.message) return response.data.message;
+  }
+  return fallback;
+}
 
 export default function AdminCBT() {
   const [activeTab, setActiveTab] = useState<SubTab>("dashboard");
@@ -144,7 +152,7 @@ function DashboardView() {
   const [dateFilter, setDateFilter] = useState("");
   const [page, setPage] = useState(1);
 
-  const fetchDashboard = async () => {
+  const fetchDashboard = useCallback(async () => {
     try {
       setLoading(true);
       const res = await AdminCBTAPI.getDashboard({
@@ -153,12 +161,12 @@ function DashboardView() {
         date: dateFilter,
       });
       setData(res);
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Gagal memuat dashboard");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal memuat dashboard"));
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, debouncedSearch, dateFilter]);
 
   // Debounce search input
   useEffect(() => {
@@ -171,7 +179,7 @@ function DashboardView() {
 
   useEffect(() => {
     fetchDashboard();
-  }, [page, debouncedSearch, dateFilter]);
+  }, [fetchDashboard]);
 
   if (loading && !data) return <div>Memuat data statistik...</div>;
   if (!data) return <div>Data tidak tersedia.</div>;
@@ -440,7 +448,7 @@ function StagesView() {
       setLoading(true);
       const data = await AdminCBTAPI.listStages();
       setStages(data);
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal memuat tahapan");
     } finally {
       setLoading(false);
@@ -465,8 +473,8 @@ function StagesView() {
       }
       setShowModal(false);
       fetchStages();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Gagal menyimpan tahapan");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal menyimpan tahapan"));
     }
   };
 
@@ -487,7 +495,7 @@ function StagesView() {
       await AdminCBTAPI.deleteStage(id);
       toast.success("Tahapan berhasil dihapus");
       fetchStages();
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal menghapus tahapan");
     }
   };
@@ -731,7 +739,7 @@ function StagesView() {
 function ExamsView() {
   const [exams, setExams] = useState<CBTExam[]>([]);
   const [stages, setStages] = useState<CBTStage[]>([]);
-  const [competitions, setCompetitions] = useState<any[]>([]);
+  const [competitions, setCompetitions] = useState<Array<{ id: string; title: string }>>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState("");
@@ -741,7 +749,7 @@ function ExamsView() {
   // States for searchable paginated competition selector
   const [compSearch, setCompSearch] = useState("");
   const [compPage, setCompPage] = useState(1);
-  const [compMeta, setCompMeta] = useState<any>(null);
+  const [compMeta, setCompMeta] = useState<PaginationMeta | null>(null);
   const [showCompDropdown, setShowCompDropdown] = useState(false);
   const [selectedCompTitle, setSelectedCompTitle] = useState("");
 
@@ -763,24 +771,26 @@ function ExamsView() {
     randomizeOptions: true,
   });
 
-  const fetchExams = async () => {
+  const fetchExams = useCallback(async () => {
     try {
       setLoading(true);
       const res = await AdminCBTAPI.listExams({ page, perPage: 5, search: debouncedSearch });
       setExams(res.data);
       setMeta(res.meta);
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal memuat daftar ujian");
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, debouncedSearch]);
 
   const fetchStages = async () => {
     try {
       const data = await AdminCBTAPI.listStages();
       setStages(data);
-    } catch (err) {}
+    } catch {
+      /* ignore */
+    }
   };
 
   const fetchCompetitions = async (pageNum: number, searchStr: string) => {
@@ -793,7 +803,9 @@ function ExamsView() {
         total: res.total,
         totalPages: res.totalPages,
       });
-    } catch (err) {}
+    } catch {
+      /* ignore */
+    }
   };
 
   // Debounce for Exam Search
@@ -822,7 +834,7 @@ function ExamsView() {
 
   useEffect(() => {
     fetchExams();
-  }, [page, debouncedSearch]);
+  }, [fetchExams]);
 
   useEffect(() => {
     fetchStages();
@@ -854,8 +866,8 @@ function ExamsView() {
       }
       setShowModal(false);
       fetchExams();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Gagal menyimpan ujian");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal menyimpan ujian"));
     }
   };
 
@@ -888,7 +900,7 @@ function ExamsView() {
       await AdminCBTAPI.toggleExam(id, !currentActive);
       toast.success(`Ujian berhasil ${!currentActive ? "diaktifkan" : "dinonaktifkan"}`);
       fetchExams();
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal mengubah status aktif");
     }
   };
@@ -900,7 +912,7 @@ function ExamsView() {
       await AdminCBTAPI.deleteExam(id);
       toast.success("Ujian berhasil dihapus");
       fetchExams();
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal menghapus ujian");
     }
   };
@@ -1625,22 +1637,24 @@ function ParticipantsView() {
     sourceStageId: "",
   });
 
-  const [registeredUsers, setRegisteredUsers] = useState<any[]>([]);
+  const [registeredUsers, setRegisteredUsers] = useState<
+    Array<{ id: string; user: { name: string; email: string }; competition: { title: string } }>
+  >([]);
   const [selectedRegUserId, setSelectedRegUserId] = useState("");
-  const [competitions, setCompetitions] = useState<any[]>([]);
+  const [competitions, setCompetitions] = useState<Array<{ id: string; title: string }>>([]);
 
-  const fetchParticipants = async () => {
+  const fetchParticipants = useCallback(async () => {
     try {
       setLoading(true);
       const res = await AdminCBTAPI.listParticipants({ page, search });
       setParticipants(res.data);
       setMeta(res.meta);
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal memuat peserta");
     } finally {
       setLoading(false);
     }
-  };
+  }, [page, search]);
 
   const loadFilterData = async () => {
     try {
@@ -1654,12 +1668,14 @@ function ParticipantsView() {
       setExams(examList.data);
       setRegisteredUsers(regUsers);
       setCompetitions(compList.data || compList);
-    } catch (err) {}
+    } catch {
+      /* ignore */
+    }
   };
 
   useEffect(() => {
     fetchParticipants();
-  }, [page, search]);
+  }, [fetchParticipants]);
 
   useEffect(() => {
     loadFilterData();
@@ -1688,8 +1704,8 @@ function ParticipantsView() {
       setSelectedRegUserId("");
       fetchParticipants();
       loadFilterData(); // Refresh list of available registered users
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Gagal menyimpan peserta");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal menyimpan peserta"));
     }
   };
 
@@ -1712,7 +1728,7 @@ function ParticipantsView() {
       toast.success("Peserta berhasil dihapus");
       fetchParticipants();
       loadFilterData();
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal menghapus peserta");
     }
   };
@@ -1721,7 +1737,14 @@ function ParticipantsView() {
     e.preventDefault();
 
     try {
-      const payload: any = {};
+      const payload: {
+        participantIds?: string[];
+        stageId?: string;
+        examIds?: string[];
+        examId?: string;
+        competitionId?: string;
+        sourceStageId?: string;
+      } = {};
 
       if (assignData.assignType === "exam") {
         if (!assignData.examId) return toast.error("Ujian harus dipilih");
@@ -1759,8 +1782,8 @@ function ParticipantsView() {
       });
 
       fetchParticipants();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Gagal melakukan assignment");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal melakukan assignment"));
     }
   };
 
@@ -2499,7 +2522,7 @@ function QuestionsView() {
   const [examSearch, setExamSearch] = useState("");
   const [debouncedExamSearch, setDebouncedExamSearch] = useState("");
   const [examPage, setExamPage] = useState(1);
-  const [examMeta, setExamMeta] = useState<any>(null);
+  const [examMeta, setExamMeta] = useState<PaginationMeta | null>(null);
   const [showExamDropdown, setShowExamDropdown] = useState(false);
   const [selectedExamTitle, setSelectedExamTitle] = useState("");
 
@@ -2545,7 +2568,9 @@ function QuestionsView() {
           }
         }
       }
-    } catch (err) {}
+    } catch {
+      /* ignore */
+    }
   };
 
   const fetchQuestions = async (examId: string) => {
@@ -2554,7 +2579,7 @@ function QuestionsView() {
       setLoading(true);
       const data = await AdminCBTAPI.listQuestions(examId);
       setQuestions(data);
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal memuat soal");
     } finally {
       setLoading(false);
@@ -2572,7 +2597,11 @@ function QuestionsView() {
   }, [examSearch]);
 
   useEffect(() => {
+    // fetchExams also closes over selectedExamId (to keep the title in sync),
+    // but it must NOT be a dep here: this effect should only re-run when the
+    // page/search changes, exactly as before.
     fetchExams(examPage, debouncedExamSearch);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [examPage, debouncedExamSearch]);
 
   useEffect(() => {
@@ -2628,8 +2657,8 @@ function QuestionsView() {
       }
       setShowModal(false);
       fetchQuestions(selectedExamId);
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Gagal menyimpan soal");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal menyimpan soal"));
     }
   };
 
@@ -2643,7 +2672,7 @@ function QuestionsView() {
     setFormData({
       id: q.id,
       text: q.text,
-      type: q.type as any,
+      type: q.type as "SINGLE_CHOICE" | "ESSAY",
       points: q.points,
       position: q.position,
       options: filledOptions,
@@ -2657,7 +2686,7 @@ function QuestionsView() {
       await AdminCBTAPI.deleteQuestion(id);
       toast.success("Soal berhasil dihapus");
       fetchQuestions(selectedExamId);
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal menghapus soal");
     }
   };
@@ -3276,30 +3305,36 @@ function MonitoringView() {
   const [exams, setExams] = useState<CBTExam[]>([]);
   const [selectedExamId, setSelectedExamId] = useState("");
 
-  const fetchExams = async () => {
+  const fetchExams = useCallback(async () => {
     try {
       const res = await AdminCBTAPI.listExams({ perPage: 100 });
       setExams(res.data);
-    } catch (err) {}
-  };
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
-  const fetchMonitoring = async () => {
+  const fetchMonitoring = useCallback(async () => {
     try {
       const res = await AdminCBTAPI.getMonitoring({ examId: selectedExamId || undefined });
       setMonitoringData(res.data);
-    } catch (err) {}
-  };
+    } catch {
+      /* ignore */
+    }
+  }, [selectedExamId]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchExams();
-  }, []);
+  }, [fetchExams]);
 
   // Poll monitoring data every 5 seconds
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchMonitoring();
     const interval = setInterval(fetchMonitoring, 5000);
     return () => clearInterval(interval);
-  }, [selectedExamId]);
+  }, [fetchMonitoring]);
 
   const formatRemainingTime = (ms: number) => {
     if (ms <= 0) return "Habis";
@@ -3467,20 +3502,22 @@ function ResultsView() {
     try {
       const res = await AdminCBTAPI.listExams({ perPage: 100 });
       setExams(res.data);
-    } catch (err) {}
+    } catch {
+      /* ignore */
+    }
   };
 
-  const fetchResults = async () => {
+  const fetchResults = useCallback(async () => {
     try {
       setLoading(true);
       const res = await AdminCBTAPI.getResults({ examId: selectedExamId || undefined });
       setResults(res.data);
-    } catch (err: any) {
+    } catch {
       toast.error("Gagal memuat hasil ujian");
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedExamId]);
 
   useEffect(() => {
     fetchExams();
@@ -3488,7 +3525,7 @@ function ResultsView() {
 
   useEffect(() => {
     fetchResults();
-  }, [selectedExamId]);
+  }, [fetchResults]);
 
   const handleExport = async () => {
     try {
@@ -3500,7 +3537,7 @@ function ResultsView() {
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
-    } catch (err) {
+    } catch {
       toast.error("Gagal mengekspor hasil");
     }
   };
@@ -3515,7 +3552,7 @@ function ResultsView() {
       document.body.appendChild(link);
       link.click();
       link.parentNode?.removeChild(link);
-    } catch (err) {
+    } catch {
       toast.error("Gagal mengekspor PDF");
     }
   };
@@ -3527,8 +3564,8 @@ function ResultsView() {
       const res = await AdminCBTAPI.recomputeStageRanking(selectedStageId);
       toast.success(`Ranking dihitung untuk ${res.participantsRanked} peserta`);
       fetchResults();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Gagal menghitung ranking");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal menghitung ranking"));
     } finally {
       setRankingLoading(false);
     }
@@ -3545,7 +3582,7 @@ function ResultsView() {
         if (q.answerId) drafts[q.answerId] = String(q.pointsEarned ?? 0);
       });
       setEssayDrafts(drafts);
-    } catch (err) {
+    } catch {
       toast.error("Gagal memuat jawaban esai");
       setGradingAttemptId(null);
     } finally {
@@ -3577,8 +3614,8 @@ function ResultsView() {
         )
       );
       fetchResults();
-    } catch (err: any) {
-      toast.error(err.response?.data?.message || "Gagal menyimpan nilai");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal menyimpan nilai"));
     } finally {
       setSavingAnswerId(null);
     }

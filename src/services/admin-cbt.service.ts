@@ -163,7 +163,7 @@ export interface PaginationMeta {
 
 export const AdminCBTAPI = {
   // Dashboard
-  getDashboard: async (params?: Record<string, any>) => {
+  getDashboard: async (params?: Record<string, unknown>) => {
     const res = await api.get<CBTDashboardData>("/admin/cbt/dashboard", { params });
     return res.data;
   },
@@ -195,7 +195,7 @@ export const AdminCBTAPI = {
   },
 
   // Exams
-  listExams: async (params?: Record<string, any>) => {
+  listExams: async (params?: Record<string, unknown>) => {
     const res = await api.get<{ data: CBTExam[]; meta: PaginationMeta }>("/admin/cbt/exams", {
       params,
     });
@@ -223,7 +223,7 @@ export const AdminCBTAPI = {
   },
 
   // Participants
-  listParticipants: async (params?: Record<string, any>) => {
+  listParticipants: async (params?: Record<string, unknown>) => {
     const res = await api.get<{ data: CBTParticipant[]; meta: PaginationMeta }>(
       "/admin/cbt/participants",
       { params }
@@ -271,7 +271,7 @@ export const AdminCBTAPI = {
   },
 
   // Monitoring
-  getMonitoring: async (params?: Record<string, any>) => {
+  getMonitoring: async (params?: Record<string, unknown>) => {
     const res = await api.get<{
       data: CBTMonitoringData[];
       serverTime: string;
@@ -281,26 +281,26 @@ export const AdminCBTAPI = {
   },
 
   // Results & Export
-  getResults: async (params?: Record<string, any>) => {
+  getResults: async (params?: Record<string, unknown>) => {
     const res = await api.get<{ data: CBTResultData[]; meta: PaginationMeta }>(
       "/admin/cbt/results",
       { params }
     );
     return res.data;
   },
-  exportResultsUrl: (params?: Record<string, any>) => {
+  exportResultsUrl: (params?: Record<string, unknown>) => {
     const token = localStorage.getItem("token");
     const query = new URLSearchParams({ ...params, token: token || "" }).toString();
     return `${import.meta.env.VITE_API_URL}/admin/cbt/results/export?${query}`;
   },
-  exportResults: async (params?: Record<string, any>) => {
+  exportResults: async (params?: Record<string, unknown>) => {
     const res = await api.get("/admin/cbt/results/export", {
       params,
       responseType: "blob",
     });
     return res.data;
   },
-  exportResultsPdf: async (params?: Record<string, any>) => {
+  exportResultsPdf: async (params?: Record<string, unknown>) => {
     const res = await api.get("/admin/cbt/results/export/pdf", {
       params,
       responseType: "blob",
@@ -308,7 +308,7 @@ export const AdminCBTAPI = {
     return res.data;
   },
   listRegisteredUsers: async () => {
-    const res = await api.get<any[]>("/admin/cbt/registered-users");
+    const res = await api.get<unknown[]>("/admin/cbt/registered-users");
     return res.data;
   },
 

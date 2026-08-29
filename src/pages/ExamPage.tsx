@@ -229,7 +229,9 @@ export default function ExamPage() {
                 <button
                   type="button"
                   className="btn secondary"
-                  onClick={() => handleSelectQuestion(payload.attempt.questions[activeIndex - 1].id)}
+                  onClick={() =>
+                    handleSelectQuestion(payload.attempt.questions[activeIndex - 1].id)
+                  }
                 >
                   Sebelumnya
                 </button>
@@ -238,7 +240,9 @@ export default function ExamPage() {
                 <button
                   type="button"
                   className="btn secondary"
-                  onClick={() => handleSelectQuestion(payload.attempt.questions[activeIndex + 1].id)}
+                  onClick={() =>
+                    handleSelectQuestion(payload.attempt.questions[activeIndex + 1].id)
+                  }
                 >
                   Berikutnya
                 </button>
@@ -276,8 +280,8 @@ export default function ExamPage() {
               >
                 {unansweredCount > 0 ? (
                   <span>
-                    Masih ada <b>{unansweredCount}</b> dari {payload.attempt.questions.length}{" "}
-                    soal yang belum diisi.
+                    Masih ada <b>{unansweredCount}</b> dari {payload.attempt.questions.length} soal
+                    yang belum diisi.
                   </span>
                 ) : (
                   <span>

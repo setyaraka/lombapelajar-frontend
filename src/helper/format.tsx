@@ -9,7 +9,7 @@ export const renderFormattedText = (text: string) => {
   if (!text) return "";
 
   // 1. Format superscripts (e.g. n^2, s^2)
-  let formatted = text.replace(/([a-zA-Z0-9\(\)]+)\^([a-zA-Z0-9\(\)\-\+]+)/g, "$1<sup>$2</sup>");
+  let formatted = text.replace(/([a-zA-Z0-9()]+)\^([a-zA-Z0-9()\-+]+)/g, "$1<sup>$2</sup>");
 
   // 2. Format parenthesized algebraic fractions (e.g. (sin 4x) / (3x))
   // Matches: (expression) / (expression)
