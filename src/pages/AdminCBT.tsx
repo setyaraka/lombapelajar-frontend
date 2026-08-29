@@ -2498,6 +2498,8 @@ function QuestionsView() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!formData.text.trim()) return toast.error("Pertanyaan harus diisi");
+    if (formData.points < 1 || formData.points > 10)
+      return toast.error("Bobot nilai harus antara 1 - 10 poin");
 
     if (formData.type === "SINGLE_CHOICE") {
       const validOptions = formData.options.filter((o) => o.text.trim());
@@ -3022,10 +3024,13 @@ function QuestionsView() {
                 </label>
                 <input
                   type="number"
+                  min={1}
+                  max={10}
                   value={formData.points}
-                  onChange={(e) =>
-                    setFormData({ ...formData, points: parseInt(e.target.value) || 0 })
-                  }
+                  onChange={(e) => {
+                    const parsed = parseInt(e.target.value) || 1;
+                    setFormData({ ...formData, points: Math.min(10, Math.max(1, parsed)) });
+                  }}
                   style={{
                     width: "120px",
                     padding: "0.6rem",
