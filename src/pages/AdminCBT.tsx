@@ -2519,7 +2519,15 @@ function QuestionsView() {
 
   const fetchExams = async (pageNum: number, searchStr: string) => {
     try {
-      const res = await AdminCBTAPI.listExams({ page: pageNum, perPage: 5, search: searchStr });
+      // sortBy: "updatedAt" - picker Bank Soal ini mau ujian yang baru
+      // saja diedit muncul di paling atas (beda dari tabel Jadwal & Ujian
+      // yang tetap default urut startAt, lihat listExams di backend).
+      const res = await AdminCBTAPI.listExams({
+        page: pageNum,
+        perPage: 5,
+        search: searchStr,
+        sortBy: "updatedAt",
+      });
       setExams(res.data);
       setExamMeta(res.meta);
       if (res.data.length > 0) {
