@@ -15,7 +15,7 @@ import { uploadCreation } from "../services/registration.service";
 import toast from "react-hot-toast";
 import { Helmet } from "react-helmet-async";
 import { useAuth } from "../auth/useAuth";
-import { ExamAPI } from "../services/exam.service";
+import { ExamAPI, type ExamScheduleItem } from "../services/exam.service";
 import { ExamResume } from "../components/exam/ExamResume";
 
 type ApiError = {
@@ -25,6 +25,16 @@ type ApiError = {
     };
   };
 };
+
+function formatDateTime(date: string) {
+  return new Date(date).toLocaleString("id-ID", {
+    day: "numeric",
+    month: "long",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
+}
 
 export default function CompetitionDetail() {
   const { id } = useParams();
@@ -37,7 +47,7 @@ export default function CompetitionDetail() {
 
   const [loading, setLoading] = useState(true);
   const [downloadJuknisLoading, setDownloadJuknisLoading] = useState(false);
-  const [startExamLoading, setStartExamLoading] = useState(false);
+  const [startExamLoadingId, setStartExamLoadingId] = useState<string | null>(null);
 
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
@@ -62,29 +72,29 @@ export default function CompetitionDetail() {
     setShowViewAnnouncementModal(true);
   };
 
-  const handleStartExam = async () => {
-    if (!competition?.examStatus) return;
+  const handleStartExam = async (exam: ExamScheduleItem) => {
+    if (!competition) return;
 
     if (!user) {
       navigate("/login");
       return;
     }
 
-    if (competition.examStatus.status === "FINISHED") {
+    if (exam.status === "FINISHED") {
       navigate(`/competition/${competition.id}/announcement`);
       return;
     }
 
     try {
-      setStartExamLoading(true);
-      const data = await ExamAPI.startAttempt(competition.id);
+      setStartExamLoadingId(exam.examId);
+      const data = await ExamAPI.startAttempt(competition.id, exam.examId);
       ExamResume.remember({ attemptId: data.attempt.id, competitionId: competition.id });
       navigate(`/exam/${data.attempt.id}`);
     } catch (err) {
       const message = err instanceof Error ? err.message : "Gagal memulai ujian";
       toast.error(message);
     } finally {
-      setStartExamLoading(false);
+      setStartExamLoadingId(null);
     }
   };
 
@@ -718,26 +728,6 @@ export default function CompetitionDetail() {
                 <button className="btn width" onClick={handleOpenViewAnnouncementModal}>
                   Lihat Pengumuman
                 </button>
-                {competition.examStatus && (
-                  <LoadingButton
-                    className="btn width"
-                    loading={startExamLoading}
-                    disabled={
-                      startExamLoading ||
-                      competition.examStatus.status === "NOT_STARTED" ||
-                      competition.examStatus.status === "SCHEDULE_ENDED"
-                    }
-                    onClick={handleStartExam}
-                  >
-                    {competition.examStatus.status === "IN_PROGRESS" ? "Lanjutkan Ujian" : ""}
-                    {competition.examStatus.status === "AVAILABLE" ? "Mulai Ujian" : ""}
-                    {competition.examStatus.status === "FINISHED" ? "Lihat Hasil Ujian" : ""}
-                    {competition.examStatus.status === "NOT_STARTED" ? "Belum Memenuhi Jadwal" : ""}
-                    {competition.examStatus.status === "SCHEDULE_ENDED"
-                      ? "Jadwal Ujian Berakhir"
-                      : ""}
-                  </LoadingButton>
-                )}
                 {user?.role === "ADMIN" && (
                   <button className="btn width" onClick={handleOpenAnnouncementModal}>
                     Atur Pengumuman
@@ -807,6 +797,53 @@ export default function CompetitionDetail() {
                 ))}
               </ul>
             </div>
+
+            {competition.examSchedule.length > 0 && (
+              <div className="detail-card">
+                <h3>Jadwal Ujian</h3>
+                {competition.examSchedule.map((exam) => (
+                  <div
+                    key={exam.examId}
+                    className="mt-1"
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      gap: "0.75rem",
+                      flexWrap: "wrap",
+                      borderBottom: "1px solid #e2e8f0",
+                      paddingBottom: "0.75rem",
+                      marginBottom: "0.75rem",
+                    }}
+                  >
+                    <div>
+                      <b>{exam.examTitle}</b>
+                      {exam.stageName && <span> ({exam.stageName})</span>}
+                      <div style={{ fontSize: "0.85rem", color: "#64748b" }}>
+                        {formatDateTime(exam.startAt)} - {formatDateTime(exam.endAt)}
+                      </div>
+                    </div>
+
+                    <LoadingButton
+                      className="btn"
+                      loading={startExamLoadingId === exam.examId}
+                      disabled={
+                        startExamLoadingId !== null ||
+                        exam.status === "NOT_STARTED" ||
+                        exam.status === "SCHEDULE_ENDED"
+                      }
+                      onClick={() => handleStartExam(exam)}
+                    >
+                      {exam.status === "IN_PROGRESS" ? "Lanjutkan Ujian" : ""}
+                      {exam.status === "AVAILABLE" ? "Mulai Ujian" : ""}
+                      {exam.status === "FINISHED" ? "Lihat Hasil Ujian" : ""}
+                      {exam.status === "NOT_STARTED" ? "Belum Memenuhi Jadwal" : ""}
+                      {exam.status === "SCHEDULE_ENDED" ? "Jadwal Ujian Berakhir" : ""}
+                    </LoadingButton>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           {/* TIMELINE */}

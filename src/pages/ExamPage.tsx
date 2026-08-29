@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import toast from "react-hot-toast";
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 import Loading from "../components/Loading";
 import ExamTimer from "../components/exam/ExamTimer";
 import QuestionNavigator from "../components/exam/QuestionNavigator";
@@ -28,6 +29,7 @@ export default function ExamPage() {
   const [activeQuestionId, setActiveQuestionId] = useState("");
   const [answers, setAnswers] = useState<Record<string, AnswerValue>>({});
   const [savedAtMap, setSavedAtMap] = useState<Record<string, string>>({});
+  const [showSubmitConfirm, setShowSubmitConfirm] = useState(false);
 
   const guard = useExamGuard();
   const autosave = useAnswerAutosave(attemptId || "", (questionId, savedAt) => {
@@ -72,6 +74,14 @@ export default function ExamPage() {
   }, [activeQuestionId, payload]);
 
   const activeQuestion = payload?.attempt.questions[activeIndex] || null;
+
+  const answeredCount = payload
+    ? payload.attempt.questions.filter((question) => {
+        const answer = answers[question.id];
+        return Array.isArray(answer) ? answer.length > 0 : Boolean(answer);
+      }).length
+    : 0;
+  const unansweredCount = payload ? payload.attempt.questions.length - answeredCount : 0;
 
   const handleSelectQuestion = (questionId: string) => {
     setActiveQuestionId(questionId);
@@ -128,6 +138,24 @@ export default function ExamPage() {
             <p className="exam-eyebrow">Ujian</p>
             <h1>{payload.exam.title}</h1>
           </div>
+
+          {/* Aksi global (bukan per-soal), sengaja ditaruh di topbar yang
+              sticky supaya selalu terlihat tanpa perlu scroll melewati
+              panel Nomor Soal - terutama saat jumlah soalnya banyak. */}
+          <div className="exam-topbar-submit">
+            <span className="exam-topbar-submit-count">
+              {answeredCount} dari {payload.attempt.questions.length} soal terjawab
+            </span>
+            <button
+              type="button"
+              className="btn"
+              disabled={submitting}
+              onClick={() => setShowSubmitConfirm(true)}
+            >
+              {submitting ? "Mengumpulkan..." : "Submit Ujian"}
+            </button>
+          </div>
+
           <ExamTimer
             serverTime={payload.serverTime}
             expiredAt={payload.attempt.expiredAt}
@@ -213,14 +241,6 @@ export default function ExamPage() {
               >
                 Berikutnya
               </button>
-              <button
-                type="button"
-                className="btn"
-                disabled={submitting}
-                onClick={() => void submit(false)}
-              >
-                {submitting ? "Mengumpulkan..." : "Submit Ujian"}
-              </button>
             </div>
 
             {savedAtMap[activeQuestion.id] && (
@@ -232,6 +252,67 @@ export default function ExamPage() {
           </section>
         </div>
       </main>
+
+      <Footer />
+
+      {showSubmitConfirm && (
+        <div className="modal-overlay" onClick={() => setShowSubmitConfirm(false)}>
+          <div className="modal exam-submit-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="exam-submit-modal-header">
+              <span
+                className={`exam-submit-modal-icon ${unansweredCount > 0 ? "warning" : "success"}`}
+              >
+                {unansweredCount > 0 ? "!" : "✓"}
+              </span>
+              <h3>Kumpulkan Ujian?</h3>
+              <p>Periksa kembali sebelum mengumpulkan jawaban Anda.</p>
+            </div>
+
+            <div className="modal-body">
+              <div
+                className={`exam-submit-modal-alert ${unansweredCount > 0 ? "warning" : "success"}`}
+              >
+                {unansweredCount > 0 ? (
+                  <span>
+                    Masih ada <b>{unansweredCount}</b> dari {payload.attempt.questions.length}{" "}
+                    soal yang belum diisi.
+                  </span>
+                ) : (
+                  <span>
+                    Semua <b>{payload.attempt.questions.length}</b> soal sudah terjawab.
+                  </span>
+                )}
+              </div>
+
+              <p className="exam-submit-modal-note">
+                Setelah dikumpulkan, ujian Anda dianggap selesai dan jawaban{" "}
+                <b>tidak dapat diubah lagi</b>.
+              </p>
+            </div>
+
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn secondary"
+                onClick={() => setShowSubmitConfirm(false)}
+              >
+                Batal
+              </button>
+              <button
+                type="button"
+                className="btn"
+                disabled={submitting}
+                onClick={() => {
+                  setShowSubmitConfirm(false);
+                  void submit(false);
+                }}
+              >
+                {submitting ? "Mengumpulkan..." : "Ya, Kumpulkan Ujian"}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

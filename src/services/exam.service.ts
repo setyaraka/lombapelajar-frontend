@@ -13,6 +13,15 @@ export type ExamStatus = {
   label: string;
 };
 
+// Dipakai di CompetitionDetail untuk menampilkan nama & jadwal tiap ujian
+// yang di-assign ke peserta (1 kompetisi bisa punya beberapa ujian).
+export type ExamScheduleItem = ExamStatus & {
+  examTitle: string;
+  stageName: string | null;
+  startAt: string;
+  endAt: string;
+};
+
 export type QuestionType = "SINGLE_CHOICE" | "MULTIPLE_CHOICE" | "ESSAY";
 
 export type ExamQuestion = {
@@ -85,8 +94,8 @@ const withRetry = async <T>(fn: () => Promise<T>, retries = 2): Promise<T> => {
 };
 
 export const ExamAPI = {
-  startAttempt: async (competitionId: string) => {
-    const res = await api.post<ExamAttemptPayload>("/attempt/start", { competitionId });
+  startAttempt: async (competitionId: string, examId?: string) => {
+    const res = await api.post<ExamAttemptPayload>("/attempt/start", { competitionId, examId });
     return res.data;
   },
 
