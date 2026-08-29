@@ -80,10 +80,8 @@ export default function CompetitionDetail() {
       return;
     }
 
-    if (exam.status === "FINISHED") {
-      navigate(`/competition/${competition.id}/announcement`);
-      return;
-    }
+    // FINISHED tidak lagi lewat sini - tombolnya sudah diganti badge status
+    // di JSX, hasil ujian dilihat lewat tombol "Lihat Pengumuman".
 
     try {
       setStartExamLoadingId(exam.examId);
@@ -824,22 +822,28 @@ export default function CompetitionDetail() {
                       </div>
                     </div>
 
-                    <LoadingButton
-                      className="btn"
-                      loading={startExamLoadingId === exam.examId}
-                      disabled={
-                        startExamLoadingId !== null ||
-                        exam.status === "NOT_STARTED" ||
-                        exam.status === "SCHEDULE_ENDED"
-                      }
-                      onClick={() => handleStartExam(exam)}
-                    >
-                      {exam.status === "IN_PROGRESS" ? "Lanjutkan Ujian" : ""}
-                      {exam.status === "AVAILABLE" ? "Mulai Ujian" : ""}
-                      {exam.status === "FINISHED" ? "Lihat Hasil Ujian" : ""}
-                      {exam.status === "NOT_STARTED" ? "Belum Memenuhi Jadwal" : ""}
-                      {exam.status === "SCHEDULE_ENDED" ? "Jadwal Ujian Berakhir" : ""}
-                    </LoadingButton>
+                    {exam.status === "FINISHED" ? (
+                      // Hasil ujian dilihat lewat tombol "Lihat Pengumuman" yang
+                      // sudah ada di halaman ini - jadi di sini cukup info status,
+                      // tidak perlu tombol lagi yang menuju halaman yang sama.
+                      <span className="badge exam-status finished">Ujian telah dilaksanakan</span>
+                    ) : (
+                      <LoadingButton
+                        className="btn"
+                        loading={startExamLoadingId === exam.examId}
+                        disabled={
+                          startExamLoadingId !== null ||
+                          exam.status === "NOT_STARTED" ||
+                          exam.status === "SCHEDULE_ENDED"
+                        }
+                        onClick={() => handleStartExam(exam)}
+                      >
+                        {exam.status === "IN_PROGRESS" ? "Lanjutkan Ujian" : ""}
+                        {exam.status === "AVAILABLE" ? "Mulai Ujian" : ""}
+                        {exam.status === "NOT_STARTED" ? "Belum Memenuhi Jadwal" : ""}
+                        {exam.status === "SCHEDULE_ENDED" ? "Jadwal Ujian Berakhir" : ""}
+                      </LoadingButton>
+                    )}
                   </div>
                 ))}
               </div>

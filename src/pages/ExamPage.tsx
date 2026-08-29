@@ -225,22 +225,24 @@ export default function ExamPage() {
             )}
 
             <div className="exam-actions">
-              <button
-                type="button"
-                className="btn secondary"
-                disabled={activeIndex <= 0}
-                onClick={() => handleSelectQuestion(payload.attempt.questions[activeIndex - 1].id)}
-              >
-                Sebelumnya
-              </button>
-              <button
-                type="button"
-                className="btn secondary"
-                disabled={activeIndex >= payload.attempt.questions.length - 1}
-                onClick={() => handleSelectQuestion(payload.attempt.questions[activeIndex + 1].id)}
-              >
-                Berikutnya
-              </button>
+              {activeIndex > 0 && (
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={() => handleSelectQuestion(payload.attempt.questions[activeIndex - 1].id)}
+                >
+                  Sebelumnya
+                </button>
+              )}
+              {activeIndex < payload.attempt.questions.length - 1 && (
+                <button
+                  type="button"
+                  className="btn secondary"
+                  onClick={() => handleSelectQuestion(payload.attempt.questions[activeIndex + 1].id)}
+                >
+                  Berikutnya
+                </button>
+              )}
             </div>
 
             {savedAtMap[activeQuestion.id] && (
