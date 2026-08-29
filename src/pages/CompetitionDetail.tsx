@@ -795,13 +795,15 @@ export default function CompetitionDetail() {
             <div className="detail-card">
               <h3>Deskripsi</h3>
               <p style={{ whiteSpace: "pre-line" }}>{competition.description}</p>
-              <LoadingButton
-                onClick={handleDownloadJuknis}
-                loading={downloadJuknisLoading}
-                className="btn width"
-              >
-                Download Juknis
-              </LoadingButton>
+              {competition.juknis && (
+                <LoadingButton
+                  onClick={handleDownloadJuknis}
+                  loading={downloadJuknisLoading}
+                  className="btn width"
+                >
+                  Download Juknis
+                </LoadingButton>
+              )}
             </div>
 
             <div className="detail-card">
