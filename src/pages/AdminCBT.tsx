@@ -247,7 +247,16 @@ function DashboardView() {
         </div>
       </div>
 
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "1rem", marginBottom: "1.5rem" }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "1rem",
+          marginBottom: "1.5rem",
+        }}
+      >
         <h3 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0f172a", margin: 0 }}>
           Statistik Jumlah Peserta Per Ujian
         </h3>
@@ -308,7 +317,14 @@ function DashboardView() {
         <div style={{ padding: "2rem 0", color: "#64748b" }}>Memperbarui daftar...</div>
       ) : (
         <>
-          <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden", marginBottom: "1rem" }}>
+          <div
+            style={{
+              border: "1px solid #e2e8f0",
+              borderRadius: "12px",
+              overflow: "hidden",
+              marginBottom: "1rem",
+            }}
+          >
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
               <thead>
                 <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
@@ -328,10 +344,16 @@ function DashboardView() {
                       {renderFormattedText(item.title)}
                     </td>
                     <td style={{ padding: "1rem", color: "#64748b", fontSize: "0.875rem" }}>
-                      {new Date(item.startAt).toLocaleString("id-ID")} s/d {new Date(item.endAt).toLocaleString("id-ID")}
+                      {new Date(item.startAt).toLocaleString("id-ID")} s/d{" "}
+                      {new Date(item.endAt).toLocaleString("id-ID")}
                     </td>
                     <td
-                      style={{ padding: "1rem", textAlign: "right", fontWeight: 700, color: "#2EC4B6" }}
+                      style={{
+                        padding: "1rem",
+                        textAlign: "right",
+                        fontWeight: 700,
+                        color: "#2EC4B6",
+                      }}
                     >
                       {item.participants}
                     </td>
@@ -339,7 +361,10 @@ function DashboardView() {
                 ))}
                 {listData.length === 0 && (
                   <tr>
-                    <td colSpan={4} style={{ padding: "3rem", textAlign: "center", color: "#64748b" }}>
+                    <td
+                      colSpan={4}
+                      style={{ padding: "3rem", textAlign: "center", color: "#64748b" }}
+                    >
                       Tidak ada data ujian aktif atau yang memenuhi kriteria pencarian.
                     </td>
                   </tr>
@@ -350,7 +375,14 @@ function DashboardView() {
 
           {/* Pagination Controls */}
           {listMeta && listMeta.totalPages > 1 && (
-            <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem", marginTop: "1rem" }}>
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                gap: "0.5rem",
+                marginTop: "1rem",
+              }}
+            >
               <button
                 disabled={page <= 1}
                 onClick={() => setPage(page - 1)}
@@ -748,7 +780,7 @@ function ExamsView() {
     try {
       const data = await AdminCBTAPI.listStages();
       setStages(data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const fetchCompetitions = async (pageNum: number, searchStr: string) => {
@@ -761,7 +793,7 @@ function ExamsView() {
         total: res.total,
         totalPages: res.totalPages,
       });
-    } catch (err) { }
+    } catch (err) {}
   };
 
   // Debounce for Exam Search
@@ -1019,8 +1051,18 @@ function ExamsView() {
                       }}
                     >
                       <td style={{ padding: "1rem" }}>
-                        <div style={{ fontWeight: 700, color: "#0f172a" }}>{renderFormattedText(exam.title)}</div>
-                        <div style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.15rem", maxWidth: "400px", lineHeight: "1.3" }}>
+                        <div style={{ fontWeight: 700, color: "#0f172a" }}>
+                          {renderFormattedText(exam.title)}
+                        </div>
+                        <div
+                          style={{
+                            fontSize: "0.8rem",
+                            color: "#64748b",
+                            marginTop: "0.15rem",
+                            maxWidth: "400px",
+                            lineHeight: "1.3",
+                          }}
+                        >
                           {exam.description || "Tidak ada deskripsi"}
                         </div>
                         {exam.competition && (
@@ -1037,35 +1079,47 @@ function ExamsView() {
                         )}
                       </td>
                       <td style={{ padding: "1rem" }}>
-                        <span style={{
-                          fontSize: "0.85rem",
-                          fontWeight: 500,
-                          color: "#475569",
-                          backgroundColor: "#f1f5f9",
-                          padding: "0.25rem 0.6rem",
-                          borderRadius: "6px"
-                        }}>
+                        <span
+                          style={{
+                            fontSize: "0.85rem",
+                            fontWeight: 500,
+                            color: "#475569",
+                            backgroundColor: "#f1f5f9",
+                            padding: "0.25rem 0.6rem",
+                            borderRadius: "6px",
+                          }}
+                        >
                           {exam.stage?.name || "-"}
                         </span>
                       </td>
                       <td style={{ padding: "1rem" }}>
-                        <div style={{ fontWeight: 600, color: "#334155", fontSize: "0.9rem" }}>{formattedDate}</div>
-                        <div style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.05rem" }}>{formattedTime} WIB</div>
+                        <div style={{ fontWeight: 600, color: "#334155", fontSize: "0.9rem" }}>
+                          {formattedDate}
+                        </div>
+                        <div
+                          style={{ fontSize: "0.75rem", color: "#64748b", marginTop: "0.05rem" }}
+                        >
+                          {formattedTime} WIB
+                        </div>
                       </td>
                       <td style={{ padding: "1rem" }}>
-                        <span style={{ fontWeight: 600, color: "#334155" }}>{exam.durationMinutes}</span>{" "}
+                        <span style={{ fontWeight: 600, color: "#334155" }}>
+                          {exam.durationMinutes}
+                        </span>{" "}
                         <span style={{ color: "#64748b", fontSize: "0.8rem" }}>menit</span>
                       </td>
                       <td style={{ padding: "1rem" }}>
-                        <span style={{
-                          display: "inline-block",
-                          padding: "0.25rem 0.5rem",
-                          borderRadius: "6px",
-                          backgroundColor: "#ecfeff",
-                          fontWeight: 700,
-                          color: "#0891b2",
-                          fontSize: "0.85rem"
-                        }}>
+                        <span
+                          style={{
+                            display: "inline-block",
+                            padding: "0.25rem 0.5rem",
+                            borderRadius: "6px",
+                            backgroundColor: "#ecfeff",
+                            fontWeight: 700,
+                            color: "#0891b2",
+                            fontSize: "0.85rem",
+                          }}
+                        >
                           {exam._count?.questions || 0} soal
                         </span>
                       </td>
@@ -1600,7 +1654,7 @@ function ParticipantsView() {
       setExams(examList.data);
       setRegisteredUsers(regUsers);
       setCompetitions(compList.data || compList);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -2205,16 +2259,32 @@ function ParticipantsView() {
                   Tipe Target
                 </label>
                 <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                      cursor: "pointer",
+                    }}
+                  >
                     <input
                       type="radio"
                       name="assignType"
                       checked={assignData.assignType === "stage_competition"}
-                      onChange={() => setAssignData({ ...assignData, assignType: "stage_competition" })}
+                      onChange={() =>
+                        setAssignData({ ...assignData, assignType: "stage_competition" })
+                      }
                     />
                     Babak & Lomba (Rekomendasi)
                   </label>
-                  <label style={{ display: "flex", alignItems: "center", gap: "0.25rem", cursor: "pointer" }}>
+                  <label
+                    style={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.25rem",
+                      cursor: "pointer",
+                    }}
+                  >
                     <input
                       type="radio"
                       name="assignType"
@@ -2258,7 +2328,9 @@ function ParticipantsView() {
                     </label>
                     <select
                       value={assignData.competitionId}
-                      onChange={(e) => setAssignData({ ...assignData, competitionId: e.target.value })}
+                      onChange={(e) =>
+                        setAssignData({ ...assignData, competitionId: e.target.value })
+                      }
                       style={{
                         width: "100%",
                         padding: "0.6rem",
@@ -2348,7 +2420,9 @@ function ParticipantsView() {
                   </label>
                   <select
                     value={assignData.sourceStageId}
-                    onChange={(e) => setAssignData({ ...assignData, sourceStageId: e.target.value })}
+                    onChange={(e) =>
+                      setAssignData({ ...assignData, sourceStageId: e.target.value })
+                    }
                     style={{
                       width: "100%",
                       padding: "0.6rem",
@@ -2451,15 +2525,19 @@ function QuestionsView() {
       if (res.data.length > 0) {
         if (!selectedExamId) {
           setSelectedExamId(res.data[0].id);
-          setSelectedExamTitle(`${res.data[0].title}${res.data[0].competition ? ` - ${res.data[0].competition.title}` : ""}`);
+          setSelectedExamTitle(
+            `${res.data[0].title}${res.data[0].competition ? ` - ${res.data[0].competition.title}` : ""}`
+          );
         } else {
           const current = res.data.find((e) => e.id === selectedExamId);
           if (current) {
-            setSelectedExamTitle(`${current.title}${current.competition ? ` - ${current.competition.title}` : ""}`);
+            setSelectedExamTitle(
+              `${current.title}${current.competition ? ` - ${current.competition.title}` : ""}`
+            );
           }
         }
       }
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const fetchQuestions = async (examId: string) => {
@@ -2509,7 +2587,9 @@ function QuestionsView() {
     }
 
     if (formData.type === "ESSAY" && !formData.options[0]?.text.trim()) {
-      return toast.error("Isi kunci jawaban untuk soal esai (dipakai sistem untuk menilai otomatis)");
+      return toast.error(
+        "Isi kunci jawaban untuk soal esai (dipakai sistem untuk menilai otomatis)"
+      );
     }
 
     try {
@@ -2636,7 +2716,8 @@ function QuestionsView() {
                   border: "1px solid #cbd5e1",
                   borderRadius: "8px",
                   marginTop: "4px",
-                  boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+                  boxShadow:
+                    "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
                   padding: "0.75rem",
                 }}
               >
@@ -2659,7 +2740,15 @@ function QuestionsView() {
                   }}
                 />
 
-                <div style={{ display: "flex", flexDirection: "column", gap: "2px", maxHeight: "200px", overflowY: "auto" }}>
+                <div
+                  style={{
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: "2px",
+                    maxHeight: "200px",
+                    overflowY: "auto",
+                  }}
+                >
                   {exams.map((exam) => {
                     const titleWithComp = `${exam.title}${exam.competition ? ` - ${exam.competition.title}` : ""}`;
                     return (
@@ -2683,14 +2772,31 @@ function QuestionsView() {
                     );
                   })}
                   {exams.length === 0 && (
-                    <div style={{ padding: "0.5rem 0.75rem", fontSize: "0.875rem", color: "#64748b", textAlign: "center" }}>
+                    <div
+                      style={{
+                        padding: "0.5rem 0.75rem",
+                        fontSize: "0.875rem",
+                        color: "#64748b",
+                        textAlign: "center",
+                      }}
+                    >
                       Tidak ditemukan ujian
                     </div>
                   )}
                 </div>
 
                 {examMeta && examMeta.totalPages > 1 && (
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: "0.75rem", borderTop: "1px solid #f1f5f9", paddingTop: "0.5rem", fontSize: "0.75rem" }}>
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginTop: "0.75rem",
+                      borderTop: "1px solid #f1f5f9",
+                      paddingTop: "0.5rem",
+                      fontSize: "0.75rem",
+                    }}
+                  >
                     <button
                       type="button"
                       disabled={examPage <= 1}
@@ -2708,7 +2814,9 @@ function QuestionsView() {
                     >
                       Prev
                     </button>
-                    <span>Hal {examPage} dari {examMeta.totalPages}</span>
+                    <span>
+                      Hal {examPage} dari {examMeta.totalPages}
+                    </span>
                     <button
                       type="button"
                       disabled={examPage >= examMeta.totalPages}
@@ -3109,8 +3217,8 @@ function QuestionsView() {
                   />
                   <p style={{ fontSize: "0.8rem", color: "#64748b", marginTop: "0.4rem" }}>
                     Sistem menilai otomatis dengan mencocokkan persis (termasuk huruf besar/kecil
-                    dan spasi) jawaban peserta dengan kunci ini. Kalau tidak cocok tapi menurut
-                    kamu sebenarnya benar, nilainya bisa dikoreksi manual di halaman Hasil Ujian.
+                    dan spasi) jawaban peserta dengan kunci ini. Kalau tidak cocok tapi menurut kamu
+                    sebenarnya benar, nilainya bisa dikoreksi manual di halaman Hasil Ujian.
                   </p>
                 </div>
               )}
@@ -3164,14 +3272,14 @@ function MonitoringView() {
     try {
       const res = await AdminCBTAPI.listExams({ perPage: 100 });
       setExams(res.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const fetchMonitoring = async () => {
     try {
       const res = await AdminCBTAPI.getMonitoring({ examId: selectedExamId || undefined });
       setMonitoringData(res.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   useEffect(() => {
@@ -3351,7 +3459,7 @@ function ResultsView() {
     try {
       const res = await AdminCBTAPI.listExams({ perPage: 100 });
       setExams(res.data);
-    } catch (err) { }
+    } catch (err) {}
   };
 
   const fetchResults = async () => {
@@ -3711,8 +3819,7 @@ function ResultsView() {
                       Kunci jawaban: <strong>{q.answerKey ?? "(belum diisi)"}</strong>
                     </div>
                     <div style={{ fontSize: "0.85rem", marginBottom: "0.75rem" }}>
-                      Jawaban peserta:{" "}
-                      <strong>{q.submittedAnswer || "(tidak dijawab)"}</strong>
+                      Jawaban peserta: <strong>{q.submittedAnswer || "(tidak dijawab)"}</strong>
                       {q.isCorrect !== null && (
                         <span
                           style={{
