@@ -733,6 +733,16 @@ textarea:focus {
   box-shadow: 0 0 0 3px rgba(46, 196, 182, .2);
 }
 
+/* input, select, textarea di atas set width: 100% & padding: 12px untuk
+   semua <input> - ini salah untuk radio/checkbox (bukan text field), bikin
+   hitbox-nya melebar mengisi flex row dan mendorong teks labelnya jauh ke
+   kanan. Reset khusus dua tipe ini supaya ukurannya balik natural. */
+input[type="radio"],
+input[type="checkbox"] {
+  width: auto;
+  padding: 0;
+}
+
 .input-error {
   border: 1px solid #e5484d !important;
   background: #fff5f5;
@@ -2572,10 +2582,13 @@ input[type="file"] {
 /* Dirender lewat portalId (lihat CreateCompetitionModal) supaya popper
    kalender tidak ikut jadi grid item di dalam .form-grid (yang sebelumnya
    menggeser layout, mis. gambar poster, saat kalender dibuka). Karena
-   dipindah ke document.body, perlu z-index eksplisit di atas .modal-overlay
-   (999) supaya tetap tampil di depan modal. */
+   dipindah ke document.body, perlu z-index eksplisit di atas overlay modal
+   manapun. .modal-overlay (CreateCompetitionModal) pakai 999, tapi modal-modal
+   di AdminCBT.tsx (mis. "Buat Ujian") pakai z-index inline 1000 - jadi z-index
+   1000 di sini masih seri/kalah (urutan DOM menentukan siapa menang saat seri).
+   Dinaikkan cukup jauh di atas keduanya. */
 .react-datepicker-popper {
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .react-datepicker__header {

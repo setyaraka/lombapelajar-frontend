@@ -1177,7 +1177,7 @@ function ExamsView() {
             display: "flex",
             justifyContent: "center",
             alignItems: "center",
-            zIndex: 1000,
+            zIndex: 100,
           }}
         >
           <div
@@ -1763,8 +1763,16 @@ function ParticipantsView() {
           </div>
           <button
             onClick={() => {
-              setAssignData({
-                participantIds: [],
+              // Peserta yang sudah dicentang (via checkbox "Pilih" di tabel)
+              // dipertahankan di sini - dulu di-reset ke [] setiap tombol ini
+              // diklik, jadi centangan dari tabel selalu hilang sebelum modal
+              // sempat dipakai (FACT, kode sebelumnya).
+              if (assignData.participantIds.length === 0) {
+                toast.error("Pilih minimal satu peserta terlebih dahulu");
+                return;
+              }
+              setAssignData((prev) => ({
+                ...prev,
                 examIds: [],
                 stageId: "",
                 examId: "",
@@ -1772,11 +1780,11 @@ function ParticipantsView() {
                 assignType: "stage_competition",
                 competitionId: "",
                 sourceStageId: "",
-              });
+              }));
               setShowAssignModal(true);
             }}
             style={{
-              backgroundColor: "#3b82f6",
+              backgroundColor: assignData.participantIds.length === 0 ? "#93c5fd" : "#3b82f6",
               color: "#fff",
               border: "none",
               padding: "0.6rem 1.4rem",
@@ -1788,15 +1796,22 @@ function ParticipantsView() {
               boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
             }}
             onMouseEnter={(e) => {
+              if (assignData.participantIds.length === 0) return;
               e.currentTarget.style.backgroundColor = "#2563eb";
               e.currentTarget.style.transform = "translateY(-1px)";
             }}
             onMouseLeave={(e) => {
+              if (assignData.participantIds.length === 0) return;
               e.currentTarget.style.backgroundColor = "#3b82f6";
               e.currentTarget.style.transform = "translateY(0)";
             }}
+            title={
+              assignData.participantIds.length === 0
+                ? "Pilih minimal satu peserta di tabel terlebih dahulu"
+                : undefined
+            }
           >
-            Assign Ujian
+            Assign Ujian ({assignData.participantIds.length})
           </button>
           <button
             onClick={() => {
@@ -2178,7 +2193,7 @@ function ParticipantsView() {
               padding: "2rem",
               borderRadius: "16px",
               width: "100%",
-              maxWidth: "480px",
+              maxWidth: "560px",
             }}
           >
             <h3 style={{ fontSize: "1.25rem", fontWeight: 700, marginBottom: "1.5rem" }}>
