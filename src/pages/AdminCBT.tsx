@@ -1,8 +1,10 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import { AdminCBTAPI } from "../services/admin-cbt.service";
 import { getCompetitions } from "../services/competition.service";
+import Pagination from "../components/Pagination";
+import RowsPerPage from "../components/RowsPerPage";
 import { renderFormattedText } from "../helper/format";
 import type {
   CBTDashboardData,
@@ -187,6 +189,165 @@ function ExamPickerDropdown({
                 }}
               >
                 Tidak ditemukan ujian
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
+// Dropdown filter generik bergaya sama seperti ExamPickerDropdown di atas
+// (klik untuk buka, ada pencarian, list bisa di-scroll) - dipakai untuk
+// filter Lomba/Tahap/Status di Manajemen Peserta supaya tampilannya
+// konsisten dengan dropdown ujian, bukan <select> bawaan browser yang kena
+// aturan CSS global "select { width: 100% }" (makanya sebelumnya melebar
+// penuh dan berantakan).
+function FilterDropdown({
+  options,
+  value,
+  onChange,
+  allLabel,
+  searchPlaceholder = "Cari...",
+}: {
+  options: { value: string; label: string }[];
+  value: string;
+  onChange: (value: string) => void;
+  allLabel: string;
+  searchPlaceholder?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Klik di luar area dropdown (trigger + panel) menutupnya, sama seperti
+  // dropdown filter/pencarian pada umumnya.
+  useEffect(() => {
+    if (!open) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [open]);
+
+  const selected = options.find((o) => o.value === value);
+  const triggerLabel = selected ? selected.label : allLabel;
+
+  const filtered = options.filter((o) => o.label.toLowerCase().includes(search.toLowerCase()));
+
+  return (
+    <div ref={containerRef} style={{ position: "relative", zIndex: open ? 40 : 1 }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          padding: "0.55rem 0.9rem",
+          borderRadius: "8px",
+          border: "1px solid #cbd5e1",
+          fontSize: "0.85rem",
+          fontWeight: 600,
+          backgroundColor: "#fff",
+          cursor: "pointer",
+          display: "flex",
+          gap: "0.5rem",
+          alignItems: "center",
+          minWidth: "200px",
+          justifyContent: "space-between",
+          color: "#0f172a",
+        }}
+      >
+        <span>{triggerLabel}</span>
+        <span style={{ fontSize: "0.7rem", color: "#64748b" }}>▼</span>
+      </div>
+
+      {open && (
+        <div
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            width: "100%",
+            minWidth: "240px",
+            backgroundColor: "#fff",
+            border: "1px solid #cbd5e1",
+            borderRadius: "8px",
+            marginTop: "4px",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+            padding: "0.75rem",
+          }}
+        >
+          <input
+            type="text"
+            placeholder={searchPlaceholder}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              padding: "0.5rem 0.75rem",
+              borderRadius: "6px",
+              border: "1px solid #cbd5e1",
+              marginBottom: "0.5rem",
+              fontSize: "0.875rem",
+            }}
+          />
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "2px",
+              maxHeight: "220px",
+              overflowY: "auto",
+            }}
+          >
+            <div
+              onClick={() => {
+                onChange("");
+                setOpen(false);
+              }}
+              style={{
+                padding: "0.5rem 0.75rem",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                backgroundColor: value === "" ? "#f1f5f9" : "transparent",
+              }}
+            >
+              {allLabel}
+            </div>
+            {filtered.map((option) => (
+              <div
+                key={option.value}
+                onClick={() => {
+                  onChange(option.value);
+                  setOpen(false);
+                }}
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                  backgroundColor: value === option.value ? "#f1f5f9" : "transparent",
+                }}
+              >
+                {option.label}
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  fontSize: "0.875rem",
+                  color: "#64748b",
+                  textAlign: "center",
+                }}
+              >
+                Tidak ditemukan
               </div>
             )}
           </div>
@@ -1760,7 +1921,16 @@ function ParticipantsView() {
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
+
+  // Filter tabel: Lomba, Tahap, dan status assign (sudah/belum di-assign ke
+  // ujian/tahap manapun).
+  const [competitionFilter, setCompetitionFilter] = useState("");
+  const [stageFilter, setStageFilter] = useState("");
+  const [assignedFilter, setAssignedFilter] = useState<"" | "true" | "false">("");
+  const [selectingAll, setSelectingAll] = useState(false);
+  const [allMatchingSelected, setAllMatchingSelected] = useState(false);
 
   const [formData, setFormData] = useState({
     id: "",
@@ -1791,7 +1961,14 @@ function ParticipantsView() {
   const fetchParticipants = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await AdminCBTAPI.listParticipants({ page, search });
+      const res = await AdminCBTAPI.listParticipants({
+        page,
+        perPage,
+        search,
+        competitionId: competitionFilter,
+        stageId: stageFilter,
+        assigned: assignedFilter,
+      });
       setParticipants(res.data);
       setMeta(res.meta);
     } catch {
@@ -1799,7 +1976,7 @@ function ParticipantsView() {
     } finally {
       setLoading(false);
     }
-  }, [page, search]);
+  }, [page, perPage, search, competitionFilter, stageFilter, assignedFilter]);
 
   const loadFilterData = async () => {
     try {
@@ -1821,6 +1998,15 @@ function ParticipantsView() {
   useEffect(() => {
     fetchParticipants();
   }, [fetchParticipants]);
+
+  // "Pilih Semua" mewakili peserta sesuai filter saat itu - kalau filter
+  // berubah, set lama sudah tidak relevan lagi, jadi centangnya dilepas
+  // (seleksi individual yang sudah ada tetap dipertahankan, tidak ikut
+  // direset - konsisten dengan alasan kenapa "Assign Ujian" tidak mereset
+  // participantIds tiap dibuka, lihat komentar di tombolnya).
+  useEffect(() => {
+    setAllMatchingSelected(false);
+  }, [competitionFilter, stageFilter, assignedFilter, search]);
 
   useEffect(() => {
     loadFilterData();
@@ -1942,6 +2128,38 @@ function ParticipantsView() {
           : [...prev.participantIds, id],
       };
     });
+    // Checkbox "Pilih Semua" cuma representasi "semua peserta sesuai filter
+    // saat ini sudah kepilih" - kalau ada satu dicentang manual lagi setelah
+    // itu (menambah di luar hasil filter, atau dibuka lagi setelah unselect),
+    // statusnya tidak lagi akurat sebagai "semua", jadi dilepas centangnya.
+    setAllMatchingSelected(false);
+  };
+
+  // "Pilih Semua" mengambil SEMUA id peserta yang cocok filter aktif
+  // (lintas halaman, lewat endpoint /participants/ids yang tidak
+  // dipaginasi) - bukan cuma yang tampil di halaman ini. Diklik lagi untuk
+  // membatalkan seleksi.
+  const handleToggleSelectAll = async () => {
+    if (allMatchingSelected) {
+      setAssignData((prev) => ({ ...prev, participantIds: [] }));
+      setAllMatchingSelected(false);
+      return;
+    }
+    try {
+      setSelectingAll(true);
+      const ids = await AdminCBTAPI.listParticipantIds({
+        search,
+        competitionId: competitionFilter,
+        stageId: stageFilter,
+        assigned: assignedFilter,
+      });
+      setAssignData((prev) => ({ ...prev, participantIds: ids }));
+      setAllMatchingSelected(true);
+    } catch {
+      toast.error("Gagal memuat semua peserta sesuai filter");
+    } finally {
+      setSelectingAll(false);
+    }
   };
 
   return (
@@ -1957,32 +2175,6 @@ function ParticipantsView() {
       >
         <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>Manajemen Peserta</h2>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
-          <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
-            <Search
-              style={{
-                position: "absolute",
-                left: "12px",
-                color: "#94a3b8",
-                pointerEvents: "none",
-              }}
-              size={18}
-            />
-            <input
-              type="text"
-              placeholder="Cari peserta..."
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              style={{
-                padding: "0.6rem 1rem 0.6rem 2.6rem",
-                borderRadius: "8px",
-                border: "1px solid #cbd5e1",
-                fontSize: "0.9rem",
-                width: "260px",
-                outline: "none",
-                transition: "all 0.2s ease",
-              }}
-            />
-          </div>
           <button
             onClick={() => {
               // Peserta yang sudah dicentang (via checkbox "Pilih" di tabel)
@@ -2076,6 +2268,82 @@ function ParticipantsView() {
         </div>
       </div>
 
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          flexWrap: "wrap",
+          gap: "0.75rem",
+          marginBottom: "1.25rem",
+        }}
+      >
+        <div style={{ position: "relative", display: "flex", alignItems: "center" }}>
+          <Search
+            style={{
+              position: "absolute",
+              left: "12px",
+              color: "#94a3b8",
+              pointerEvents: "none",
+            }}
+            size={18}
+          />
+          <input
+            type="text"
+            placeholder="Cari peserta..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            style={{
+              padding: "0.6rem 1rem 0.6rem 2.6rem",
+              borderRadius: "8px",
+              border: "1px solid #cbd5e1",
+              fontSize: "0.9rem",
+              width: "260px",
+              outline: "none",
+              transition: "all 0.2s ease",
+            }}
+          />
+        </div>
+
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
+          <FilterDropdown
+            allLabel="Semua Lomba"
+            searchPlaceholder="Cari lomba..."
+            value={competitionFilter}
+            onChange={(v) => {
+              setCompetitionFilter(v);
+              setPage(1);
+            }}
+            options={competitions.map((c) => ({ value: c.id, label: c.title }))}
+          />
+
+          <FilterDropdown
+            allLabel="Semua Tahap"
+            searchPlaceholder="Cari tahap..."
+            value={stageFilter}
+            onChange={(v) => {
+              setStageFilter(v);
+              setPage(1);
+            }}
+            options={stages.map((s) => ({ value: s.id, label: s.name }))}
+          />
+
+          <FilterDropdown
+            allLabel="Semua Status"
+            searchPlaceholder="Cari status..."
+            value={assignedFilter}
+            onChange={(v) => {
+              setAssignedFilter(v as "" | "true" | "false");
+              setPage(1);
+            }}
+            options={[
+              { value: "true", label: "Sudah di-assign" },
+              { value: "false", label: "Belum di-assign" },
+            ]}
+          />
+        </div>
+      </div>
+
       {loading ? (
         <div>Memuat data peserta...</div>
       ) : (
@@ -2091,10 +2359,19 @@ function ParticipantsView() {
             <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
               <thead>
                 <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-                  <th style={{ padding: "1rem", width: "40px" }}>Pilih</th>
+                  <th style={{ padding: "1rem", width: "40px" }}>
+                    <input
+                      type="checkbox"
+                      checked={allMatchingSelected}
+                      disabled={selectingAll}
+                      onChange={handleToggleSelectAll}
+                      title="Pilih semua peserta sesuai filter di atas (lintas halaman)"
+                    />
+                  </th>
                   <th style={{ padding: "1rem" }}>No. Peserta</th>
                   <th style={{ padding: "1rem" }}>Nama</th>
                   <th style={{ padding: "1rem" }}>Email</th>
+                  <th style={{ padding: "1rem" }}>Lomba</th>
                   <th style={{ padding: "1rem" }}>Tahap</th>
                   <th style={{ padding: "1rem" }}>Ujian Diikuti</th>
                   <th style={{ padding: "1rem", textAlign: "right" }}>Aksi</th>
@@ -2113,6 +2390,24 @@ function ParticipantsView() {
                     <td style={{ padding: "1rem", fontWeight: 600 }}>{p.participantNumber}</td>
                     <td style={{ padding: "1rem" }}>{p.name}</td>
                     <td style={{ padding: "1rem" }}>{p.email}</td>
+                    <td style={{ padding: "1rem", color: "#64748b" }}>
+                      {(() => {
+                        // Participant tidak punya competitionId langsung -
+                        // lomba ditelusuri lewat Registration milik User yang
+                        // sama (lihat catatan di backend). Di-dedupe karena
+                        // satu user secara teori bisa daftar >1 lomba.
+                        const titles = Array.from(
+                          new Set((p.user?.registrations ?? []).map((r) => r.competition.title))
+                        );
+                        return titles.length > 0 ? (
+                          titles.join(", ")
+                        ) : (
+                          <span style={{ color: "#94a3b8", fontSize: "0.85rem" }}>
+                            Belum terdaftar di lomba manapun
+                          </span>
+                        );
+                      })()}
+                    </td>
                     <td style={{ padding: "1rem" }}>{p.stage?.name || "-"}</td>
                     <td style={{ padding: "1rem" }}>
                       <div style={{ display: "flex", flexWrap: "wrap", gap: "0.25rem" }}>
@@ -2167,39 +2462,23 @@ function ParticipantsView() {
             </table>
           </div>
 
-          {meta && meta.totalPages > 1 && (
-            <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
-              <button
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                Sebelumnya
-              </button>
-              <span style={{ alignSelf: "center" }}>
-                Halaman {page} dari {meta.totalPages}
-              </span>
-              <button
-                disabled={page >= meta.totalPages}
-                onClick={() => setPage(page + 1)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                Berikutnya
-              </button>
-            </div>
-          )}
+          <div className="table-footer">
+            <div></div>
+
+            {meta && meta.totalPages > 1 ? (
+              <Pagination page={page} totalPages={meta.totalPages} onChange={setPage} />
+            ) : (
+              <div></div>
+            )}
+
+            <RowsPerPage
+              value={perPage}
+              onChange={(v) => {
+                setPage(1);
+                setPerPage(v);
+              }}
+            />
+          </div>
         </>
       )}
 

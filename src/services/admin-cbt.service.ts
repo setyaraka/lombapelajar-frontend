@@ -80,8 +80,18 @@ export interface CBTParticipant {
     exam: {
       id: string;
       title: string;
+      competition?: { id: string; title: string } | null;
     };
   }[];
+  // Participant tidak punya competitionId langsung - lomba yang diikuti
+  // ditelusuri lewat Registration milik User yang sama (lihat catatan di
+  // backend cbtRepository.listParticipants). Bisa lebih dari satu kalau
+  // user yang sama daftar di beberapa lomba berbeda.
+  user?: {
+    registrations?: {
+      competition: { id: string; title: string };
+    }[];
+  } | null;
 }
 
 export interface CBTQuestionOption {
@@ -233,6 +243,10 @@ export const AdminCBTAPI = {
       { params }
     );
     return res.data;
+  },
+  listParticipantIds: async (params?: Record<string, unknown>) => {
+    const res = await api.get<{ ids: string[] }>("/admin/cbt/participants/ids", { params });
+    return res.data.ids;
   },
   createParticipant: async (data: Partial<CBTParticipant>) => {
     const res = await api.post<CBTParticipant>("/admin/cbt/participants", data);
