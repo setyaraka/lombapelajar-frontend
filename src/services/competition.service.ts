@@ -1,4 +1,5 @@
 import api from "../api/axios";
+import type { ExamStatus } from "./exam.service";
 
 export type CreateCompetitionPayload = {
   title: string;
@@ -52,6 +53,7 @@ export type CompetitionDetail = {
   qris: string | null;
   registrationStatus: string | null;
   creationFile: string | null;
+  examStatus: ExamStatus | null;
 };
 
 export const getCompetitions = async (params: CompetitionQuery) => {
@@ -89,8 +91,11 @@ export const deleteCompetition = async (id: string) => {
   return res.data;
 };
 
-export const getCompetitionParticipants = async (id: string) => {
-  const res = await api.get(`/competitions/${id}/participants`);
+export const getCompetitionParticipants = async (
+  id: string,
+  params?: { page?: number; perPage?: number }
+) => {
+  const res = await api.get(`/competitions/${id}/participants`, { params });
   return res.data;
 };
 
@@ -104,7 +109,12 @@ export const uploadJuknis = async (id: string, file: File) => {
   return res.data;
 };
 
-export const updateAnnouncement = async (id: string, file: File | null, link: string, clearPoster: boolean) => {
+export const updateAnnouncement = async (
+  id: string,
+  file: File | null,
+  link: string,
+  clearPoster: boolean
+) => {
   const formData = new FormData();
   if (file) {
     formData.append("file", file);

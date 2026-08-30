@@ -37,7 +37,7 @@ export default function Pagination({ page, totalPages, onChange }: Props) {
 
   return (
     <div className="pagination">
-      <button className="nav" disabled={page === 1} onClick={() => onChange(page - 1)}>
+      <button className="pagination-nav" disabled={page === 1} onClick={() => onChange(page - 1)}>
         ‹
       </button>
 
@@ -57,7 +57,11 @@ export default function Pagination({ page, totalPages, onChange }: Props) {
         )
       )}
 
-      <button className="nav" disabled={page === totalPages} onClick={() => onChange(page + 1)}>
+      <button
+        className="pagination-nav"
+        disabled={page === totalPages}
+        onClick={() => onChange(page + 1)}
+      >
         ›
       </button>
     </div>

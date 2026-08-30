@@ -4,6 +4,8 @@ import LoadingButton from "../components/LoadingButton";
 import { useAuth } from "../auth/useAuth";
 import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
+import { ExamResume } from "../components/exam/ExamResume";
+import { ExamAPI } from "../services/exam.service";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -30,6 +32,16 @@ export default function Login() {
       if (loggedInUser.role === "ADMIN") {
         navigate("/admin/participants");
       } else {
+        const activeAttempt = ExamResume.read();
+        if (activeAttempt) {
+          try {
+            await ExamAPI.getCurrentAttempt({ attemptId: activeAttempt.attemptId });
+            navigate(`/exam/${activeAttempt.attemptId}`);
+            return;
+          } catch {
+            ExamResume.forget();
+          }
+        }
         navigate("/");
       }
     } catch {

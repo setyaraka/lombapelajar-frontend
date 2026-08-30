@@ -1,4 +1,6 @@
 import { useEffect } from "react";
+import Pagination from "../Pagination";
+import RowsPerPage from "../RowsPerPage";
 
 export type Participant = {
   id: number;
@@ -13,6 +15,11 @@ type Props = {
   competitionTitle?: string;
   participants: Participant[];
   loading: boolean;
+  page: number;
+  totalPages: number;
+  perPage: number;
+  onPageChange: (page: number) => void;
+  onPerPageChange: (perPage: number) => void;
 };
 
 export default function CompetitionParticipantsModal({
@@ -21,6 +28,11 @@ export default function CompetitionParticipantsModal({
   competitionTitle,
   participants,
   loading,
+  page,
+  totalPages,
+  perPage,
+  onPageChange,
+  onPerPageChange,
 }: Props) {
   // useEffect(() => {
   //   const esc = (e: KeyboardEvent) => e.key === "Escape" && onClose();
@@ -76,9 +88,13 @@ export default function CompetitionParticipantsModal({
                     <td>{p.school}</td>
                     <td>
                       <span className={`badge ${p.status}`}>
-                        {p.status === "verified" ? "Diterima" : 
-                         p.status === "pending" ? "Menunggu" : 
-                         p.status === "rejected" ? "Ditolak" : p.status}
+                        {p.status === "verified"
+                          ? "Diterima"
+                          : p.status === "pending"
+                            ? "Menunggu"
+                            : p.status === "rejected"
+                              ? "Ditolak"
+                              : p.status}
                       </span>
                     </td>
                   </tr>
@@ -86,6 +102,18 @@ export default function CompetitionParticipantsModal({
               )}
             </tbody>
           </table>
+        </div>
+
+        <div className="table-footer">
+          <div></div>
+
+          {totalPages > 1 ? (
+            <Pagination page={page} totalPages={totalPages} onChange={onPageChange} />
+          ) : (
+            <div></div>
+          )}
+
+          <RowsPerPage value={perPage} onChange={(v) => onPerPageChange(v)} />
         </div>
       </div>
     </div>

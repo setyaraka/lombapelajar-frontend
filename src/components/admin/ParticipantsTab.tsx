@@ -4,8 +4,9 @@ import RowsPerPage from "../RowsPerPage";
 import PaymentProofModal from "../PaymentProofModal";
 import type { ProofData } from "../PaymentProofModal";
 import { getParticipants, updateParticipantStatus } from "../../services/participant.service";
-import type { CreationData } from "../CreationModal";
-import CreationModal from "../CreationModal";
+import SearchableDropdown from "../SearchableDropdown";
+// import type { CreationData } from "../CreationModal";
+// import CreationModal from "../CreationModal";
 
 type Status = "PENDING" | "VERIFIED" | "REJECTED";
 
@@ -40,8 +41,11 @@ export default function ParticipantsTab() {
     total: 0,
   });
 
-  const [creation, setCreation] = useState<CreationData | null>(null);
-  const [openCreation, setOpenCreation] = useState(false);
+  // Modal "Lihat Karya" disembunyikan sementara bersama kolomnya di tabel
+  // (lihat catatan di header tabel) — state & import-nya ikut dinonaktifkan
+  // supaya tidak ada state/import yang menggantung tak terpakai.
+  // const [creation, setCreation] = useState<CreationData | null>(null);
+  // const [openCreation, setOpenCreation] = useState(false);
 
   // ================= LOAD DATA =================
   const loadParticipants = useCallback(async () => {
@@ -85,7 +89,7 @@ export default function ParticipantsTab() {
         onClose={() => setOpen(false)}
         changeStatus={changeStatus}
       />
-      <CreationModal open={openCreation} data={creation} onClose={() => setOpenCreation(false)} />
+      {/* <CreationModal open={openCreation} data={creation} onClose={() => setOpenCreation(false)} /> */}
 
       <div className="admin-page">
         <div className="container">
@@ -128,18 +132,20 @@ export default function ParticipantsTab() {
                 />
               </div>
 
-              <select
+              <SearchableDropdown
+                allLabel="Semua Status"
+                searchPlaceholder="Cari status..."
                 value={statusFilter}
-                onChange={(e) => {
+                onChange={(v) => {
                   setPage(1);
-                  setStatusFilter(e.target.value);
+                  setStatusFilter(v);
                 }}
-              >
-                <option value="">Semua Status</option>
-                <option value="PENDING">Menunggu</option>
-                <option value="VERIFIED">Diterima</option>
-                <option value="REJECTED">Ditolak</option>
-              </select>
+                options={[
+                  { value: "PENDING", label: "Menunggu" },
+                  { value: "VERIFIED", label: "Diterima" },
+                  { value: "REJECTED", label: "Ditolak" },
+                ]}
+              />
             </div>
           </div>
 
@@ -152,7 +158,10 @@ export default function ParticipantsTab() {
                   <th>Sekolah</th>
                   <th>Lomba</th>
                   <th>Pembayaran</th>
-                  <th>Karya</th>
+                  {/* Kolom "Karya" disembunyikan sementara — fitur penilaian/ranking
+                      karya tulis belum ada di sistem, jadi kolom ini belum berguna
+                      untuk admin. Data & backend-nya tidak dihapus, cuma tidak
+                      ditampilkan dulu. */}
                   <th>Status</th>
                   <th>Aksi</th>
                 </tr>
@@ -184,7 +193,7 @@ export default function ParticipantsTab() {
 
                         {/* ===== BUKTI ===== */}
                         <td data-label="Pembayaran">
-                          {imageUrl ? (
+                          {p.proofUrl ? (
                             <button
                               className="btn view"
                               onClick={() => {
@@ -206,25 +215,7 @@ export default function ParticipantsTab() {
                             <span className="muted">Belum upload</span>
                           )}
                         </td>
-                        <td data-label="Karya">
-                          {p.creationFile ? (
-                            <button
-                              className="btn view"
-                              onClick={() => {
-                                setCreation({
-                                  name: p.name,
-                                  competition: p.competition,
-                                  fileUrl: `${import.meta.env.VITE_API_URL}/files/${p.creationFile}`,
-                                });
-                                setOpenCreation(true);
-                              }}
-                            >
-                              Lihat Karya
-                            </button>
-                          ) : (
-                            <span className="muted">Belum upload</span>
-                          )}
-                        </td>
+                        {/* Kolom "Karya" disembunyikan sementara, lihat catatan di header tabel */}
 
                         {/* ===== STATUS ===== */}
                         <td data-label="Status">
@@ -237,25 +228,27 @@ export default function ParticipantsTab() {
 
                         {/* ===== ACTION ===== */}
                         {p.status === "PENDING" ? (
-                          <td data-label="Aksi" className="actions">
-                            <button
-                              className="btn approve"
-                              disabled={!paymentUploaded}
-                              title={
-                                !paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""
-                              }
-                              onClick={() => changeStatus(p.id, "VERIFIED")}
-                            >
-                              Terima
-                            </button>
+                          paymentUploaded ? (
+                            <td data-label="Aksi" className="actions">
+                              <button
+                                className="btn approve"
+                                onClick={() => changeStatus(p.id, "VERIFIED")}
+                              >
+                                Terima
+                              </button>
 
-                            <button
-                              className="btn reject"
-                              onClick={() => changeStatus(p.id, "REJECTED")}
-                            >
-                              Tolak
-                            </button>
-                          </td>
+                              <button
+                                className="btn reject"
+                                onClick={() => changeStatus(p.id, "REJECTED")}
+                              >
+                                Tolak
+                              </button>
+                            </td>
+                          ) : (
+                            <td data-label="Aksi" className="muted">
+                              Menunggu pembayaran
+                            </td>
+                          )
                         ) : (
                           <td data-label="Aksi" className="muted">
                             Selesai

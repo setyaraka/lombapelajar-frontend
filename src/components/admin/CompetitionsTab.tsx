@@ -3,6 +3,7 @@ import CreateCompetitionModal from "./CreateCompetitionModal";
 import CompetitionParticipantsModal, { type Participant } from "./CompetitionParticipantsModal";
 import Pagination from "../Pagination";
 import RowsPerPage from "../RowsPerPage";
+import SearchableDropdown from "../SearchableDropdown";
 import {
   deleteCompetition,
   getCompetitionParticipants,
@@ -34,6 +35,9 @@ export default function CompetitionsTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [participantLoading, setParticipantLoading] = useState(false);
+  const [participantsPage, setParticipantsPage] = useState(1);
+  const [participantsPerPage, setParticipantsPerPage] = useState(10);
+  const [participantsTotalPages, setParticipantsTotalPages] = useState(1);
 
   const loadCompetitions = useCallback(async () => {
     setLoading(true);
@@ -47,28 +51,47 @@ export default function CompetitionsTab() {
       });
 
       setCompetitions(res.data);
-      setTotalPages(res.meta.totalPages);
+      setTotalPages(res.totalPages);
     } finally {
       setLoading(false);
     }
   }, [page, perPage, search, level, category]);
 
-  const openParticipants = async (c: Competition) => {
+  const openParticipants = (c: Competition) => {
     setSelectedCompetition(c);
     setParticipantOpen(true);
-    setParticipantLoading(true);
-
-    try {
-      const res = await getCompetitionParticipants(c.id);
-      setParticipants(res);
-    } finally {
-      setParticipantLoading(false);
-    }
+    setParticipantsPage(1);
   };
 
   useEffect(() => {
     loadCompetitions();
   }, [loadCompetitions]);
+
+  useEffect(() => {
+    if (!participantOpen || !selectedCompetition) return;
+
+    let cancelled = false;
+
+    (async () => {
+      setParticipantLoading(true);
+      try {
+        const res = await getCompetitionParticipants(selectedCompetition.id, {
+          page: participantsPage,
+          perPage: participantsPerPage,
+        });
+
+        if (cancelled) return;
+        setParticipants(res.data);
+        setParticipantsTotalPages(res.totalPages);
+      } finally {
+        if (!cancelled) setParticipantLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [participantOpen, selectedCompetition, participantsPage, participantsPerPage]);
 
   return (
     <>
@@ -88,6 +111,14 @@ export default function CompetitionsTab() {
         competitionTitle={selectedCompetition?.title}
         participants={participants}
         loading={participantLoading}
+        page={participantsPage}
+        totalPages={participantsTotalPages}
+        perPage={participantsPerPage}
+        onPageChange={setParticipantsPage}
+        onPerPageChange={(v) => {
+          setParticipantsPage(1);
+          setParticipantsPerPage(v);
+        }}
       />
 
       {/* FILTER */}
@@ -114,32 +145,36 @@ export default function CompetitionsTab() {
             />
           </div>
 
-          <select
+          <SearchableDropdown
+            allLabel="Semua Jenjang"
+            searchPlaceholder="Cari jenjang..."
             value={level}
-            onChange={(e) => {
+            onChange={(v) => {
               setPage(1);
-              setLevel(e.target.value);
+              setLevel(v);
             }}
-          >
-            <option value="">Semua Jenjang</option>
-            <option value="SD">SD</option>
-            <option value="SMP">SMP</option>
-            <option value="SMA">SMA</option>
-            <option value="MAHASISWA">MAHASISWA</option>
-          </select>
+            options={[
+              { value: "SD", label: "SD" },
+              { value: "SMP", label: "SMP" },
+              { value: "SMA", label: "SMA" },
+              { value: "MAHASISWA", label: "MAHASISWA" },
+            ]}
+          />
 
-          <select
+          <SearchableDropdown
+            allLabel="Semua Kategori"
+            searchPlaceholder="Cari kategori..."
             value={category}
-            onChange={(e) => {
+            onChange={(v) => {
               setPage(1);
-              setCategory(e.target.value);
+              setCategory(v);
             }}
-          >
-            <option value="">Semua Kategori</option>
-            <option value="Akademik">Akademik</option>
-            <option value="Bahasa">Bahasa</option>
-            <option value="Sains">Sains</option>
-          </select>
+            options={[
+              { value: "Akademik", label: "Akademik" },
+              { value: "Bahasa", label: "Bahasa" },
+              { value: "Sains", label: "Sains" },
+            ]}
+          />
         </div>
       </div>
 

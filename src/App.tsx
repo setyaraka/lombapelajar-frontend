@@ -8,6 +8,9 @@ import Competitions from "./pages/Competitions";
 import CompetitionDetail from "./pages/CompetitionDetail";
 import RegisterCompetition from "./pages/RegisterCompetition";
 import AdminParticipants from "./pages/AdminParticipants";
+import AdminCBT from "./pages/AdminCBT";
+import ExamPage from "./pages/ExamPage";
+import AnnouncementPage from "./pages/AnnouncementPage";
 
 export default function App() {
   return (
@@ -24,7 +27,10 @@ export default function App() {
           {/* private */}
           <Route element={<ProtectedRoute />}>
             <Route path="/competition/:id/register" element={<RegisterCompetition />} />
+            <Route path="/competition/:id/announcement" element={<AnnouncementPage />} />
+            <Route path="/exam/:attemptId" element={<ExamPage />} />
             <Route path="/admin/participants" element={<AdminParticipants />} />
+            <Route path="/admin/cbt" element={<AdminCBT />} />
           </Route>
 
           {/* NOT FOUND -> LOGIN */}

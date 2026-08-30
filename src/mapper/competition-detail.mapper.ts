@@ -1,3 +1,5 @@
+import type { ExamScheduleItem } from "../services/exam.service";
+
 export type CompetitionDetailVM = {
   id: string;
   title: string;
@@ -16,6 +18,7 @@ export type CompetitionDetailVM = {
   whatsapp?: string | null;
   announcementPoster?: string | null;
   announcementLink?: string | null;
+  examSchedule: ExamScheduleItem[];
 };
 
 export type CompetitionRequirementDTO = {
@@ -49,6 +52,7 @@ export type CompetitionDetailDTO = {
   whatsapp?: string | null;
   announcementPoster?: string | null;
   announcementLink?: string | null;
+  examSchedule: ExamScheduleItem[];
 };
 
 export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDetailVM {
@@ -65,6 +69,7 @@ export function toCompetitionDetailVM(api: CompetitionDetailDTO): CompetitionDet
     whatsapp: api.whatsapp,
     announcementPoster: api.announcementPoster,
     announcementLink: api.announcementLink,
+    examSchedule: api.examSchedule,
 
     requirements: api.requirements.map((r) => r.text),
 

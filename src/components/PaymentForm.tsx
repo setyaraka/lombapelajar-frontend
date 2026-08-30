@@ -34,12 +34,16 @@ export default function PaymentForm({
       <div className="bank-box">
         {competition ? (
           <>
-            <p style={{ marginBottom: 10, fontWeight: 500 }}>Silakan pilih salah satu metode pembayaran berikut:</p>
+            <p style={{ marginBottom: 10, fontWeight: 500 }}>
+              Silakan pilih salah satu metode pembayaran berikut:
+            </p>
 
             <div className="grid">
               {competition.bankName && (
                 <div className="method-box">
-                  <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>Transfer Bank:</div>
+                  <div style={{ fontSize: 13, color: "#64748b", marginBottom: 4 }}>
+                    Transfer Bank:
+                  </div>
                   <b>
                     {competition.bankName} - {competition.bankNumber}
                   </b>
@@ -54,14 +58,21 @@ export default function PaymentForm({
                   <img
                     src={`${import.meta.env.VITE_API_URL}/files/${competition.qris}`}
                     alt="QRIS"
-                    style={{ maxWidth: "50%", borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.1)" }}
+                    style={{
+                      maxWidth: "50%",
+                      borderRadius: 12,
+                      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+                    }}
                   />
                 </div>
               )}
             </div>
 
             <div style={{ marginTop: 15, paddingTop: 15, borderTop: "1px dashed #ddd" }}>
-              Total Biaya: <b style={{ color: "var(--primary)", fontSize: 18 }}>{formatRupiah(competition.price)}</b>
+              Total Biaya:{" "}
+              <b style={{ color: "var(--primary)", fontSize: 18 }}>
+                {formatRupiah(competition.price)}
+              </b>
             </div>
           </>
         ) : (
