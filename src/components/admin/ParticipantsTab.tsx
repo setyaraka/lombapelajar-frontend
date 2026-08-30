@@ -4,8 +4,8 @@ import RowsPerPage from "../RowsPerPage";
 import PaymentProofModal from "../PaymentProofModal";
 import type { ProofData } from "../PaymentProofModal";
 import { getParticipants, updateParticipantStatus } from "../../services/participant.service";
-import type { CreationData } from "../CreationModal";
-import CreationModal from "../CreationModal";
+// import type { CreationData } from "../CreationModal";
+// import CreationModal from "../CreationModal";
 
 type Status = "PENDING" | "VERIFIED" | "REJECTED";
 
@@ -40,8 +40,11 @@ export default function ParticipantsTab() {
     total: 0,
   });
 
-  const [creation, setCreation] = useState<CreationData | null>(null);
-  const [openCreation, setOpenCreation] = useState(false);
+  // Modal "Lihat Karya" disembunyikan sementara bersama kolomnya di tabel
+  // (lihat catatan di header tabel) — state & import-nya ikut dinonaktifkan
+  // supaya tidak ada state/import yang menggantung tak terpakai.
+  // const [creation, setCreation] = useState<CreationData | null>(null);
+  // const [openCreation, setOpenCreation] = useState(false);
 
   // ================= LOAD DATA =================
   const loadParticipants = useCallback(async () => {
@@ -85,7 +88,7 @@ export default function ParticipantsTab() {
         onClose={() => setOpen(false)}
         changeStatus={changeStatus}
       />
-      <CreationModal open={openCreation} data={creation} onClose={() => setOpenCreation(false)} />
+      {/* <CreationModal open={openCreation} data={creation} onClose={() => setOpenCreation(false)} /> */}
 
       <div className="admin-page">
         <div className="container">
@@ -152,7 +155,10 @@ export default function ParticipantsTab() {
                   <th>Sekolah</th>
                   <th>Lomba</th>
                   <th>Pembayaran</th>
-                  <th>Karya</th>
+                  {/* Kolom "Karya" disembunyikan sementara — fitur penilaian/ranking
+                      karya tulis belum ada di sistem, jadi kolom ini belum berguna
+                      untuk admin. Data & backend-nya tidak dihapus, cuma tidak
+                      ditampilkan dulu. */}
                   <th>Status</th>
                   <th>Aksi</th>
                 </tr>
@@ -206,25 +212,7 @@ export default function ParticipantsTab() {
                             <span className="muted">Belum upload</span>
                           )}
                         </td>
-                        <td data-label="Karya">
-                          {p.creationFile ? (
-                            <button
-                              className="btn view"
-                              onClick={() => {
-                                setCreation({
-                                  name: p.name,
-                                  competition: p.competition,
-                                  fileUrl: `${import.meta.env.VITE_API_URL}/files/${p.creationFile}`,
-                                });
-                                setOpenCreation(true);
-                              }}
-                            >
-                              Lihat Karya
-                            </button>
-                          ) : (
-                            <span className="muted">Belum upload</span>
-                          )}
-                        </td>
+                        {/* Kolom "Karya" disembunyikan sementara, lihat catatan di header tabel */}
 
                         {/* ===== STATUS ===== */}
                         <td data-label="Status">

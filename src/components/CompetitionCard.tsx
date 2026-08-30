@@ -20,8 +20,9 @@ export default function CompetitionCard({
   level,
   date,
   poster,
-  submitted,
-  creationFile,
+  // submitted dan creationFile sementara tidak dipakai — badge yang
+  // menggunakannya di-hide juga (lihat di bawah). Props tetap ada di tipe
+  // Props di atas supaya pemanggil (Competitions.tsx) tidak perlu diubah.
   examStatus,
   onEdit,
 }: Props) {
@@ -55,6 +56,9 @@ export default function CompetitionCard({
           <div className="info-row">
             <span className="date-info">{date}</span>
           </div>
+          {/* Badge Karya Terupload/Belum Upload Karya disembunyikan sementara,
+              konsisten dengan tombol Upload Karya yang juga disembunyikan di
+              CompetitionDetail.tsx — belum ada alur penilaian karya di sistem.
           {user && submitted && (
             <>
               {creationFile ? (
@@ -64,6 +68,7 @@ export default function CompetitionCard({
               )}
             </>
           )}
+          */}
           {user && examStatus && (
             <div className={`badge exam-status ${examStatus.status.toLowerCase()}`}>
               {examStatus.label}

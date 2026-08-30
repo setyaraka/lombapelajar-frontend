@@ -755,6 +755,10 @@ export default function CompetitionDetail() {
                     Upload Juknis
                   </button>
                 )}
+                {/* Upload/Lihat Karya disembunyikan sementara — belum ada alur
+                    penilaian/ranking karya tulis di sistem, jadi fitur upload ini
+                    belum berguna untuk dipakai. Tidak dihapus, cuma tidak
+                    ditampilkan dulu.
                 {competition.registrationStatus === "verified" &&
                   (competition.creationFile ? (
                     <button className="btn width" onClick={() => setShowCreationModal(true)}>
@@ -765,6 +769,7 @@ export default function CompetitionDetail() {
                       Upload Karya
                     </button>
                   ))}
+                */}
               </div>
               <div className="mt-1">
                 {competition.registrationStatus === "verified" && (

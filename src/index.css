@@ -2455,6 +2455,54 @@ input[type="file"] {
   color: #6b7280;
 }
 
+/* ===== PAGINATION =====
+   Class name sengaja bukan "nav" — nama itu sudah dipakai untuk navbar utama
+   (lihat Header.tsx), jadi kalau dipakai lagi di sini tombolnya ikut kebawa
+   style navbar (termasuk aturan responsive yang bikin tombol jadi width:100%
+   dan pindah baris sendiri-sendiri di layar sempit). */
+.pagination {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.pagination .pagination-nav,
+.pagination .page {
+  min-width: 32px;
+  height: 32px;
+  padding: 0 8px;
+  border-radius: 10px;
+  border: 1px solid #e5e7eb;
+  background: #f3f4f6;
+  color: #111827;
+  font-weight: 500;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.pagination .pagination-nav:hover:not(:disabled),
+.pagination .page:hover:not(.active) {
+  border-color: #cbd5f5;
+}
+
+.pagination .pagination-nav:disabled {
+  opacity: .4;
+  cursor: not-allowed;
+}
+
+.pagination .page.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: #fff;
+}
+
+.pagination .dots {
+  color: #9ca3af;
+  padding: 0 4px;
+}
+
 .info-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
