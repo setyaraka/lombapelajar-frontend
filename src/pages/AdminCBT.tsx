@@ -3644,9 +3644,16 @@ function ResultsView() {
   };
 
   const fetchResults = useCallback(async () => {
+    // Sengaja tidak fetch/tampilkan apa pun sebelum admin memilih satu ujian
+    // — daftar "semua ujian dari semua lomba" gabung jadi satu tabel besar
+    // yang membingungkan, jadi defaultnya kosong dengan ajakan untuk memilih.
+    if (!selectedExamId) {
+      setResults([]);
+      return;
+    }
     try {
       setLoading(true);
-      const res = await AdminCBTAPI.getResults({ examId: selectedExamId || undefined });
+      const res = await AdminCBTAPI.getResults({ examId: selectedExamId });
       setResults(res.data);
     } catch {
       toast.error("Gagal memuat hasil ujian");
@@ -3843,7 +3850,19 @@ function ResultsView() {
         </div>
       </div>
 
-      {loading ? (
+      {!selectedExamId ? (
+        <div
+          style={{
+            border: "1px solid #e2e8f0",
+            borderRadius: "12px",
+            padding: "3rem 2rem",
+            textAlign: "center",
+            color: "#64748b",
+          }}
+        >
+          Pilih salah satu ujian/lomba di atas untuk melihat hasil ujiannya.
+        </div>
+      ) : loading ? (
         <div>Memuat data hasil ujian...</div>
       ) : (
         <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
