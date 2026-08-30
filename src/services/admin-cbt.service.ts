@@ -1,5 +1,11 @@
 import api from "../api/axios";
 
+export interface CBTRegisteredUser {
+  id: string;
+  user: { name: string; email: string };
+  competition: { title: string };
+}
+
 export interface CBTDashboardData {
   stats: {
     totalParticipants: number;
@@ -355,7 +361,7 @@ export const AdminCBTAPI = {
     return res.data;
   },
   listRegisteredUsers: async () => {
-    const res = await api.get<unknown[]>("/admin/cbt/registered-users");
+    const res = await api.get<CBTRegisteredUser[]>("/admin/cbt/registered-users");
     return res.data;
   },
 

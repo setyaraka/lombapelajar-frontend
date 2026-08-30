@@ -17,6 +17,7 @@ import type {
   CBTMonitoringData,
   CBTResultData,
   CBTEssayAnswer,
+  CBTRegisteredUser,
   PaginationMeta,
 } from "../services/admin-cbt.service";
 import toast from "react-hot-toast";
@@ -1767,9 +1768,7 @@ function ParticipantsView() {
     sourceStageId: "",
   });
 
-  const [registeredUsers, setRegisteredUsers] = useState<
-    Array<{ id: string; user: { name: string; email: string }; competition: { title: string } }>
-  >([]);
+  const [registeredUsers, setRegisteredUsers] = useState<CBTRegisteredUser[]>([]);
   const [selectedRegUserId, setSelectedRegUserId] = useState("");
   const [competitions, setCompetitions] = useState<Array<{ id: string; title: string }>>([]);
 

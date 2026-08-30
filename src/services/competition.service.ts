@@ -1,5 +1,5 @@
 import api from "../api/axios";
-import type { ExamStatus } from "./exam.service";
+import type { ExamStatus, ExamScheduleItem } from "./exam.service";
 
 export type CreateCompetitionPayload = {
   title: string;
@@ -54,6 +54,7 @@ export type CompetitionDetail = {
   registrationStatus: string | null;
   creationFile: string | null;
   examStatus: ExamStatus | null;
+  examSchedule: ExamScheduleItem[];
 };
 
 export const getCompetitions = async (params: CompetitionQuery) => {
