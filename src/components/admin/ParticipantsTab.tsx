@@ -228,25 +228,27 @@ export default function ParticipantsTab() {
 
                         {/* ===== ACTION ===== */}
                         {p.status === "PENDING" ? (
-                          <td data-label="Aksi" className="actions">
-                            <button
-                              className="btn approve"
-                              disabled={!paymentUploaded}
-                              title={
-                                !paymentUploaded ? "Peserta belum upload bukti pembayaran" : ""
-                              }
-                              onClick={() => changeStatus(p.id, "VERIFIED")}
-                            >
-                              Terima
-                            </button>
+                          paymentUploaded ? (
+                            <td data-label="Aksi" className="actions">
+                              <button
+                                className="btn approve"
+                                onClick={() => changeStatus(p.id, "VERIFIED")}
+                              >
+                                Terima
+                              </button>
 
-                            <button
-                              className="btn reject"
-                              onClick={() => changeStatus(p.id, "REJECTED")}
-                            >
-                              Tolak
-                            </button>
-                          </td>
+                              <button
+                                className="btn reject"
+                                onClick={() => changeStatus(p.id, "REJECTED")}
+                              >
+                                Tolak
+                              </button>
+                            </td>
+                          ) : (
+                            <td data-label="Aksi" className="muted">
+                              Menunggu pembayaran
+                            </td>
+                          )
                         ) : (
                           <td data-label="Aksi" className="muted">
                             Selesai
