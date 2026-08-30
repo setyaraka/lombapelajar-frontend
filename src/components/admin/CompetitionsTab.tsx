@@ -35,6 +35,9 @@ export default function CompetitionsTab() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [participants, setParticipants] = useState<Participant[]>([]);
   const [participantLoading, setParticipantLoading] = useState(false);
+  const [participantsPage, setParticipantsPage] = useState(1);
+  const [participantsPerPage, setParticipantsPerPage] = useState(10);
+  const [participantsTotalPages, setParticipantsTotalPages] = useState(1);
 
   const loadCompetitions = useCallback(async () => {
     setLoading(true);
@@ -48,28 +51,47 @@ export default function CompetitionsTab() {
       });
 
       setCompetitions(res.data);
-      setTotalPages(res.meta.totalPages);
+      setTotalPages(res.totalPages);
     } finally {
       setLoading(false);
     }
   }, [page, perPage, search, level, category]);
 
-  const openParticipants = async (c: Competition) => {
+  const openParticipants = (c: Competition) => {
     setSelectedCompetition(c);
     setParticipantOpen(true);
-    setParticipantLoading(true);
-
-    try {
-      const res = await getCompetitionParticipants(c.id);
-      setParticipants(res);
-    } finally {
-      setParticipantLoading(false);
-    }
+    setParticipantsPage(1);
   };
 
   useEffect(() => {
     loadCompetitions();
   }, [loadCompetitions]);
+
+  useEffect(() => {
+    if (!participantOpen || !selectedCompetition) return;
+
+    let cancelled = false;
+
+    (async () => {
+      setParticipantLoading(true);
+      try {
+        const res = await getCompetitionParticipants(selectedCompetition.id, {
+          page: participantsPage,
+          perPage: participantsPerPage,
+        });
+
+        if (cancelled) return;
+        setParticipants(res.data);
+        setParticipantsTotalPages(res.totalPages);
+      } finally {
+        if (!cancelled) setParticipantLoading(false);
+      }
+    })();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [participantOpen, selectedCompetition, participantsPage, participantsPerPage]);
 
   return (
     <>
@@ -89,6 +111,14 @@ export default function CompetitionsTab() {
         competitionTitle={selectedCompetition?.title}
         participants={participants}
         loading={participantLoading}
+        page={participantsPage}
+        totalPages={participantsTotalPages}
+        perPage={participantsPerPage}
+        onPageChange={setParticipantsPage}
+        onPerPageChange={(v) => {
+          setParticipantsPage(1);
+          setParticipantsPerPage(v);
+        }}
       />
 
       {/* FILTER */}

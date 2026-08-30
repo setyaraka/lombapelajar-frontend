@@ -1334,6 +1334,12 @@ th {
   border-color: gray;
 }
 
+.participants-table thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+}
+
 /* ============== REGISTER COMPETITION ============ */
 .layout-page {
   min-height: 100vh;

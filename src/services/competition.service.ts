@@ -91,8 +91,11 @@ export const deleteCompetition = async (id: string) => {
   return res.data;
 };
 
-export const getCompetitionParticipants = async (id: string) => {
-  const res = await api.get(`/competitions/${id}/participants`);
+export const getCompetitionParticipants = async (
+  id: string,
+  params?: { page?: number; perPage?: number }
+) => {
+  const res = await api.get(`/competitions/${id}/participants`, { params });
   return res.data;
 };
 

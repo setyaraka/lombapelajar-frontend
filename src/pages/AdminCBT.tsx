@@ -301,12 +301,14 @@ function DashboardView() {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [dateFilter, setDateFilter] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
 
   const fetchDashboard = useCallback(async () => {
     try {
       setLoading(true);
       const res = await AdminCBTAPI.getDashboard({
         page,
+        perPage,
         search: debouncedSearch,
         date: dateFilter,
       });
@@ -316,7 +318,7 @@ function DashboardView() {
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch, dateFilter]);
+  }, [page, perPage, debouncedSearch, dateFilter]);
 
   // Debounce search input
   useEffect(() => {
@@ -529,47 +531,23 @@ function DashboardView() {
             </table>
           </div>
 
-          {/* Pagination Controls */}
-          {listMeta && listMeta.totalPages > 1 && (
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "center",
-                gap: "0.5rem",
-                marginTop: "1rem",
+          <div className="table-footer" style={{ marginTop: "1rem" }}>
+            <div></div>
+
+            {listMeta && listMeta.totalPages > 1 ? (
+              <Pagination page={page} totalPages={listMeta.totalPages} onChange={setPage} />
+            ) : (
+              <div></div>
+            )}
+
+            <RowsPerPage
+              value={perPage}
+              onChange={(v) => {
+                setPage(1);
+                setPerPage(v);
               }}
-            >
-              <button
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                Sebelumnya
-              </button>
-              <span style={{ alignSelf: "center", fontSize: "0.9rem", color: "#475569" }}>
-                Halaman {page} dari {listMeta.totalPages}
-              </span>
-              <button
-                disabled={page >= listMeta.totalPages}
-                onClick={() => setPage(page + 1)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                Berikutnya
-              </button>
-            </div>
-          )}
+            />
+          </div>
         </>
       )}
     </div>
@@ -892,6 +870,7 @@ function ExamsView() {
   const [showModal, setShowModal] = useState(false);
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(5);
   const [meta, setMeta] = useState<PaginationMeta | null>(null);
 
   // States for searchable paginated competition selector
@@ -941,7 +920,7 @@ function ExamsView() {
   const fetchExams = useCallback(async () => {
     try {
       setLoading(true);
-      const res = await AdminCBTAPI.listExams({ page, perPage: 5, search: debouncedSearch });
+      const res = await AdminCBTAPI.listExams({ page, perPage, search: debouncedSearch });
       setExams(res.data);
       setMeta(res.meta);
     } catch {
@@ -949,7 +928,7 @@ function ExamsView() {
     } finally {
       setLoading(false);
     }
-  }, [page, debouncedSearch]);
+  }, [page, perPage, debouncedSearch]);
 
   const fetchStages = async () => {
     try {
@@ -1362,39 +1341,23 @@ function ExamsView() {
             </table>
           </div>
 
-          {meta && meta.totalPages > 1 && (
-            <div style={{ display: "flex", justifyContent: "center", gap: "0.5rem" }}>
-              <button
-                disabled={page <= 1}
-                onClick={() => setPage(page - 1)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                Sebelumnya
-              </button>
-              <span style={{ alignSelf: "center" }}>
-                Halaman {page} dari {meta.totalPages}
-              </span>
-              <button
-                disabled={page >= meta.totalPages}
-                onClick={() => setPage(page + 1)}
-                style={{
-                  padding: "0.5rem 1rem",
-                  borderRadius: "8px",
-                  border: "1px solid #cbd5e1",
-                  background: "#fff",
-                  cursor: "pointer",
-                }}
-              >
-                Berikutnya
-              </button>
-            </div>
-          )}
+          <div className="table-footer">
+            <div></div>
+
+            {meta && meta.totalPages > 1 ? (
+              <Pagination page={page} totalPages={meta.totalPages} onChange={setPage} />
+            ) : (
+              <div></div>
+            )}
+
+            <RowsPerPage
+              value={perPage}
+              onChange={(v) => {
+                setPage(1);
+                setPerPage(v);
+              }}
+            />
+          </div>
         </>
       )}
 
@@ -3536,6 +3499,9 @@ function MonitoringView() {
   const [monitoringData, setMonitoringData] = useState<CBTMonitoringData[]>([]);
   const [exams, setExams] = useState<CBTExam[]>([]);
   const [selectedExamId, setSelectedExamId] = useState("");
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
 
   const fetchExams = useCallback(async () => {
     try {
@@ -3548,17 +3514,29 @@ function MonitoringView() {
 
   const fetchMonitoring = useCallback(async () => {
     try {
-      const res = await AdminCBTAPI.getMonitoring({ examId: selectedExamId || undefined });
+      const res = await AdminCBTAPI.getMonitoring({
+        examId: selectedExamId || undefined,
+        page,
+        perPage,
+      });
       setMonitoringData(res.data);
+      setMeta(res.meta);
     } catch {
       /* ignore */
     }
-  }, [selectedExamId]);
+  }, [selectedExamId, page, perPage]);
 
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchExams();
   }, [fetchExams]);
+
+  // Ganti ujian yang dipantau -> kembali ke halaman 1, supaya tidak nyangkut
+  // di halaman yang mungkin tidak ada di data ujian barunya.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    setPage(1);
+  }, [selectedExamId]);
 
   // Poll monitoring data every 5 seconds
   useEffect(() => {
@@ -3691,6 +3669,24 @@ function MonitoringView() {
           </tbody>
         </table>
       </div>
+
+      <div className="table-footer">
+        <div></div>
+
+        {meta && meta.totalPages > 1 ? (
+          <Pagination page={page} totalPages={meta.totalPages} onChange={setPage} />
+        ) : (
+          <div></div>
+        )}
+
+        <RowsPerPage
+          value={perPage}
+          onChange={(v) => {
+            setPage(1);
+            setPerPage(v);
+          }}
+        />
+      </div>
     </div>
   );
 }
@@ -3703,6 +3699,9 @@ function ResultsView() {
   const [exams, setExams] = useState<CBTExam[]>([]);
   const [selectedExamId, setSelectedExamId] = useState("");
   const [loading, setLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [meta, setMeta] = useState<PaginationMeta | null>(null);
 
   // Koreksi manual esai — auto-grading exact-match sudah jalan saat peserta
   // submit, modal ini untuk admin meninjau/override kalau exact-match-nya
@@ -3736,22 +3735,29 @@ function ResultsView() {
     // yang membingungkan, jadi defaultnya kosong dengan ajakan untuk memilih.
     if (!selectedExamId) {
       setResults([]);
+      setMeta(null);
       return;
     }
     try {
       setLoading(true);
-      const res = await AdminCBTAPI.getResults({ examId: selectedExamId });
+      const res = await AdminCBTAPI.getResults({ examId: selectedExamId, page, perPage });
       setResults(res.data);
+      setMeta(res.meta);
     } catch {
       toast.error("Gagal memuat hasil ujian");
     } finally {
       setLoading(false);
     }
-  }, [selectedExamId]);
+  }, [selectedExamId, page, perPage]);
 
   useEffect(() => {
     fetchExams();
   }, []);
+
+  // Ganti ujian yang ditampilkan -> kembali ke halaman 1.
+  useEffect(() => {
+    setPage(1);
+  }, [selectedExamId]);
 
   useEffect(() => {
     fetchResults();
@@ -3952,82 +3958,102 @@ function ResultsView() {
       ) : loading ? (
         <div>Memuat data hasil ujian...</div>
       ) : (
-        <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
-          <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
-            <thead>
-              <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
-                <th style={{ padding: "1rem" }}>Nomor Peserta</th>
-                <th style={{ padding: "1rem" }}>Nama Peserta</th>
-                <th style={{ padding: "1rem" }}>Ujian</th>
-                <th style={{ padding: "1rem" }}>Lomba</th>
-                <th style={{ padding: "1rem" }}>Jumlah Jawaban</th>
-                <th style={{ padding: "1rem" }}>Selesai Pada</th>
-                <th style={{ padding: "1rem", textAlign: "right" }}>Nilai Akhir</th>
-                <th style={{ padding: "1rem", textAlign: "center" }}>Ranking</th>
-                <th style={{ padding: "1rem" }}></th>
-              </tr>
-            </thead>
-            <tbody>
-              {results.map((row) => (
-                <tr key={row.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
-                  <td style={{ padding: "1rem", fontWeight: 600 }}>{row.participantNumber}</td>
-                  <td style={{ padding: "1rem" }}>{row.participantName}</td>
-                  <td style={{ padding: "1rem" }}>{row.examTitle}</td>
-                  <td style={{ padding: "1rem", color: "#64748b" }}>
-                    {row.competitionTitle || "-"}
-                  </td>
-                  <td style={{ padding: "1rem" }}>{row.answerCount} Terjawab</td>
-                  <td style={{ padding: "1rem" }}>
-                    {row.finishedAt ? new Date(row.finishedAt).toLocaleString("id-ID") : "-"}
-                  </td>
-                  <td
-                    style={{
-                      padding: "1rem",
-                      textAlign: "right",
-                      fontWeight: 700,
-                      fontSize: "1.1rem",
-                      color: "#2EC4B6",
-                    }}
-                  >
-                    {row.score !== null ? row.score : "-"}
-                  </td>
-                  <td style={{ padding: "1rem", textAlign: "center", fontWeight: 700 }}>
-                    {row.rank !== null ? `#${row.rank}` : "-"}
-                  </td>
-                  <td style={{ padding: "1rem" }}>
-                    <button
-                      onClick={() => openEssayGrading(row.id)}
+        <>
+          <div style={{ border: "1px solid #e2e8f0", borderRadius: "12px", overflow: "hidden" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+              <thead>
+                <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #e2e8f0" }}>
+                  <th style={{ padding: "1rem" }}>Nomor Peserta</th>
+                  <th style={{ padding: "1rem" }}>Nama Peserta</th>
+                  <th style={{ padding: "1rem" }}>Ujian</th>
+                  <th style={{ padding: "1rem" }}>Lomba</th>
+                  <th style={{ padding: "1rem" }}>Jumlah Jawaban</th>
+                  <th style={{ padding: "1rem" }}>Selesai Pada</th>
+                  <th style={{ padding: "1rem", textAlign: "right" }}>Nilai Akhir</th>
+                  <th style={{ padding: "1rem", textAlign: "center" }}>Ranking</th>
+                  <th style={{ padding: "1rem" }}></th>
+                </tr>
+              </thead>
+              <tbody>
+                {results.map((row) => (
+                  <tr key={row.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                    <td style={{ padding: "1rem", fontWeight: 600 }}>{row.participantNumber}</td>
+                    <td style={{ padding: "1rem" }}>{row.participantName}</td>
+                    <td style={{ padding: "1rem" }}>{row.examTitle}</td>
+                    <td style={{ padding: "1rem", color: "#64748b" }}>
+                      {row.competitionTitle || "-"}
+                    </td>
+                    <td style={{ padding: "1rem" }}>{row.answerCount} Terjawab</td>
+                    <td style={{ padding: "1rem" }}>
+                      {row.finishedAt ? new Date(row.finishedAt).toLocaleString("id-ID") : "-"}
+                    </td>
+                    <td
                       style={{
-                        display: "flex",
-                        alignItems: "center",
-                        gap: "0.35rem",
-                        border: "1px solid #cbd5e1",
-                        backgroundColor: "#fff",
-                        borderRadius: "6px",
-                        padding: "0.4rem 0.7rem",
-                        cursor: "pointer",
-                        fontSize: "0.8rem",
-                        whiteSpace: "nowrap",
+                        padding: "1rem",
+                        textAlign: "right",
+                        fontWeight: 700,
+                        fontSize: "1.1rem",
+                        color: "#2EC4B6",
                       }}
                     >
-                      <Edit2 size={14} /> Koreksi Esai
-                    </button>
-                  </td>
-                </tr>
-              ))}
-              {results.length === 0 && (
-                <tr>
-                  <td
-                    colSpan={10}
-                    style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}
-                  >
-                    Belum ada hasil ujian yang tersedia.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
+                      {row.score !== null ? row.score : "-"}
+                    </td>
+                    <td style={{ padding: "1rem", textAlign: "center", fontWeight: 700 }}>
+                      {row.rank !== null ? `#${row.rank}` : "-"}
+                    </td>
+                    <td style={{ padding: "1rem" }}>
+                      <button
+                        onClick={() => openEssayGrading(row.id)}
+                        style={{
+                          display: "flex",
+                          alignItems: "center",
+                          gap: "0.35rem",
+                          border: "1px solid #cbd5e1",
+                          backgroundColor: "#fff",
+                          borderRadius: "6px",
+                          padding: "0.4rem 0.7rem",
+                          cursor: "pointer",
+                          fontSize: "0.8rem",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        <Edit2 size={14} /> Koreksi Esai
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+                {results.length === 0 && (
+                  <tr>
+                    <td
+                      colSpan={10}
+                      style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}
+                    >
+                      Belum ada hasil ujian yang tersedia.
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          <div className="table-footer">
+            <div></div>
+
+            {meta && meta.totalPages > 1 ? (
+              <Pagination page={page} totalPages={meta.totalPages} onChange={setPage} />
+            ) : (
+              <div></div>
+            )}
+
+            <RowsPerPage
+              value={perPage}
+              onChange={(v) => {
+                setPage(1);
+                setPerPage(v);
+              }}
+            />
+          </div>
+        </>
       )}
 
       {gradingAttemptId && (
