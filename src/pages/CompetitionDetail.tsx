@@ -86,6 +86,23 @@ export default function CompetitionDetail() {
   const [uploadingAnnouncement, setUploadingAnnouncement] = useState(false);
 
   const handleOpenViewAnnouncementModal = () => {
+    // Kalau pengumumannya cuma PDF (tanpa link tambahan) — baik dari mode
+    // "PDF Otomatis" maupun "Upload PDF" di Publish Pengumuman — modal ini
+    // isinya cuma bakal berupa satu tombol "Lihat PDF Pengumuman" doang,
+    // jadi langsung buka PDF-nya di tab baru daripada lewat modal yang jadi
+    // klik dua kali buat hal yang sama.
+    if (
+      competition?.announcementPoster &&
+      competition.announcementPoster.toLowerCase().endsWith(".pdf") &&
+      !competition.announcementLink
+    ) {
+      window.open(
+        `${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}`,
+        "_blank",
+        "noopener,noreferrer"
+      );
+      return;
+    }
     setShowViewAnnouncementModal(true);
   };
 
@@ -564,11 +581,34 @@ export default function CompetitionDetail() {
 
                 {announcementFilePreview && (
                   <div style={{ position: "relative", marginTop: "10px", maxWidth: "200px" }}>
-                    <img
-                      src={announcementFilePreview}
-                      alt="Preview Pengumuman"
-                      style={{ width: "100%", borderRadius: "8px", border: "1px solid #e2e8f0" }}
-                    />
+                    {announcementFilePreview.toLowerCase().endsWith(".pdf") ? (
+                      // File tersimpan bisa PDF kalau diisi lewat "Publish Pengumuman" di
+                      // halaman Hasil Ujian & Export (bukan lewat form ini yang cuma terima
+                      // gambar) — <img> tidak bisa menampilkan PDF, jadi tampilkan sebagai
+                      // tautan buka file.
+                      <a
+                        href={announcementFilePreview}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{
+                          display: "block",
+                          padding: "10px",
+                          borderRadius: "8px",
+                          border: "1px solid #e2e8f0",
+                          fontSize: "13px",
+                          color: "#1d4ed8",
+                          textAlign: "center",
+                        }}
+                      >
+                        📄 Lihat PDF tersimpan
+                      </a>
+                    ) : (
+                      <img
+                        src={announcementFilePreview}
+                        alt="Preview Pengumuman"
+                        style={{ width: "100%", borderRadius: "8px", border: "1px solid #e2e8f0" }}
+                      />
+                    )}
                     <button
                       type="button"
                       onClick={() => {
@@ -649,23 +689,48 @@ export default function CompetitionDetail() {
                 </div>
               ) : (
                 <>
-                  {competition.announcementPoster && (
-                    <div
-                      style={{
-                        maxWidth: "100%",
-                        borderRadius: "12px",
-                        overflow: "hidden",
-                        boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
-                        border: "1px solid #e2e8f0",
-                      }}
-                    >
-                      <img
-                        src={`${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}`}
-                        alt="Pengumuman Lomba"
-                        style={{ width: "100%", maxHeight: "400px", objectFit: "contain" }}
-                      />
-                    </div>
-                  )}
+                  {competition.announcementPoster &&
+                    (competition.announcementPoster.toLowerCase().endsWith(".pdf") ? (
+                      // Publish Pengumuman (halaman Hasil Ujian & Export) bisa mengisi slot
+                      // ini dengan PDF (mode "PDF Otomatis"/"Upload PDF"), bukan cuma gambar
+                      // seperti upload manual "Atur Pengumuman" — <img> tidak bisa
+                      // menampilkan PDF, jadi untuk kasus ini tampilkan sebagai tautan buka
+                      // file, bukan gambar inline.
+                      <a
+                        href={`${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="btn primary"
+                        style={{
+                          display: "inline-flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: "8px",
+                          padding: "12px 24px",
+                          textDecoration: "none",
+                          width: "auto",
+                          borderRadius: "10px",
+                        }}
+                      >
+                        📄 Lihat PDF Pengumuman
+                      </a>
+                    ) : (
+                      <div
+                        style={{
+                          maxWidth: "100%",
+                          borderRadius: "12px",
+                          overflow: "hidden",
+                          boxShadow: "0 4px 15px rgba(0,0,0,0.08)",
+                          border: "1px solid #e2e8f0",
+                        }}
+                      >
+                        <img
+                          src={`${import.meta.env.VITE_API_URL}/files/${competition.announcementPoster}`}
+                          alt="Pengumuman Lomba"
+                          style={{ width: "100%", maxHeight: "400px", objectFit: "contain" }}
+                        />
+                      </div>
+                    ))}
 
                   {competition.announcementLink && (
                     <a

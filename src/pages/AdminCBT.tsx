@@ -33,6 +33,7 @@ import {
   Search,
   RefreshCw,
   CheckCircle2,
+  Megaphone,
 } from "lucide-react";
 
 type SubTab =
@@ -3713,12 +3714,32 @@ function ResultsView() {
   const [savingAnswerId, setSavingAnswerId] = useState<string | null>(null);
   const [rankingLoading, setRankingLoading] = useState(false);
 
+  // Cutoff kelulusan Stage — diedit dari sini, disimpan ke ExamStage lewat
+  // updateStage (field passingCutoff).
+  const [cutoffInput, setCutoffInput] = useState("");
+  const [cutoffSaving, setCutoffSaving] = useState(false);
+
+  // Publish Pengumuman — 1 modal, 3 mode (auto-generate PDF dari sistem,
+  // upload PDF manual, atau isi URL langsung). Lihat publishStageAnnouncement
+  // di admin-cbt.service.js untuk penjelasan slot pengumuman yang dipakai.
+  const [publishOpen, setPublishOpen] = useState(false);
+  const [publishMode, setPublishMode] = useState<"auto" | "upload" | "url">("auto");
+  const [publishFile, setPublishFile] = useState<File | null>(null);
+  const [publishUrl, setPublishUrl] = useState("");
+  const [publishing, setPublishing] = useState(false);
+
   // Ranking dihitung per Stage (bisa gabungan >1 exam dalam satu tahap),
   // bukan otomatis tiap submit — lihat komentar recomputeStageRanking di
   // admin-cbt.service.js. Stage-nya diturunkan dari exam yang lagi dipilih
   // di dropdown.
   const selectedExam = exams.find((exam) => exam.id === selectedExamId);
   const selectedStageId = selectedExam?.stage?.id || "";
+  const selectedStageCutoff = selectedExam?.stage?.passingCutoff ?? null;
+  const selectedCompetitionId = selectedExam?.competitionId || "";
+
+  useEffect(() => {
+    setCutoffInput(selectedStageCutoff ? String(selectedStageCutoff) : "");
+  }, [selectedExamId, selectedStageCutoff]);
 
   const fetchExams = async () => {
     try {
@@ -3807,6 +3828,61 @@ function ResultsView() {
     }
   };
 
+  const handleSaveCutoff = async () => {
+    if (!selectedStageId) return;
+    const trimmed = cutoffInput.trim();
+    const value = trimmed === "" ? null : Number(trimmed);
+    if (value !== null && (!Number.isFinite(value) || value < 1)) {
+      toast.error("Jumlah kelulusan harus angka positif");
+      return;
+    }
+    setCutoffSaving(true);
+    try {
+      await AdminCBTAPI.updateStage(selectedStageId, { passingCutoff: value });
+      toast.success("Jumlah kelulusan disimpan");
+      await fetchExams();
+      fetchResults();
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal menyimpan jumlah kelulusan"));
+    } finally {
+      setCutoffSaving(false);
+    }
+  };
+
+  const handlePublish = async () => {
+    if (!selectedStageId) return;
+    if (!selectedCompetitionId) {
+      toast.error("Ujian ini belum terhubung ke kompetisi manapun");
+      return;
+    }
+    if (publishMode === "upload" && !publishFile) {
+      toast.error("Pilih file PDF terlebih dahulu");
+      return;
+    }
+    if (publishMode === "url" && !publishUrl.trim()) {
+      toast.error("Isi URL pengumuman terlebih dahulu");
+      return;
+    }
+    setPublishing(true);
+    try {
+      await AdminCBTAPI.publishStageAnnouncement(selectedStageId, {
+        mode: publishMode,
+        competitionId: selectedCompetitionId,
+        file: publishFile || undefined,
+        announcementLink: publishUrl.trim() || undefined,
+      });
+      toast.success("Pengumuman berhasil dipublish ke peserta");
+      setPublishOpen(false);
+      setPublishFile(null);
+      setPublishUrl("");
+      setPublishMode("auto");
+    } catch (err) {
+      toast.error(getErrorMessage(err, "Gagal mempublish pengumuman"));
+    } finally {
+      setPublishing(false);
+    }
+  };
+
   const openEssayGrading = async (attemptId: string) => {
     setGradingAttemptId(attemptId);
     setEssayLoading(true);
@@ -3866,20 +3942,13 @@ function ResultsView() {
           alignItems: "center",
           flexWrap: "wrap",
           gap: "1rem",
-          marginBottom: "2rem",
+          marginBottom: "1.25rem",
         }}
       >
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
-            Hasil Ujian & Export
-          </h2>
-          <ExamPickerDropdown
-            exams={exams}
-            selectedExamId={selectedExamId}
-            onSelect={setSelectedExamId}
-          />
-        </div>
-        <div style={{ display: "flex", gap: "0.75rem" }}>
+        <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a", whiteSpace: "nowrap" }}>
+          Hasil Ujian & Export
+        </h2>
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
           <button
             onClick={handleRecomputeRanking}
             disabled={!selectedStageId || rankingLoading}
@@ -3940,7 +4009,83 @@ function ResultsView() {
           >
             <FileDown size={16} /> Export PDF
           </button>
+          <button
+            onClick={() => setPublishOpen(true)}
+            disabled={!selectedStageId || !selectedCompetitionId}
+            title={
+              !selectedStageId
+                ? "Pilih ujian yang tergabung ke sebuah tahapan (stage) dulu"
+                : !selectedCompetitionId
+                  ? "Ujian ini belum terhubung ke kompetisi manapun"
+                  : "Publish pengumuman hasil ke peserta"
+            }
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "0.5rem",
+              backgroundColor: !selectedStageId || !selectedCompetitionId ? "#e2e8f0" : "#0f172a",
+              color: !selectedStageId || !selectedCompetitionId ? "#94a3b8" : "#fff",
+              border: "none",
+              padding: "0.6rem 1.2rem",
+              borderRadius: "8px",
+              cursor: !selectedStageId || !selectedCompetitionId ? "not-allowed" : "pointer",
+              fontWeight: 600,
+            }}
+          >
+            <Megaphone size={16} /> Publish Pengumuman
+          </button>
         </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flexWrap: "wrap",
+          alignItems: "center",
+          gap: "1rem",
+          marginBottom: "1.5rem",
+        }}
+      >
+        <ExamPickerDropdown
+          exams={exams}
+          selectedExamId={selectedExamId}
+          onSelect={setSelectedExamId}
+        />
+        {selectedStageId && (
+          <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
+            <label style={{ fontSize: "0.85rem", color: "#64748b", whiteSpace: "nowrap" }}>
+              Lolos ke tahap berikutnya:
+            </label>
+            <input
+              type="number"
+              min={1}
+              placeholder="cth. 10"
+              value={cutoffInput}
+              onChange={(e) => setCutoffInput(e.target.value)}
+              style={{
+                width: "80px",
+                padding: "0.45rem 0.6rem",
+                borderRadius: "8px",
+                border: "1px solid #cbd5e1",
+              }}
+            />
+            <button
+              onClick={handleSaveCutoff}
+              disabled={cutoffSaving}
+              style={{
+                border: "1px solid #cbd5e1",
+                backgroundColor: "#fff",
+                borderRadius: "8px",
+                padding: "0.45rem 0.8rem",
+                cursor: cutoffSaving ? "not-allowed" : "pointer",
+                fontSize: "0.85rem",
+                fontWeight: 600,
+              }}
+            >
+              {cutoffSaving ? "Menyimpan..." : "Simpan"}
+            </button>
+          </div>
+        )}
       </div>
 
       {!selectedExamId ? (
@@ -3971,6 +4116,7 @@ function ResultsView() {
                   <th style={{ padding: "1rem" }}>Selesai Pada</th>
                   <th style={{ padding: "1rem", textAlign: "right" }}>Nilai Akhir</th>
                   <th style={{ padding: "1rem", textAlign: "center" }}>Ranking</th>
+                  <th style={{ padding: "1rem", textAlign: "center" }}>Status</th>
                   <th style={{ padding: "1rem" }}></th>
                 </tr>
               </thead>
@@ -4001,6 +4147,24 @@ function ResultsView() {
                     <td style={{ padding: "1rem", textAlign: "center", fontWeight: 700 }}>
                       {row.rank !== null ? `#${row.rank}` : "-"}
                     </td>
+                    <td style={{ padding: "1rem", textAlign: "center" }}>
+                      {row.status ? (
+                        <span
+                          style={{
+                            padding: "0.25rem 0.6rem",
+                            borderRadius: "9999px",
+                            fontSize: "0.75rem",
+                            fontWeight: 600,
+                            backgroundColor: row.status === "LULUS" ? "#dcfce7" : "#fef2f2",
+                            color: row.status === "LULUS" ? "#166534" : "#b91c1c",
+                          }}
+                        >
+                          {row.status === "LULUS" ? "Lulus" : "Tidak Lulus"}
+                        </span>
+                      ) : (
+                        "-"
+                      )}
+                    </td>
                     <td style={{ padding: "1rem" }}>
                       <button
                         onClick={() => openEssayGrading(row.id)}
@@ -4025,7 +4189,7 @@ function ResultsView() {
                 {results.length === 0 && (
                   <tr>
                     <td
-                      colSpan={10}
+                      colSpan={11}
                       style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}
                     >
                       Belum ada hasil ujian yang tersedia.
@@ -4195,6 +4359,195 @@ function ResultsView() {
                 }}
               >
                 Tutup
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {publishOpen && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            left: 0,
+            width: "100vw",
+            height: "100vh",
+            backgroundColor: "rgba(0,0,0,0.5)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            zIndex: 1000,
+          }}
+        >
+          <div
+            style={{
+              backgroundColor: "#fff",
+              borderRadius: "12px",
+              padding: "2rem",
+              width: "480px",
+              maxWidth: "90vw",
+              maxHeight: "85vh",
+              overflowY: "auto",
+            }}
+          >
+            <h3
+              style={{
+                fontSize: "1.2rem",
+                fontWeight: 700,
+                marginBottom: "0.75rem",
+                color: "#0f172a",
+              }}
+            >
+              Publish Pengumuman
+            </h3>
+
+            <div
+              style={{
+                backgroundColor: "#fffbeb",
+                border: "1px solid #fde68a",
+                color: "#92400e",
+                borderRadius: "8px",
+                padding: "0.85rem 1rem",
+                fontSize: "0.85rem",
+                marginBottom: "1.25rem",
+                lineHeight: 1.5,
+              }}
+            >
+              Menekan tombol ini akan mempublish hasil lomba ke peserta yang terdaftar di kompetisi
+              ini. Peserta akan bisa melihat nilai, ranking, dan status kelulusan mereka. Apakah
+              dilanjutkan?
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: "0.75rem",
+                marginBottom: "1.25rem",
+              }}
+            >
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.6rem",
+                  cursor: "pointer",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="publishMode"
+                  checked={publishMode === "auto"}
+                  onChange={() => setPublishMode("auto")}
+                  style={{ marginTop: "0.2rem" }}
+                />
+                <span>
+                  <strong style={{ display: "block" }}>PDF Otomatis dari Sistem</strong>
+                  <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
+                    Sistem membuat PDF hasil ujian (semua peserta + status lulus/tidak) secara
+                    otomatis.
+                  </span>
+                </span>
+              </label>
+
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.6rem",
+                  cursor: "pointer",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="publishMode"
+                  checked={publishMode === "upload"}
+                  onChange={() => setPublishMode("upload")}
+                  style={{ marginTop: "0.2rem" }}
+                />
+                <span>
+                  <strong style={{ display: "block" }}>Upload PDF</strong>
+                  <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
+                    Unggah file PDF pengumuman sendiri.
+                  </span>
+                </span>
+              </label>
+              {publishMode === "upload" && (
+                <input
+                  type="file"
+                  accept="application/pdf"
+                  onChange={(e) => setPublishFile(e.target.files?.[0] || null)}
+                  style={{ marginLeft: "1.6rem" }}
+                />
+              )}
+
+              <label
+                style={{
+                  display: "flex",
+                  alignItems: "flex-start",
+                  gap: "0.6rem",
+                  cursor: "pointer",
+                }}
+              >
+                <input
+                  type="radio"
+                  name="publishMode"
+                  checked={publishMode === "url"}
+                  onChange={() => setPublishMode("url")}
+                  style={{ marginTop: "0.2rem" }}
+                />
+                <span>
+                  <strong style={{ display: "block" }}>URL</strong>
+                  <span style={{ fontSize: "0.8rem", color: "#64748b" }}>
+                    Tautkan ke halaman/pengumuman di luar sistem.
+                  </span>
+                </span>
+              </label>
+              {publishMode === "url" && (
+                <input
+                  type="url"
+                  placeholder="https://..."
+                  value={publishUrl}
+                  onChange={(e) => setPublishUrl(e.target.value)}
+                  style={{
+                    marginLeft: "1.6rem",
+                    padding: "0.5rem 0.7rem",
+                    borderRadius: "8px",
+                    border: "1px solid #cbd5e1",
+                  }}
+                />
+              )}
+            </div>
+
+            <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
+              <button
+                onClick={() => setPublishOpen(false)}
+                disabled={publishing}
+                style={{
+                  padding: "0.5rem 1.2rem",
+                  border: "1px solid #cbd5e1",
+                  borderRadius: "8px",
+                  backgroundColor: "#fff",
+                  cursor: publishing ? "not-allowed" : "pointer",
+                }}
+              >
+                Batal
+              </button>
+              <button
+                onClick={handlePublish}
+                disabled={publishing}
+                style={{
+                  padding: "0.5rem 1.2rem",
+                  border: "none",
+                  borderRadius: "8px",
+                  backgroundColor: "#0f172a",
+                  color: "#fff",
+                  cursor: publishing ? "not-allowed" : "pointer",
+                  fontWeight: 600,
+                }}
+              >
+                {publishing ? "Mempublish..." : "Publish"}
               </button>
             </div>
           </div>

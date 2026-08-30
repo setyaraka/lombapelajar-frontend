@@ -29,6 +29,9 @@ export interface CBTStage {
   description?: string | null;
   position: number;
   isActive: boolean;
+  // Jumlah peserta yang lolos ke tahap berikutnya berdasarkan rank hasil
+  // "Hitung Ranking". Null = kelulusan belum diset oleh admin.
+  passingCutoff?: number | null;
   createdAt: string;
   updatedAt: string;
   _count?: {
@@ -144,6 +147,10 @@ export interface CBTResultData {
   // Ranking per Stage, diisi lewat tombol "Hitung Ranking" (admin-triggered,
   // bukan otomatis) — null berarti belum pernah dihitung untuk stage exam ini.
   rank: number | null;
+  // Cutoff kelulusan Stage exam ini, dan status hasil bandingnya dengan
+  // rank — null kalau rank belum dihitung atau cutoff belum diset.
+  passingCutoff: number | null;
+  status: "LULUS" | "TIDAK_LULUS" | null;
   finishedAt: string | null;
   violationCount: number;
   answerCount: number;
@@ -205,6 +212,28 @@ export const AdminCBTAPI = {
       participantsRanked: number;
       attemptsUpdated: number;
     }>(`/admin/cbt/stages/${stageId}/recompute-ranking`);
+    return res.data;
+  },
+  publishStageAnnouncement: async (
+    stageId: string,
+    data: {
+      mode: "auto" | "upload" | "url";
+      competitionId: string;
+      file?: File;
+      announcementLink?: string;
+    }
+  ) => {
+    const formData = new FormData();
+    formData.append("mode", data.mode);
+    formData.append("competitionId", data.competitionId);
+    if (data.file) formData.append("file", data.file);
+    if (data.announcementLink) formData.append("announcementLink", data.announcementLink);
+
+    const res = await api.post<{ stageId: string; mode: string }>(
+      `/admin/cbt/stages/${stageId}/publish-announcement`,
+      formData,
+      { headers: { "Content-Type": "multipart/form-data" } }
+    );
     return res.data;
   },
 
