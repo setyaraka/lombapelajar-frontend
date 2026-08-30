@@ -805,9 +805,16 @@ export default function CompetitionDetail() {
                   </button>
                 )}
 
-                <button className="btn width" onClick={handleOpenViewAnnouncementModal}>
-                  Lihat Pengumuman
-                </button>
+                {/* Disembunyikan untuk pengunjung yang belum login atau belum
+                    ikut kompetisi ini (registrationStatus null di kedua kasus
+                    itu — backend cuma isi status kalau userId ada DAN peserta
+                    itu punya registrasi ke kompetisi ini). Admin selalu bisa
+                    lihat, dipakai buat preview pengumuman yang peserta lihat. */}
+                {(user?.role === "ADMIN" || competition.registrationStatus) && (
+                  <button className="btn width" onClick={handleOpenViewAnnouncementModal}>
+                    Lihat Pengumuman
+                  </button>
+                )}
                 {user?.role === "ADMIN" && (
                   <button className="btn width" onClick={handleOpenAnnouncementModal}>
                     Atur Pengumuman
