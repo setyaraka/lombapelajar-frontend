@@ -5,6 +5,7 @@ import { AdminCBTAPI } from "../services/admin-cbt.service";
 import { getCompetitions } from "../services/competition.service";
 import Pagination from "../components/Pagination";
 import RowsPerPage from "../components/RowsPerPage";
+import SearchableDropdown from "../components/SearchableDropdown";
 import { renderFormattedText } from "../helper/format";
 import type {
   CBTDashboardData,
@@ -189,165 +190,6 @@ function ExamPickerDropdown({
                 }}
               >
                 Tidak ditemukan ujian
-              </div>
-            )}
-          </div>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Dropdown filter generik bergaya sama seperti ExamPickerDropdown di atas
-// (klik untuk buka, ada pencarian, list bisa di-scroll) - dipakai untuk
-// filter Lomba/Tahap/Status di Manajemen Peserta supaya tampilannya
-// konsisten dengan dropdown ujian, bukan <select> bawaan browser yang kena
-// aturan CSS global "select { width: 100% }" (makanya sebelumnya melebar
-// penuh dan berantakan).
-function FilterDropdown({
-  options,
-  value,
-  onChange,
-  allLabel,
-  searchPlaceholder = "Cari...",
-}: {
-  options: { value: string; label: string }[];
-  value: string;
-  onChange: (value: string) => void;
-  allLabel: string;
-  searchPlaceholder?: string;
-}) {
-  const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  // Klik di luar area dropdown (trigger + panel) menutupnya, sama seperti
-  // dropdown filter/pencarian pada umumnya.
-  useEffect(() => {
-    if (!open) return;
-    const handleClickOutside = (e: MouseEvent) => {
-      if (containerRef.current && !containerRef.current.contains(e.target as Node)) {
-        setOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [open]);
-
-  const selected = options.find((o) => o.value === value);
-  const triggerLabel = selected ? selected.label : allLabel;
-
-  const filtered = options.filter((o) => o.label.toLowerCase().includes(search.toLowerCase()));
-
-  return (
-    <div ref={containerRef} style={{ position: "relative", zIndex: open ? 40 : 1 }}>
-      <div
-        onClick={() => setOpen(!open)}
-        style={{
-          padding: "0.55rem 0.9rem",
-          borderRadius: "8px",
-          border: "1px solid #cbd5e1",
-          fontSize: "0.85rem",
-          fontWeight: 600,
-          backgroundColor: "#fff",
-          cursor: "pointer",
-          display: "flex",
-          gap: "0.5rem",
-          alignItems: "center",
-          minWidth: "200px",
-          justifyContent: "space-between",
-          color: "#0f172a",
-        }}
-      >
-        <span>{triggerLabel}</span>
-        <span style={{ fontSize: "0.7rem", color: "#64748b" }}>▼</span>
-      </div>
-
-      {open && (
-        <div
-          style={{
-            position: "absolute",
-            top: "100%",
-            left: 0,
-            width: "100%",
-            minWidth: "240px",
-            backgroundColor: "#fff",
-            border: "1px solid #cbd5e1",
-            borderRadius: "8px",
-            marginTop: "4px",
-            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
-            padding: "0.75rem",
-          }}
-        >
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            onClick={(e) => e.stopPropagation()}
-            style={{
-              width: "100%",
-              padding: "0.5rem 0.75rem",
-              borderRadius: "6px",
-              border: "1px solid #cbd5e1",
-              marginBottom: "0.5rem",
-              fontSize: "0.875rem",
-            }}
-          />
-
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "2px",
-              maxHeight: "220px",
-              overflowY: "auto",
-            }}
-          >
-            <div
-              onClick={() => {
-                onChange("");
-                setOpen(false);
-              }}
-              style={{
-                padding: "0.5rem 0.75rem",
-                borderRadius: "4px",
-                cursor: "pointer",
-                fontSize: "0.875rem",
-                fontWeight: 600,
-                backgroundColor: value === "" ? "#f1f5f9" : "transparent",
-              }}
-            >
-              {allLabel}
-            </div>
-            {filtered.map((option) => (
-              <div
-                key={option.value}
-                onClick={() => {
-                  onChange(option.value);
-                  setOpen(false);
-                }}
-                style={{
-                  padding: "0.5rem 0.75rem",
-                  borderRadius: "4px",
-                  cursor: "pointer",
-                  fontSize: "0.875rem",
-                  backgroundColor: value === option.value ? "#f1f5f9" : "transparent",
-                }}
-              >
-                {option.label}
-              </div>
-            ))}
-            {filtered.length === 0 && (
-              <div
-                style={{
-                  padding: "0.5rem 0.75rem",
-                  fontSize: "0.875rem",
-                  color: "#64748b",
-                  textAlign: "center",
-                }}
-              >
-                Tidak ditemukan
               </div>
             )}
           </div>
@@ -1058,6 +900,25 @@ function ExamsView() {
   const [compMeta, setCompMeta] = useState<PaginationMeta | null>(null);
   const [showCompDropdown, setShowCompDropdown] = useState(false);
   const [selectedCompTitle, setSelectedCompTitle] = useState("");
+  const compDropdownRef = useRef<HTMLDivElement>(null);
+
+  // Klik di luar dropdown Kompetisi (Lomba) menutupnya - sama seperti
+  // SearchableDropdown. Dropdown ini tetap versi custom (bukan pakai
+  // SearchableDropdown) karena daftar kompetisinya di-search & dipaginasi
+  // dari server (fetchCompetitions), bukan daftar penuh yang sudah dimuat
+  // di client seperti dropdown lain - SearchableDropdown cuma memfilter
+  // opsi yang sudah ada di memori, jadi tidak cocok dipakai di sini tanpa
+  // kehilangan pencarian/paginasi server-side-nya.
+  useEffect(() => {
+    if (!showCompDropdown) return;
+    const handleClickOutside = (e: MouseEvent) => {
+      if (compDropdownRef.current && !compDropdownRef.current.contains(e.target as Node)) {
+        setShowCompDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [showCompDropdown]);
 
   const [debouncedCompSearch, setDebouncedCompSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
@@ -1604,25 +1465,15 @@ function ExamsView() {
                 <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
                   Tahap Ujian
                 </label>
-                <select
+                <SearchableDropdown
+                  allLabel="-- Pilih Tahapan --"
+                  searchPlaceholder="Cari tahapan..."
                   value={formData.stageId}
-                  onChange={(e) => setFormData({ ...formData, stageId: e.target.value })}
-                  style={{
-                    width: "100%",
-                    padding: "0.6rem",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
-                  }}
-                >
-                  <option value="">-- Pilih Tahapan --</option>
-                  {stages.map((stage) => (
-                    <option key={stage.id} value={stage.id}>
-                      {stage.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => setFormData({ ...formData, stageId: v })}
+                  options={stages.map((stage) => ({ value: stage.id, label: stage.name }))}
+                />
               </div>
-              <div style={{ marginBottom: "1rem", position: "relative" }}>
+              <div ref={compDropdownRef} style={{ marginBottom: "1rem", position: "relative" }}>
                 <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
                   Kompetisi (Lomba)
                 </label>
@@ -2306,7 +2157,7 @@ function ParticipantsView() {
         </div>
 
         <div style={{ display: "flex", flexWrap: "wrap", gap: "0.75rem" }}>
-          <FilterDropdown
+          <SearchableDropdown
             allLabel="Semua Lomba"
             searchPlaceholder="Cari lomba..."
             value={competitionFilter}
@@ -2317,7 +2168,7 @@ function ParticipantsView() {
             options={competitions.map((c) => ({ value: c.id, label: c.title }))}
           />
 
-          <FilterDropdown
+          <SearchableDropdown
             allLabel="Semua Tahap"
             searchPlaceholder="Cari tahap..."
             value={stageFilter}
@@ -2328,7 +2179,7 @@ function ParticipantsView() {
             options={stages.map((s) => ({ value: s.id, label: s.name }))}
           />
 
-          <FilterDropdown
+          <SearchableDropdown
             allLabel="Semua Status"
             searchPlaceholder="Cari status..."
             value={assignedFilter}
@@ -2516,10 +2367,11 @@ function ParticipantsView() {
                   <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
                     Pilih Pendaftar Lomba
                   </label>
-                  <select
+                  <SearchableDropdown
+                    allLabel="-- Pilih Pendaftar (Approved) --"
+                    searchPlaceholder="Cari pendaftar..."
                     value={selectedRegUserId}
-                    onChange={(e) => {
-                      const val = e.target.value;
+                    onChange={(val) => {
                       setSelectedRegUserId(val);
                       const selected = registeredUsers.find((r) => r.id === val);
                       if (selected) {
@@ -2540,21 +2392,11 @@ function ParticipantsView() {
                         });
                       }
                     }}
-                    style={{
-                      width: "100%",
-                      padding: "0.6rem",
-                      borderRadius: "8px",
-                      border: "1px solid #cbd5e1",
-                    }}
-                    required
-                  >
-                    <option value="">-- Pilih Pendaftar (Approved) --</option>
-                    {registeredUsers.map((reg) => (
-                      <option key={reg.id} value={reg.id}>
-                        {reg.user.name} ({reg.user.email}) - {reg.competition.title}
-                      </option>
-                    ))}
-                  </select>
+                    options={registeredUsers.map((reg) => ({
+                      value: reg.id,
+                      label: `${reg.user.name} (${reg.user.email}) - ${reg.competition.title}`,
+                    }))}
+                  />
                 </div>
               )}
               <div style={{ marginBottom: "1rem" }}>
@@ -2617,23 +2459,13 @@ function ParticipantsView() {
                 <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
                   Tahapan
                 </label>
-                <select
+                <SearchableDropdown
+                  allLabel="-- Pilih Tahapan --"
+                  searchPlaceholder="Cari tahapan..."
                   value={formData.stageId}
-                  onChange={(e) => setFormData({ ...formData, stageId: e.target.value })}
-                  style={{
-                    width: "100%",
-                    padding: "0.6rem",
-                    borderRadius: "8px",
-                    border: "1px solid #cbd5e1",
-                  }}
-                >
-                  <option value="">-- Pilih Tahapan --</option>
-                  {stages.map((stage) => (
-                    <option key={stage.id} value={stage.id}>
-                      {stage.name}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(v) => setFormData({ ...formData, stageId: v })}
+                  options={stages.map((stage) => ({ value: stage.id, label: stage.name }))}
+                />
               </div>
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "0.75rem" }}>
                 <button
@@ -2773,49 +2605,25 @@ function ParticipantsView() {
                     <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
                       Pilih Lomba (Kompetisi) Target
                     </label>
-                    <select
+                    <SearchableDropdown
+                      allLabel="-- Pilih Lomba --"
+                      searchPlaceholder="Cari lomba..."
                       value={assignData.competitionId}
-                      onChange={(e) =>
-                        setAssignData({ ...assignData, competitionId: e.target.value })
-                      }
-                      style={{
-                        width: "100%",
-                        padding: "0.6rem",
-                        borderRadius: "8px",
-                        border: "1px solid #cbd5e1",
-                      }}
-                      required
-                    >
-                      <option value="">-- Pilih Lomba --</option>
-                      {competitions.map((comp) => (
-                        <option key={comp.id} value={comp.id}>
-                          {comp.title}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(v) => setAssignData({ ...assignData, competitionId: v })}
+                      options={competitions.map((comp) => ({ value: comp.id, label: comp.title }))}
+                    />
                   </div>
                   <div style={{ marginBottom: "1rem" }}>
                     <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
                       Pilih Babak (Stage) Target
                     </label>
-                    <select
+                    <SearchableDropdown
+                      allLabel="-- Pilih Babak --"
+                      searchPlaceholder="Cari babak..."
                       value={assignData.stageId}
-                      onChange={(e) => setAssignData({ ...assignData, stageId: e.target.value })}
-                      style={{
-                        width: "100%",
-                        padding: "0.6rem",
-                        borderRadius: "8px",
-                        border: "1px solid #cbd5e1",
-                      }}
-                      required
-                    >
-                      <option value="">-- Pilih Babak --</option>
-                      {stages.map((stage) => (
-                        <option key={stage.id} value={stage.id}>
-                          {stage.name}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(v) => setAssignData({ ...assignData, stageId: v })}
+                      options={stages.map((stage) => ({ value: stage.id, label: stage.name }))}
+                    />
                   </div>
                 </>
               )}

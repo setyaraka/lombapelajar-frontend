@@ -3,6 +3,7 @@ import CreateCompetitionModal from "./CreateCompetitionModal";
 import CompetitionParticipantsModal, { type Participant } from "./CompetitionParticipantsModal";
 import Pagination from "../Pagination";
 import RowsPerPage from "../RowsPerPage";
+import SearchableDropdown from "../SearchableDropdown";
 import {
   deleteCompetition,
   getCompetitionParticipants,
@@ -114,32 +115,36 @@ export default function CompetitionsTab() {
             />
           </div>
 
-          <select
+          <SearchableDropdown
+            allLabel="Semua Jenjang"
+            searchPlaceholder="Cari jenjang..."
             value={level}
-            onChange={(e) => {
+            onChange={(v) => {
               setPage(1);
-              setLevel(e.target.value);
+              setLevel(v);
             }}
-          >
-            <option value="">Semua Jenjang</option>
-            <option value="SD">SD</option>
-            <option value="SMP">SMP</option>
-            <option value="SMA">SMA</option>
-            <option value="MAHASISWA">MAHASISWA</option>
-          </select>
+            options={[
+              { value: "SD", label: "SD" },
+              { value: "SMP", label: "SMP" },
+              { value: "SMA", label: "SMA" },
+              { value: "MAHASISWA", label: "MAHASISWA" },
+            ]}
+          />
 
-          <select
+          <SearchableDropdown
+            allLabel="Semua Kategori"
+            searchPlaceholder="Cari kategori..."
             value={category}
-            onChange={(e) => {
+            onChange={(v) => {
               setPage(1);
-              setCategory(e.target.value);
+              setCategory(v);
             }}
-          >
-            <option value="">Semua Kategori</option>
-            <option value="Akademik">Akademik</option>
-            <option value="Bahasa">Bahasa</option>
-            <option value="Sains">Sains</option>
-          </select>
+            options={[
+              { value: "Akademik", label: "Akademik" },
+              { value: "Bahasa", label: "Bahasa" },
+              { value: "Sains", label: "Sains" },
+            ]}
+          />
         </div>
       </div>
 

@@ -4,6 +4,7 @@ import RowsPerPage from "../RowsPerPage";
 import PaymentProofModal from "../PaymentProofModal";
 import type { ProofData } from "../PaymentProofModal";
 import { getParticipants, updateParticipantStatus } from "../../services/participant.service";
+import SearchableDropdown from "../SearchableDropdown";
 // import type { CreationData } from "../CreationModal";
 // import CreationModal from "../CreationModal";
 
@@ -131,18 +132,20 @@ export default function ParticipantsTab() {
                 />
               </div>
 
-              <select
+              <SearchableDropdown
+                allLabel="Semua Status"
+                searchPlaceholder="Cari status..."
                 value={statusFilter}
-                onChange={(e) => {
+                onChange={(v) => {
                   setPage(1);
-                  setStatusFilter(e.target.value);
+                  setStatusFilter(v);
                 }}
-              >
-                <option value="">Semua Status</option>
-                <option value="PENDING">Menunggu</option>
-                <option value="VERIFIED">Diterima</option>
-                <option value="REJECTED">Ditolak</option>
-              </select>
+                options={[
+                  { value: "PENDING", label: "Menunggu" },
+                  { value: "VERIFIED", label: "Diterima" },
+                  { value: "REJECTED", label: "Ditolak" },
+                ]}
+              />
             </div>
           </div>
 

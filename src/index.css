@@ -2079,6 +2079,15 @@ th {
 .filter-card {
   padding: 20px;
   margin-bottom: 20px;
+  /* .card (induk .filter-card) pakai backdrop-filter, yang membuat setiap
+     .card jadi stacking context terpisah - tanpa position+z-index di sini,
+     urutan tumpuk antar .card cuma ikut urutan DOM, jadi .card tabel yang
+     ada DI BAWAH filter (tapi belakangan di DOM) malah nutupin dropdown
+     yang meluber keluar dari filter-card (mis. SearchableDropdown). Kasih
+     z-index lebih tinggi di sini supaya filter-card & isinya selalu di atas
+     .card lain di sebelahnya. */
+  position: relative;
+  z-index: 2;
 }
 
 .filter-title {
