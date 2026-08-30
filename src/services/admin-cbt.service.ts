@@ -114,6 +114,8 @@ export interface CBTMonitoringData {
     id: string;
     title: string;
   };
+  // Nama lomba/kompetisi exam ini — null kalau exam belum tergabung ke kompetisi manapun.
+  competitionTitle: string | null;
   attemptId: string | null;
   status: "Waiting" | "In Progress" | "Finished" | "Auto Submitted" | "Disconnected";
   remainingMs: number;
@@ -126,6 +128,8 @@ export interface CBTResultData {
   participantName: string;
   participantNumber: string;
   examTitle: string;
+  // Nama lomba/kompetisi exam ini — null kalau exam belum tergabung ke kompetisi manapun.
+  competitionTitle: string | null;
   score: number | null;
   // Ranking per Stage, diisi lewat tombol "Hitung Ranking" (admin-triggered,
   // bukan otomatis) — null berarti belum pernah dihitung untuk stage exam ini.

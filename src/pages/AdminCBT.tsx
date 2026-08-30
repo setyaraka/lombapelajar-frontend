@@ -49,6 +49,153 @@ function getErrorMessage(err: unknown, fallback: string): string {
   return fallback;
 }
 
+// Dropdown pemilih ujian yang menampilkan "Judul Ujian - Nama Lomba", dipakai
+// di Monitoring Ujian & Hasil Ujian supaya ujian dengan judul yang sama dari
+// lomba berbeda tetap bisa dibedakan (lihat gaya dropdown ujian di Bank Soal,
+// QuestionsView, yang jadi acuan tampilan ini — versi ini tidak butuh
+// pencarian server-side/paginasi karena daftar ujiannya sudah dimuat penuh
+// oleh view pemanggilnya).
+function ExamPickerDropdown({
+  exams,
+  selectedExamId,
+  onSelect,
+  allLabel = "Semua Ujian",
+}: {
+  exams: CBTExam[];
+  selectedExamId: string;
+  onSelect: (examId: string) => void;
+  allLabel?: string;
+}) {
+  const [open, setOpen] = useState(false);
+  const [search, setSearch] = useState("");
+
+  const examLabel = (exam: CBTExam) =>
+    `${exam.title}${exam.competition ? ` - ${exam.competition.title}` : ""}`;
+
+  const selected = exams.find((exam) => exam.id === selectedExamId);
+  const triggerLabel = selected ? examLabel(selected) : allLabel;
+
+  const filtered = exams.filter((exam) =>
+    examLabel(exam).toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div style={{ position: "relative", zIndex: open ? 40 : 1 }}>
+      <div
+        onClick={() => setOpen(!open)}
+        style={{
+          padding: "0.5rem 1rem",
+          borderRadius: "8px",
+          border: "1px solid #cbd5e1",
+          fontSize: "0.95rem",
+          fontWeight: 600,
+          backgroundColor: "#fff",
+          cursor: "pointer",
+          display: "flex",
+          gap: "0.5rem",
+          alignItems: "center",
+          minWidth: "250px",
+          justifyContent: "space-between",
+        }}
+      >
+        <span>{triggerLabel}</span>
+        <span style={{ fontSize: "0.75rem", color: "#64748b" }}>▼</span>
+      </div>
+
+      {open && (
+        <div
+          style={{
+            position: "absolute",
+            top: "100%",
+            left: 0,
+            width: "100%",
+            minWidth: "300px",
+            backgroundColor: "#fff",
+            border: "1px solid #cbd5e1",
+            borderRadius: "8px",
+            marginTop: "4px",
+            boxShadow: "0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)",
+            padding: "0.75rem",
+          }}
+        >
+          <input
+            type="text"
+            placeholder="Cari ujian..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            onClick={(e) => e.stopPropagation()}
+            style={{
+              width: "100%",
+              padding: "0.5rem 0.75rem",
+              borderRadius: "6px",
+              border: "1px solid #cbd5e1",
+              marginBottom: "0.5rem",
+              fontSize: "0.875rem",
+            }}
+          />
+
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "2px",
+              maxHeight: "220px",
+              overflowY: "auto",
+            }}
+          >
+            <div
+              onClick={() => {
+                onSelect("");
+                setOpen(false);
+              }}
+              style={{
+                padding: "0.5rem 0.75rem",
+                borderRadius: "4px",
+                cursor: "pointer",
+                fontSize: "0.875rem",
+                fontWeight: 600,
+                backgroundColor: selectedExamId === "" ? "#f1f5f9" : "transparent",
+              }}
+            >
+              {allLabel}
+            </div>
+            {filtered.map((exam) => (
+              <div
+                key={exam.id}
+                onClick={() => {
+                  onSelect(exam.id);
+                  setOpen(false);
+                }}
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "0.875rem",
+                  backgroundColor: selectedExamId === exam.id ? "#f1f5f9" : "transparent",
+                }}
+              >
+                {examLabel(exam)}
+              </div>
+            ))}
+            {filtered.length === 0 && (
+              <div
+                style={{
+                  padding: "0.5rem 0.75rem",
+                  fontSize: "0.875rem",
+                  color: "#64748b",
+                  textAlign: "center",
+                }}
+              >
+                Tidak ditemukan ujian
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+
 export default function AdminCBT() {
   const [activeTab, setActiveTab] = useState<SubTab>("dashboard");
 
@@ -185,7 +332,6 @@ function DashboardView() {
   if (!data) return <div>Data tidak tersedia.</div>;
 
   const cardStyle = {
-    flex: "1 1 220px",
     backgroundColor: "#ffffff",
     borderRadius: "12px",
     padding: "1.5rem",
@@ -204,7 +350,14 @@ function DashboardView() {
       <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "1.5rem", color: "#0f172a" }}>
         Dashboard CBT
       </h2>
-      <div style={{ display: "flex", flexWrap: "wrap", gap: "1.5rem", marginBottom: "3rem" }}>
+      <div
+        style={{
+          display: "grid",
+          gridTemplateColumns: "repeat(3, 1fr)",
+          gap: "1.5rem",
+          marginBottom: "3rem",
+        }}
+      >
         <div style={{ ...cardStyle, borderLeftColor: "#3b82f6" }}>
           <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>
             Total Peserta
@@ -243,14 +396,6 @@ function DashboardView() {
           </span>
           <span style={{ fontSize: "2rem", fontWeight: 800, color: "#9d174d", margin: "0.5rem 0" }}>
             {data.stats.finished}
-          </span>
-        </div>
-        <div style={{ ...cardStyle, borderLeftColor: "#ef4444" }}>
-          <span style={{ fontSize: "0.875rem", color: "#64748b", fontWeight: 500 }}>
-            Jumlah Pelanggaran
-          </span>
-          <span style={{ fontSize: "2rem", fontWeight: 800, color: "#991b1b", margin: "0.5rem 0" }}>
-            {data.stats.violations}
           </span>
         </div>
       </div>
@@ -3378,24 +3523,11 @@ function MonitoringView() {
           <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
             Monitoring Ujian Realtime
           </h2>
-          <select
-            value={selectedExamId}
-            onChange={(e) => setSelectedExamId(e.target.value)}
-            style={{
-              padding: "0.5rem 1rem",
-              borderRadius: "8px",
-              border: "1px solid #cbd5e1",
-              fontSize: "0.95rem",
-              fontWeight: 600,
-            }}
-          >
-            <option value="">Semua Ujian</option>
-            {exams.map((exam) => (
-              <option key={exam.id} value={exam.id}>
-                {exam.title}
-              </option>
-            ))}
-          </select>
+          <ExamPickerDropdown
+            exams={exams}
+            selectedExamId={selectedExamId}
+            onSelect={setSelectedExamId}
+          />
         </div>
         <div
           style={{
@@ -3418,6 +3550,7 @@ function MonitoringView() {
               <th style={{ padding: "1rem" }}>Nomor Peserta</th>
               <th style={{ padding: "1rem" }}>Nama Peserta</th>
               <th style={{ padding: "1rem" }}>Ujian</th>
+              <th style={{ padding: "1rem" }}>Lomba</th>
               <th style={{ padding: "1rem" }}>Status</th>
               <th style={{ padding: "1rem" }}>Sisa Waktu</th>
               <th style={{ padding: "1rem" }}>Progres Jawaban</th>
@@ -3433,6 +3566,9 @@ function MonitoringView() {
                   </td>
                   <td style={{ padding: "1rem" }}>{row.participant.name}</td>
                   <td style={{ padding: "1rem" }}>{row.exam.title}</td>
+                  <td style={{ padding: "1rem", color: "#64748b" }}>
+                    {row.competitionTitle || "-"}
+                  </td>
                   <td style={{ padding: "1rem" }}>
                     <span
                       style={{
@@ -3460,7 +3596,7 @@ function MonitoringView() {
             })}
             {monitoringData.length === 0 && (
               <tr>
-                <td colSpan={6} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
+                <td colSpan={7} style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}>
                   Tidak ada peserta yang di-assign untuk dipantau.
                 </td>
               </tr>
@@ -3637,24 +3773,11 @@ function ResultsView() {
           <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
             Hasil Ujian & Export
           </h2>
-          <select
-            value={selectedExamId}
-            onChange={(e) => setSelectedExamId(e.target.value)}
-            style={{
-              padding: "0.5rem 1rem",
-              borderRadius: "8px",
-              border: "1px solid #cbd5e1",
-              fontSize: "0.95rem",
-              fontWeight: 600,
-            }}
-          >
-            <option value="">Semua Ujian</option>
-            {exams.map((exam) => (
-              <option key={exam.id} value={exam.id}>
-                {exam.title}
-              </option>
-            ))}
-          </select>
+          <ExamPickerDropdown
+            exams={exams}
+            selectedExamId={selectedExamId}
+            onSelect={setSelectedExamId}
+          />
         </div>
         <div style={{ display: "flex", gap: "0.75rem" }}>
           <button
@@ -3730,6 +3853,7 @@ function ResultsView() {
                 <th style={{ padding: "1rem" }}>Nomor Peserta</th>
                 <th style={{ padding: "1rem" }}>Nama Peserta</th>
                 <th style={{ padding: "1rem" }}>Ujian</th>
+                <th style={{ padding: "1rem" }}>Lomba</th>
                 <th style={{ padding: "1rem" }}>Jumlah Jawaban</th>
                 <th style={{ padding: "1rem" }}>Selesai Pada</th>
                 <th style={{ padding: "1rem", textAlign: "right" }}>Nilai Akhir</th>
@@ -3743,6 +3867,9 @@ function ResultsView() {
                   <td style={{ padding: "1rem", fontWeight: 600 }}>{row.participantNumber}</td>
                   <td style={{ padding: "1rem" }}>{row.participantName}</td>
                   <td style={{ padding: "1rem" }}>{row.examTitle}</td>
+                  <td style={{ padding: "1rem", color: "#64748b" }}>
+                    {row.competitionTitle || "-"}
+                  </td>
                   <td style={{ padding: "1rem" }}>{row.answerCount} Terjawab</td>
                   <td style={{ padding: "1rem" }}>
                     {row.finishedAt ? new Date(row.finishedAt).toLocaleString("id-ID") : "-"}
@@ -3785,7 +3912,7 @@ function ResultsView() {
               {results.length === 0 && (
                 <tr>
                   <td
-                    colSpan={9}
+                    colSpan={10}
                     style={{ padding: "2rem", textAlign: "center", color: "#64748b" }}
                   >
                     Belum ada hasil ujian yang tersedia.
