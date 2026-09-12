@@ -62,7 +62,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
   };
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const raw = e.target.value.replace(/\./g, "");
+    const raw = e.target.value.replace(/\D/g, "");
     setPrice(raw);
   };
 
@@ -332,17 +332,18 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               </div>
             </div>
 
-            <DatePicker
-              selected={deadline ? new Date(deadline) : null}
-              onChange={(date: Date | null) =>
-                setDeadline(date ? date.toISOString().split("T")[0] : "")
-              }
-              locale={id}
-              dateFormat="dd/MM/yyyy"
-              placeholderText="Deadline Lomba"
-              className="datepicker-input"
-              portalId="datepicker-portal"
-            />
+            <div className="deadline-picker-cell">
+              <DatePicker
+                selected={deadline ? new Date(deadline) : null}
+                onChange={(date: Date | null) =>
+                  setDeadline(date ? date.toISOString().split("T")[0] : "")
+                }
+                locale={id}
+                dateFormat="dd/MM/yyyy"
+                placeholderText="Deadline Lomba"
+                className="datepicker-input"
+              />
+            </div>
             <input
               placeholder="Harga (Rp)"
               value={formatRupiah(price)}

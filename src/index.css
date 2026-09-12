@@ -2753,6 +2753,25 @@ input[type="file"] {
 
 /* ================= DATEPICKER ================= */
 
+/* Deadline Lomba dibungkus <div className="deadline-picker-cell"> (lihat
+   CreateCompetitionModal) supaya popper kalender saat terbuka tidak ikut
+   dianggap grid item terpisah di .form-grid (yang sebelumnya menggeser
+   field lain, mis. Harga, ke baris berikutnya - lihat komentar
+   .react-datepicker-popper di bawah).
+
+   Konsekuensinya: .react-datepicker-wrapper (elemen bawaan react-datepicker,
+   defaultnya display:inline-block) sebelumnya "blockified" & auto stretch
+   penuh selama dia LANGSUNG jadi grid item di .form-grid. Begitu dipindah
+   jadi cucu (dibungkus <div> ini), blockification itu tidak berlaku lagi,
+   jadi lebarnya balik ke lebar konten aslinya (sempit) - makanya field
+   Deadline Lomba jadi kelihatan lebih sempit/pendek dari field lain di
+   baris yang sama. Dipaksa block + lebar penuh lagi di sini. */
+.deadline-picker-cell,
+.deadline-picker-cell .react-datepicker-wrapper {
+  display: block;
+  width: 100%;
+}
+
 .datepicker-input {
   width: 100%;
   padding: 12px;
