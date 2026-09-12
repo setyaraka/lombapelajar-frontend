@@ -6,6 +6,7 @@ import { Eye, EyeOff } from "lucide-react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { id as localeId } from "date-fns/locale";
+import { toLocalYMD } from "../helper/date";
 
 type FormData = {
   nama: string;
@@ -100,7 +101,7 @@ export default function Register() {
               onChange={(date: Date | null) =>
                 setForm((prev) => ({
                   ...prev,
-                  birthDate: date ? date.toISOString().split("T")[0] : "",
+                  birthDate: date ? toLocalYMD(date) : "",
                 }))
               }
               locale={localeId}

@@ -7,6 +7,7 @@ import Pagination from "../components/Pagination";
 import RowsPerPage from "../components/RowsPerPage";
 import SearchableDropdown from "../components/SearchableDropdown";
 import { renderFormattedText } from "../helper/format";
+import { toLocalDatetimeInputValue } from "../helper/date";
 import type {
   CBTDashboardData,
   CBTStage,
@@ -228,8 +229,9 @@ export default function AdminCBT() {
         <div
           style={{
             display: "flex",
-            flexWrap: "wrap",
-            gap: "0.5rem",
+            flexWrap: "nowrap",
+            overflowX: "auto",
+            gap: "0.35rem",
             marginBottom: "2rem",
             borderBottom: "1px solid #e2e8f0",
             paddingBottom: "1rem",
@@ -237,7 +239,7 @@ export default function AdminCBT() {
         >
           {[
             { id: "dashboard", label: "Dashboard", icon: <Award size={18} /> },
-            { id: "stages", label: "Tahapan Ujian", icon: <Award size={18} /> },
+            { id: "stages", label: "Tahapan Kompetisi", icon: <Award size={18} /> },
             { id: "exams", label: "Jadwal & Ujian", icon: <Calendar size={18} /> },
             { id: "participants", label: "Manajemen Peserta", icon: <Users size={18} /> },
             { id: "questions", label: "Bank Soal", icon: <BookOpen size={18} /> },
@@ -250,8 +252,10 @@ export default function AdminCBT() {
               style={{
                 display: "flex",
                 alignItems: "center",
-                gap: "0.5rem",
-                padding: "0.75rem 1.25rem",
+                flexShrink: 0,
+                whiteSpace: "nowrap",
+                gap: "0.4rem",
+                padding: "0.65rem 1rem",
                 borderRadius: "8px",
                 border: "none",
                 cursor: "pointer",
@@ -641,7 +645,7 @@ function StagesView() {
         }}
       >
         <h2 style={{ fontSize: "1.5rem", fontWeight: 700, color: "#0f172a" }}>
-          Manajemen Tahapan Ujian
+          Manajemen Tahapan Kompetisi
         </h2>
         <button
           onClick={() => {
@@ -1020,8 +1024,10 @@ function ExamsView() {
   };
 
   const handleEdit = (exam: CBTExam) => {
-    // Format to local ISO for datetime-local input
-    const localStartAt = exam.startAt ? new Date(exam.startAt).toISOString().slice(0, 16) : "";
+    // Format to local datetime-local input value (lihat helper/date.ts -
+    // toISOString() di sini bakal ngasih jam UTC, bukan jam lokal yang
+    // sebenarnya diinput admin)
+    const localStartAt = exam.startAt ? toLocalDatetimeInputValue(new Date(exam.startAt)) : "";
     setFormData({
       id: exam.id,
       title: exam.title,
