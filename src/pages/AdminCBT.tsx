@@ -7,7 +7,10 @@ import Pagination from "../components/Pagination";
 import RowsPerPage from "../components/RowsPerPage";
 import SearchableDropdown from "../components/SearchableDropdown";
 import { renderFormattedText } from "../helper/format";
-import { toLocalDatetimeInputValue } from "../helper/date";
+import { toLocalDatetimeInputValue, toLocalYMD } from "../helper/date";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
+import { id as localeId } from "date-fns/locale";
 import type {
   CBTDashboardData,
   CBTStage,
@@ -1623,12 +1626,37 @@ function ExamsView() {
               <div style={{ display: "flex", gap: "1rem", marginBottom: "1rem" }}>
                 <div style={{ flex: 1 }}>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
-                    Tanggal & Jam Mulai
+                    Tanggal Mulai
+                  </label>
+                  <div className="exam-start-date-cell">
+                    <DatePicker
+                      selected={formData.startAt ? new Date(formData.startAt) : null}
+                      onChange={(date: Date | null) => {
+                        const timePart = formData.startAt.split("T")[1] || "00:00";
+                        setFormData({
+                          ...formData,
+                          startAt: date ? `${toLocalYMD(date)}T${timePart}` : "",
+                        });
+                      }}
+                      locale={localeId}
+                      dateFormat="dd/MM/yyyy"
+                      placeholderText="Tanggal Mulai"
+                      className="datepicker-input"
+                      required
+                    />
+                  </div>
+                </div>
+                <div style={{ flex: 1 }}>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: 600 }}>
+                    Jam Mulai
                   </label>
                   <input
-                    type="datetime-local"
-                    value={formData.startAt}
-                    onChange={(e) => setFormData({ ...formData, startAt: e.target.value })}
+                    type="time"
+                    value={formData.startAt.split("T")[1] || ""}
+                    onChange={(e) => {
+                      const datePart = formData.startAt.split("T")[0] || toLocalYMD(new Date());
+                      setFormData({ ...formData, startAt: `${datePart}T${e.target.value}` });
+                    }}
                     style={{
                       width: "100%",
                       padding: "0.6rem",
@@ -1735,6 +1763,9 @@ function ExamsView() {
 4. MANAJEMEN PESERTA VIEW
 ==================================================== */
 function ParticipantsView() {
+  // Tombol Tambah Peserta & aksi Hapus Peserta di-nonaktifkan sementara
+  // (permintaan admin). Set true lagi kalau mau dimunculkan.
+  const SHOW_ADD_DELETE_PARTICIPANT = false;
   const [participants, setParticipants] = useState<CBTParticipant[]>([]);
   const [stages, setStages] = useState<CBTStage[]>([]);
   const [exams, setExams] = useState<CBTExam[]>([]);
@@ -2047,6 +2078,7 @@ function ParticipantsView() {
           >
             Assign Ujian ({assignData.participantIds.length})
           </button>
+          {SHOW_ADD_DELETE_PARTICIPANT && (
           <button
             onClick={() => {
               setFormData({
@@ -2085,6 +2117,7 @@ function ParticipantsView() {
           >
             <Plus size={16} /> Tambah Peserta
           </button>
+          )}
         </div>
       </div>
 
@@ -2264,6 +2297,7 @@ function ParticipantsView() {
                       >
                         <Edit2 size={16} />
                       </button>
+                      {SHOW_ADD_DELETE_PARTICIPANT && (
                       <button
                         onClick={() => handleDelete(p.id)}
                         style={{
@@ -2275,6 +2309,7 @@ function ParticipantsView() {
                       >
                         <Trash2 size={16} />
                       </button>
+                      )}
                     </td>
                   </tr>
                 ))}
