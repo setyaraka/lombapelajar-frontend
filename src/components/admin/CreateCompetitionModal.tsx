@@ -10,6 +10,7 @@ import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { id } from "date-fns/locale";
 import toast from "react-hot-toast";
+import { toLocalYMD } from "../../helper/date";
 
 type Props = {
   open: boolean;
@@ -336,7 +337,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
               <DatePicker
                 selected={deadline ? new Date(deadline) : null}
                 onChange={(date: Date | null) =>
-                  setDeadline(date ? date.toISOString().split("T")[0] : "")
+                  setDeadline(date ? toLocalYMD(date) : "")
                 }
                 locale={id}
                 dateFormat="dd/MM/yyyy"
@@ -497,8 +498,8 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
                 onChange={(update: [Date | null, Date | null]) => {
                   const [start, end] = update;
                   const copy = [...timeline];
-                  copy[i].startDate = start ? start.toISOString().split("T")[0] : "";
-                  copy[i].endDate = end ? end.toISOString().split("T")[0] : "";
+                  copy[i].startDate = start ? toLocalYMD(start) : "";
+                  copy[i].endDate = end ? toLocalYMD(end) : "";
                   setTimeline(copy);
                 }}
                 locale={id}
