@@ -2772,6 +2772,16 @@ input[type="file"] {
   width: 100%;
 }
 
+/* Field Tanggal Mulai di modal Buat/Edit Ujian (AdminCBT) - masalah &
+   fix yang sama persis dengan .deadline-picker-cell di atas, bedanya
+   di sini DatePicker ada di dalam flex row (sebelah field Jam Mulai
+   & Durasi), bukan .form-grid. */
+.exam-start-date-cell,
+.exam-start-date-cell .react-datepicker-wrapper {
+  display: block;
+  width: 100%;
+}
+
 .datepicker-input {
   width: 100%;
   padding: 12px;
