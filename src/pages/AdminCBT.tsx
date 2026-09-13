@@ -2079,44 +2079,44 @@ function ParticipantsView() {
             Assign Ujian ({assignData.participantIds.length})
           </button>
           {SHOW_ADD_DELETE_PARTICIPANT && (
-          <button
-            onClick={() => {
-              setFormData({
-                id: "",
-                name: "",
-                email: "",
-                participantNumber: "",
-                stageId: "",
-                isActive: true,
-              });
-              setShowModal(true);
-            }}
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-              backgroundColor: "#2EC4B6",
-              color: "#fff",
-              border: "none",
-              padding: "0.6rem 1.4rem",
-              borderRadius: "8px",
-              cursor: "pointer",
-              fontWeight: 600,
-              fontSize: "0.9rem",
-              transition: "all 0.2s ease",
-              boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = "#27a79b";
-              e.currentTarget.style.transform = "translateY(-1px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = "#2EC4B6";
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
-          >
-            <Plus size={16} /> Tambah Peserta
-          </button>
+            <button
+              onClick={() => {
+                setFormData({
+                  id: "",
+                  name: "",
+                  email: "",
+                  participantNumber: "",
+                  stageId: "",
+                  isActive: true,
+                });
+                setShowModal(true);
+              }}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.5rem",
+                backgroundColor: "#2EC4B6",
+                color: "#fff",
+                border: "none",
+                padding: "0.6rem 1.4rem",
+                borderRadius: "8px",
+                cursor: "pointer",
+                fontWeight: 600,
+                fontSize: "0.9rem",
+                transition: "all 0.2s ease",
+                boxShadow: "0 1px 2px 0 rgba(0, 0, 0, 0.05)",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.backgroundColor = "#27a79b";
+                e.currentTarget.style.transform = "translateY(-1px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.backgroundColor = "#2EC4B6";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              <Plus size={16} /> Tambah Peserta
+            </button>
           )}
         </div>
       </div>
@@ -2298,17 +2298,17 @@ function ParticipantsView() {
                         <Edit2 size={16} />
                       </button>
                       {SHOW_ADD_DELETE_PARTICIPANT && (
-                      <button
-                        onClick={() => handleDelete(p.id)}
-                        style={{
-                          border: "none",
-                          backgroundColor: "transparent",
-                          color: "#ef4444",
-                          cursor: "pointer",
-                        }}
-                      >
-                        <Trash2 size={16} />
-                      </button>
+                        <button
+                          onClick={() => handleDelete(p.id)}
+                          style={{
+                            border: "none",
+                            backgroundColor: "transparent",
+                            color: "#ef4444",
+                            cursor: "pointer",
+                          }}
+                        >
+                          <Trash2 size={16} />
+                        </button>
                       )}
                     </td>
                   </tr>

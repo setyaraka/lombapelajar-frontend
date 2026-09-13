@@ -336,9 +336,7 @@ export default function CreateCompetitionModal({ open, onClose, competitionId, o
             <div className="deadline-picker-cell">
               <DatePicker
                 selected={deadline ? new Date(deadline) : null}
-                onChange={(date: Date | null) =>
-                  setDeadline(date ? toLocalYMD(date) : "")
-                }
+                onChange={(date: Date | null) => setDeadline(date ? toLocalYMD(date) : "")}
                 locale={id}
                 dateFormat="dd/MM/yyyy"
                 placeholderText="Deadline Lomba"
